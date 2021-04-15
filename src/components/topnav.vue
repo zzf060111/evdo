@@ -271,29 +271,29 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 	/* 登录、注册、忘记密码 */
-	.el-dialog{
+	.topnav .el-dialog{
 		width: 450px;
 		height: 420px;
 		border-radius: 10px;
 	}
-	.forget.el-dialog{
+	.topnav .forget.el-dialog{
 		width: 400px;
 		height: 450px;
 	}
-	.regUser.el-dialog{
+	.topnav .regUser.el-dialog{
 		height: 530px;
 	}
-	.el-dialog__header{
+	.topnav .el-dialog__header{
 		border-bottom: 1px solid #ddd;
 	}
-	.el-dialog__body{
+	.topnav .el-dialog__body{
 		padding-left:30px !important;
 		padding-right:50px !important;
 	}
-	.el-form-item{
+	.topnav .el-form-item{
 		position: relative;
 	}
-	.el-form-item p{
+	.topnav .el-form-item p{
 		padding: 0;
 		margin: 0;
 		height: 60%;
@@ -304,16 +304,16 @@ export default {
 		background-color: #fff;
 		color: #6495ed;
 	}
-	.forget .el-form-item p{
+	.topnav .forget .el-form-item p{
 		font-size: 12px;
 		color: #989898;
 		top: 0;
 		background-color: transparent;
 	}
-	.el-form-item p:hover{
+	.topnav .el-form-item p:hover{
 		cursor: pointer;
 	}
-	.el-button{
+	.topnav .el-button{
 		width:50%;
 	}
 	.el-menu.el-menu--horizontal{

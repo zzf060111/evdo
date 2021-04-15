@@ -115,27 +115,27 @@
     }
 </script>
 <style>
-    .el-carousel{
+    .index .el-carousel{
         width: 1690px;
         height: 774px;
     }
-    .el-carousel__item{
+    .index .el-carousel__item{
         width: 1690px;
         height: 774px;
     }
-    .el-carousel__item img{
+    .index .el-carousel__item img{
         width: 100%;
         height: 100%;
     }
-    .el-carousel__arrow{
+    .index .el-carousel__arrow{
         top:120% !important;
     }
-    .el-carousel__button{
+    .index .el-carousel__button{
         width: 40px;
         height: 5px;
         background-color: #ccc;
     }
-    .el-carousel__indicator.is-active .el-carousel__button{
+    .index .el-carousel__indicator.is-active .el-carousel__button{
         background-color:#999;
     }
 </style>
