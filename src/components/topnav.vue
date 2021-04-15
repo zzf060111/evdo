@@ -261,6 +261,8 @@ export default {
 				this.$router.push({path:'/'})
 			}else if(key==2){
 				this.$router.push({path:'/professional'})
+			}else if(key==3){
+				this.$router.push({path:'/enterprise'})
 			}
 		}
 	},
@@ -271,29 +273,29 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 	/* 登录、注册、忘记密码 */
-	.topnav .el-dialog{
+	.el-dialog{
 		width: 450px;
 		height: 420px;
 		border-radius: 10px;
 	}
-	.topnav .forget.el-dialog{
+	.forget.el-dialog{
 		width: 400px;
 		height: 450px;
 	}
-	.topnav .regUser.el-dialog{
+	.regUser.el-dialog{
 		height: 530px;
 	}
-	.topnav .el-dialog__header{
+	.el-dialog__header{
 		border-bottom: 1px solid #ddd;
 	}
-	.topnav .el-dialog__body{
+	.el-dialog__body{
 		padding-left:30px !important;
 		padding-right:50px !important;
 	}
-	.topnav .el-form-item{
+	.el-form-item{
 		position: relative;
 	}
-	.topnav .el-form-item p{
+	.el-form-item p{
 		padding: 0;
 		margin: 0;
 		height: 60%;
@@ -304,16 +306,16 @@ export default {
 		background-color: #fff;
 		color: #6495ed;
 	}
-	.topnav .forget .el-form-item p{
+	.forget .el-form-item p{
 		font-size: 12px;
 		color: #989898;
 		top: 0;
 		background-color: transparent;
 	}
-	.topnav .el-form-item p:hover{
+	.el-form-item p:hover{
 		cursor: pointer;
 	}
-	.topnav .el-button{
+	.el-button{
 		width:50%;
 	}
 	.el-menu.el-menu--horizontal{
