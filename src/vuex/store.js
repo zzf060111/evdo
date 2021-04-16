@@ -5,7 +5,8 @@ Vue.use(Vuex);
 
 const state={
     forgetReg:60,
-    forgetStr:'获取验证码'
+    forgetStr:'获取验证码',
+    searchval:''
 }
 const mutations={
     forgetTime(state){
@@ -21,6 +22,9 @@ const mutations={
                 clearInterval(time1);
             }
         },1000)
+    },
+    changeSearch(state,str){
+        state.searchval=str;
     }
 }
 

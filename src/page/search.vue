@@ -1,26 +1,20 @@
 <template>
-    <div class="professional">
+    <div class="search">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
+             <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchFu="searchFu" @searchPage="searchPage"></topnav>
         </div>
         <div class="twoNav">
-            <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
+            <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#fff" active-text-color="#FFD302" @select="changeNav">
                 <el-menu-item index="1"> 
-                    常用
+                    模型
                 </el-menu-item>
                 <el-menu-item index="2">
-                    系统解剖学
-                </el-menu-item>
-                <el-menu-item index="3">
-                    局部解剖学
-                </el-menu-item>
-                <el-menu-item index="4">
-                    断层解剖学
+                    视频
                 </el-menu-item>
             </el-menu>
         </div>
-        <div class="publicBox">
-            <div class="pubItem" v-for="(item,index) of 24" :key="index">
+        <div class="publicBox" v-show="twoNavIndex==1">
+            <div class="pubItem" v-for="(item,index) of 36" :key="index">
                 <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
                 <div class="imgTop" @click="lookItem">
                     <img v-lazy="'../../static/image/professional/pic_changyong@2x.png'">
@@ -38,6 +32,26 @@
                 </div>
             </div>
         </div>
+        <div class="publicBox boxyxsp" v-show="twoNavIndex==2">
+            <div class="pubItem" v-for="(item,index) of 36" :key="index">
+                <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
+                <div class="imgTop" @click="lookItem">
+                    <img v-lazy="'../../static/image/enterprise/pic_yxsp@2x.png'">
+                    <div class="iconTop">
+                        <p>100</p>
+                        <img src="../../static/image/professional/icon_members@2x.png">
+                    </div>
+                    <div class="iconDown">
+                        <img src="../../static/image/professional/icon_view@2x.png">100
+                    </div>
+                    <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
+                </div>
+                <div class="txtDown">
+                    <h2>EVDO产品宣传片</h2>
+                    <p>中博科技15周年宣传片</p>
+                </div>
+            </div>
+        </div>
         <div class="pageBox">
             <el-pagination
             background
@@ -50,7 +64,7 @@
             >
             </el-pagination>
         </div>
-    </div>    
+    </div>
 </template>
 <script>
 import topnav from '../components/topnav'
@@ -58,19 +72,39 @@ export default {
     data(){
         return{
             topIcon:'../../static/image/top/logo2@2x.png',
-            activeIndex:'2',
+            activeIndex:'0',
             twoNavIndex:'1',
             currentPage:1
         }
     },
+    created(){
+        // console.log(this.$route.params.val)
+    },
     methods:{
-        // 本页搜索
+        // 本页全站搜索
+        searchFu(str){
+            // console.log(str);
+        },
+        // 搜索本页
         searchPage(str){
             console.log(str);
         },
         // 导航
         changeNav(key){
-            // console.log(key)
+            console.log(key)
+            this.twoNavIndex=key;
+            this.toTop(50);
+            this.currentPage=1;
+        },
+        // 查看详情
+        lookItem(){
+            this.$alert('此模型需开通会员','提示',{
+                confirmButtonText:'立即开通',
+                center:true,
+                callback:()=>{
+                    console.log('确定')
+                }
+            })
         },
         // 分页
         handleCurrentChange(val){
@@ -85,16 +119,6 @@ export default {
             }else {
                 clearTimeout(c);
             }
-        },
-        // 查看详情
-        lookItem(){
-            this.$alert('此模型需开通会员','提示',{
-                confirmButtonText:'立即开通',
-                center:true,
-                callback:()=>{
-                    console.log('确定')
-                }
-            })
         }
     },
     components:{
@@ -103,32 +127,30 @@ export default {
 }
 </script>
 <style>
-    .professional .twoNav .el-menu-demo{
+    .twoNav .el-menu-demo{
         height: 100%;
+        display: flex;
+        justify-content: center;
     }
-    .professional .twoNav .el-menu-item{
-        height: 50px !important;
-    }
-    .professional .el-pagination{
-        margin: 20px 0;
+    .twoNav .el-menu-item{
+        height: 60px !important;
+        font-size: 18px !important;
+        margin: 0 20px;
     }
 </style>
 <style scoped>
-    .professional{
-        padding-top: 50px;
+    .search{
+        padding-top: 60px;
         box-sizing: border-box;
     }
     .twoNav{
         width: 100%;
-        height: 50px;
-        background-color: #616576;
-        font-size: 16px;
-        padding-left: 50px;
-        box-sizing: border-box;
+        height: 60px;
         position: fixed;
         top:60px;
-        left:0;
+        left: 0;
         z-index: 9;
+        background-color:#616576;
     }
     .publicBox{
         width: 1765px;
@@ -214,7 +236,23 @@ export default {
     }
     .pageBox{
         width: 100%;
+        height: 50px;
         display: flex;
         justify-content: center;
+    }
+    /* 医学视频 */
+    .boxyxsp .pubItem{
+        height: 265px;
+    }
+    .boxyxsp .pubItem .imgTop{
+        height: 160px;
+    }
+    .boxyxsp .pubItem .imgTop .module{
+        width: 36px;
+        height: 36px;
+        position: absolute;
+        top: 62px;
+        left: 102px;
+        z-index: 1;
     }
 </style>

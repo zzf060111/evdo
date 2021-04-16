@@ -22,10 +22,10 @@
 			</el-menu-item>
 	  	</el-menu>
 		<div class="searchBox">
-			<img src="../../static/image/top/icon_search@2x.png">
-			<input type="text" placeholder="搜索标本、视频以及更多内容" v-model="serchVal">
+			<img src="../../static/image/top/icon_search@2x.png" @click="searchAll">
+			<input type="text" placeholder="搜索标本、视频以及更多内容"  @input="changVal($event)" :value="searchstr">
 			<div class="btnBox">
-				<p @click="searchAll">搜全站</p>|<p>搜本页</p>
+				<p @click="searchAll">搜全站</p>|<p @click="searchPage">搜本页</p>
 			</div>
 		</div>
 		<div class="userBox" @click="isLogin">
@@ -108,7 +108,6 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
 export default {
-	name: 'HelloWorld',
 	data () {
 		// 验证手机号
 		var checkPhone = (rule, value, callback) => {
@@ -137,7 +136,7 @@ export default {
 			}
 		}
 		return {
-			serchVal:'',
+			searchstr:'',
 			logoVisible:false,
 			forgetVisible:false,
 			regVisible:false,
@@ -186,6 +185,9 @@ export default {
 		}
 	},
 	store,
+	created(){
+		this.searchstr=this.searchval;
+	},
 	props: {
 		topIcon: {
 			type: String,
@@ -194,17 +196,45 @@ export default {
 			type: String,
 		}
 	},
-	created(){
-	
-	},
 	methods:{
-		...mapMutations(["forgetTime"]),
+		...mapMutations(["forgetTime","changeSearch"]),
+		// 改变搜索框内容
+		changVal(e){
+			this.searchstr=e.target.value;
+			this.changeSearch(this.searchstr);
+		},
+		// 全站查询
 		searchAll(){
-			
+			this.changeSearch(this.searchstr);
+			if(this.activeIndex=='0'){
+				this.$emit('searchFu',this.searchstr)
+			}else{
+				this.$router.push({
+					name:'Search',
+					params:{
+						val:this.searchstr
+					}
+				})
+			}
+		},
+		// 搜索本页
+		searchPage(){
+			if(this.activeIndex=='0'||this.activeIndex=='2'||this.activeIndex=='3'){
+				this.$emit('searchPage',this.searchstr)
+			}else{
+				 this.$alert('此页面不支持本页搜索','提示',{
+					confirmButtonText:'确定',
+					center:true,
+					callback:()=>{
+						console.log('确定')
+					}
+				})
+			}
 		},
 		// 是否登录
 		isLogin(){
-			this.logoVisible=true;
+			// this.logoVisible=true;
+			this.$router.push('/personal');
 		},
 		// 登录
 		login(formName){
@@ -263,10 +293,12 @@ export default {
 				this.$router.push({path:'/professional'})
 			}else if(key==3){
 				this.$router.push({path:'/enterprise'})
+			}else if(key==6){
+				this.$router.push({path:'/fslist'})
 			}
 		}
 	},
-	computed:mapState(["forgetReg","forgetStr"])
+	computed:mapState(["forgetReg","forgetStr","searchval"])
 }
 </script>
 
