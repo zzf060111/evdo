@@ -1,5 +1,6 @@
 <template>
-    <div class="fsList">
+    <div class="fsList" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
         </div>
@@ -13,9 +14,12 @@
                 <img v-lazy="item.img" class="imgright">
             </div>
         </div>
+        </vue-scroll>
     </div>
 </template>
 <script>
+import store from '../vuex/store'
+import {mapState,mapMutations} from 'vuex';
 import topnav from '../components/topnav'
 export default {
     data(){
@@ -54,7 +58,12 @@ export default {
             ]
         }
     },
+    store,
+    mounted(){
+        this.windowChange();
+    },
     methods:{
+        ...mapMutations(["windowChange"]),
         // 查看详情
         lookItem(id){
             this.$router.push({
@@ -67,7 +76,8 @@ export default {
     },
     components:{
         topnav
-    }
+    },
+    computed:mapState(["opsx","screenHeight"])
 }
 </script>
 <style scoped>

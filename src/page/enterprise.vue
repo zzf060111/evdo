@@ -1,5 +1,6 @@
 <template>
-    <div class="enterprise">
+    <div class="enterprise" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
         </div>
@@ -19,7 +20,8 @@
                 </el-menu-item>
             </el-menu>
         </div>
-        <div class="leftNav">
+        <div class="leftNav" :style="`height:${screenHeight-110}px`">
+            <vue-scroll :ops="ops" style="width:100%;height:100%;">
             <el-menu class="left-menu" :default-active="leftNav[0].childrens[0].id" background-color="#F6F6F6" unique-opened @select="changLeftNav">
                 <el-submenu :index="item.id" v-for="(item,index) of leftNav" :key="index">
                     <template slot="title">
@@ -31,6 +33,7 @@
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>
+            </vue-scroll>
         </div>
         <div class="pubBox">
             <div class="box boxJcyx" v-show="twoNavIndex==1">
@@ -85,9 +88,12 @@
                 </el-pagination>
             </div>
         </div>
+        </vue-scroll>
     </div>
 </template>
 <script>
+    import store from '../vuex/store'
+    import {mapState,mapMutations} from 'vuex';
     import topnav from '../components/topnav'
     export default {
         data(){
@@ -172,7 +178,9 @@
                 currentPage:1
             }
         },
+        store,
         methods:{
+            ...mapMutations(["windowChange"]),
             // 本页搜索
             searchPage(str){
                 console.log(str);
@@ -211,9 +219,13 @@
                 this.toTop(50);
             }
         },
+        mounted(){
+            this.windowChange()
+        },
         components:{
             topnav
-        }
+        },
+        computed:mapState(["opsx","ops","screenHeight"])
     }
 </script>
 <style>
@@ -281,13 +293,14 @@
     }
     .leftNav{
         width: 300px;
-        height: 900px;
         background-color: #F6F6F6;
         overflow-y: auto;
         position: fixed;
         top:110px;
         left: 0;
         z-index: 9;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     .pubBox{
         width: 100%;

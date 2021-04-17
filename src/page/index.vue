@@ -1,5 +1,6 @@
 <template>
-    <div class="index">
+    <div class="index" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
         </div>
@@ -84,9 +85,12 @@
             </div>
             <p>河南中博健康科技有限公司|豫ICP备18001437号</p>
         </div>
+        </vue-scroll>
     </div>
 </template>
 <script>
+    import store from '../vuex/store'
+    import {mapState,mapMutations} from 'vuex';
     import topnav from '../components/topnav' 
     export default {
         data(){
@@ -96,7 +100,12 @@
                 isUser:1
             }
         },
+        store,
+        mounted(){
+            this.windowChange()
+        },
         methods:{
+            ...mapMutations(["windowChange"]),
             // 导航箭头显示隐藏
            mEnter(event,num){
                event.target.parentElement.querySelector(`.${num}`).style.cssText += "opacity:1;";
@@ -111,7 +120,8 @@
         },
         components:{
             topnav
-        }
+        },
+        computed:mapState(["opsx","screenHeight"])
     }
 </script>
 <style>

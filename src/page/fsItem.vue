@@ -1,5 +1,6 @@
 <template>
-    <div class="fsitem">
+    <div class="fsitem" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
         </div>
@@ -13,9 +14,12 @@
                 
             </div>
         </div>
+        </vue-scroll>
     </div>
 </template>
 <script>
+import store from '../vuex/store'
+import {mapState,mapMutations} from 'vuex';
 import topnav from '../components/topnav'
 export default {
     data(){
@@ -24,10 +28,15 @@ export default {
             activeIndex:'6',
         }
     },
+    store,
     created(){
         console.log(this.$route.params.id);
     },
+    mounted(){
+        this.windowChange();
+    },
     methods:{
+        ...mapMutations(["windowChange"]),
         // 返回上一页
         back(){
             this.$router.go(-1);
@@ -35,7 +44,8 @@ export default {
     },
     components:{
         topnav
-    }
+    },
+    computed:mapState(["opsx","screenHeight"])
 }
 </script>
 <style scoped>

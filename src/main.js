@@ -19,6 +19,10 @@ Vue.component(Submenu.name, Submenu);
 Vue.component(MenuItemGroup.name, MenuItemGroup);
 Vue.prototype.$message = Message;
 Vue.prototype.$alert = MessageBox.alert
+// 滚动条样式
+import vuescroll from 'vuescroll';
+import 'vuescroll/dist/vuescroll.css';
+Vue.use(vuescroll);
 
 import 'lib-flexible'
 

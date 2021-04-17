@@ -1,5 +1,6 @@
 <template>
-    <div class="search">
+    <div class="search" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchFu="searchFu" @searchPage="searchPage"></topnav>
         </div>
@@ -64,9 +65,12 @@
             >
             </el-pagination>
         </div>
+        </vue-scroll>
     </div>
 </template>
 <script>
+import store from '../vuex/store'
+import {mapState,mapMutations} from 'vuex';
 import topnav from '../components/topnav'
 export default {
     data(){
@@ -77,10 +81,15 @@ export default {
             currentPage:1
         }
     },
+    store,
     created(){
         // console.log(this.$route.params.val)
     },
+    mounted(){
+        this.windowChange()
+    },
     methods:{
+         ...mapMutations(["windowChange"]),
         // 本页全站搜索
         searchFu(str){
             // console.log(str);
@@ -123,7 +132,8 @@ export default {
     },
     components:{
         topnav
-    }
+    },
+    computed:mapState(["opsx","screenHeight"])
 }
 </script>
 <style>

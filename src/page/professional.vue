@@ -1,5 +1,6 @@
 <template>
-    <div class="professional">
+    <div class="professional" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
         </div>
@@ -20,7 +21,7 @@
             </el-menu>
         </div>
         <div class="publicBox">
-            <div class="pubItem" v-for="(item,index) of 24" :key="index">
+            <div class="pubItem" v-for="(item,index) of 36" :key="index">
                 <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
                 <div class="imgTop" @click="lookItem">
                     <img v-lazy="'../../static/image/professional/pic_changyong@2x.png'">
@@ -50,9 +51,12 @@
             >
             </el-pagination>
         </div>
+        </vue-scroll>
     </div>    
 </template>
 <script>
+import store from '../vuex/store'
+import {mapState,mapMutations} from 'vuex';
 import topnav from '../components/topnav'
 export default {
     data(){
@@ -63,7 +67,12 @@ export default {
             currentPage:1
         }
     },
+    store,
+    mounted(){
+        this.windowChange()
+    },
     methods:{
+        ...mapMutations(["windowChange"]),
         // 本页搜索
         searchPage(str){
             console.log(str);
@@ -99,7 +108,8 @@ export default {
     },
     components:{
         topnav
-    }
+    },
+    computed:mapState(["opsx","screenHeight"])
 }
 </script>
 <style>
