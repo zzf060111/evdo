@@ -6,7 +6,7 @@ Vue.use(Vuex);
 const state={
     forgetReg:60,
     forgetStr:'获取验证码',
-    searchval:'',
+    searchval:localStorage.getItem('searchval')?localStorage.getItem('searchval'):'',
     ops: {
         vuescroll: {
         },
@@ -60,6 +60,7 @@ const mutations={
     },
     changeSearch(state,str){
         state.searchval=str;
+        localStorage.setItem('searchval',str);
     },
     // 窗口变化
     windowChange(state){

@@ -45,4 +45,8 @@ export default {
 .el-message-box__content{
   margin: 10px 0;
 }
+.errorAlert .el-button{
+  background-color: #FF5555;
+  border-color: #FF5555;
+}
 </style>

@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import {Menu,MenuItem,Form,FormItem,Dialog,Button,Input,Message,Carousel,CarouselItem,Pagination,MessageBox,Submenu,MenuItemGroup} from 'element-ui'
+import {Menu,MenuItem,Form,FormItem,Dialog,Button,Input,Message,Carousel,CarouselItem,Pagination,MessageBox,Submenu,MenuItemGroup,Upload} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.component(Menu.name, Menu);
 Vue.component(MenuItem.name, MenuItem);
@@ -17,6 +17,7 @@ Vue.component(CarouselItem.name, CarouselItem);
 Vue.component(Pagination.name, Pagination);
 Vue.component(Submenu.name, Submenu);
 Vue.component(MenuItemGroup.name, MenuItemGroup);
+Vue.component(Upload.name, Upload);
 Vue.prototype.$message = Message;
 Vue.prototype.$alert = MessageBox.alert
 // 滚动条样式

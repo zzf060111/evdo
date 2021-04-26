@@ -15,7 +15,7 @@
             </div>
             <div class="cardBox card1">
                 <img src="../../static/image/personal/bg_members@2x.png" class="bj">
-                <p>加入企业用户组，共享全站权限</p>
+                <p><img src="../../static/image/personal/icon_members3@2x.png"> 加入企业用户组，共享全站权限</p>
                 <div class="btn">加入组织</div>
             </div>
             <div class="cardBox card2">
@@ -34,21 +34,24 @@
         </div>
         <div class="rightBox">
             <div class="box">
-
+                <personalItem v-show="rightShow==3"></personalItem>
+                <collection v-show="rightShow==1"></collection>
             </div>
         </div>
     </div>
 </template>
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
+import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import personalItem from '../components/personalItem'
+import collection from '../components/collection'
 export default {
     data(){
         return{
             topIcon:'../../static/image/top/logo2@2x.png',
             activeIndex:'8',
-            rightShow:'3',
+            rightShow:'',
             navArr:[
                 {
                     id:'1',
@@ -78,6 +81,17 @@ export default {
         }
     },
     store,
+    created(){
+        this.rightShow=localStorage.getItem('rightShow')?localStorage.getItem('rightShow'):'3';
+        let arr=this.navArr;
+        for(let i=0;i<arr.length;i++){
+            if(arr[i].id==this.rightShow){
+                arr[i].isSel=true;
+            }else{
+                arr[i].isSel=false;
+            }
+        }
+    },
     mounted(){
         this.windowChange()
     },
@@ -89,6 +103,8 @@ export default {
             for(let i=0;i<arr.length;i++){
                 if(index==i){
                     arr[i].isSel=true;
+                    this.rightShow=arr[i].id;
+                    localStorage.setItem('rightShow',arr[i].id);
                 }else{
                     arr[i].isSel=false;
                 }
@@ -96,10 +112,16 @@ export default {
             this.navArr=arr;
         }
     },
-    components:{
-        topnav
+    beforeRouteLeave(to, form, next) {
+        next();
+        localStorage.removeItem('rightShow');
     },
-    computed:mapState(["ops","screenHeight"])
+    components:{
+        topnav,
+        personalItem,
+        collection
+    },
+    computed:mapState(["ops","screenHeight","opsx"])
 }
 </script>
 <style scoped>
@@ -166,6 +188,14 @@ export default {
     .personal .leftNav .cardBox p{
         font-size: 18px;
         color: #333;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .personal .leftNav .cardBox p img{
+        width: 40px;
+        height: 33.84px;
+        margin-right: 10px;
     }
     .personal .leftNav .cardBox .btn{
         width: 110px;
