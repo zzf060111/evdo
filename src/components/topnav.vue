@@ -101,6 +101,15 @@
 				</div>
 			</div>
 		</el-dialog>
+		<!-- 提示 -->
+		<el-dialog title="通知" :visible.sync="toastVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="regUser toast" top="13vh" @close="Toastclose()">
+			<div>亲爱的医维度用户您好！</div>
+			<div class="txt">
+				 温馨提示您，版本更新后，取消会员积分充值规则，现可开通专业版会员享更多资源，或加入组织成为企业版用户，享全站查看权限。您之前的会员积分现已转换成超值会员时长，详情可至个人中心查看。如有疑问，请扫描下方二维码，关注“医维度”公众号，咨询客服人员。感谢您的配合！
+			</div>
+			<img src="../../static/image/top/pic_ewm@2x.png" alt="">
+			<p>扫描二维码，关注医维度公众号</p>
+		</el-dialog>
   </div>
 </template>
 
@@ -140,6 +149,7 @@ export default {
 			logoVisible:false,
 			forgetVisible:false,
 			regVisible:false,
+			toastVisible:true,
 			logoform:{
 				name:'',
 				pwd:''
@@ -187,6 +197,7 @@ export default {
 	store,
 	created(){
 		this.searchstr=this.searchval;
+		this.toastVisible=localStorage.getItem('toastVisible')?false:true;
 	},
 	props: {
 		topIcon: {
@@ -295,7 +306,13 @@ export default {
 				this.$router.push({path:'/enterprise'})
 			}else if(key==6){
 				this.$router.push({path:'/fslist'})
+			}else if(key==5){
+				this.$router.push({path:'/downLoad'})
 			}
+		},
+		// 通知窗口关闭回调
+		Toastclose(){
+			localStorage.setItem('toastVisible',true);
 		}
 	},
 	computed:mapState(["forgetReg","forgetStr","searchval"])
@@ -317,12 +334,40 @@ export default {
 	.regUser.el-dialog{
 		height: 530px;
 	}
+	.toast.el-dialog{
+		width: 400px;
+		height: 600px;
+	}
+	.toast.el-dialog div{
+		font-size: 16px;
+		color: #666;
+		line-height: 30px;
+		letter-spacing: 2px;
+	}
+	.toast.el-dialog div.txt{
+		text-indent: 20px;
+		text-align: left;
+	}
+	.toast.el-dialog img{
+		width: 172px;
+		height: 172px;
+		display: block;
+		margin: 0 auto;
+	}
+	.toast.el-dialog p{
+		text-align: center;
+		font-size: 14px;
+		color: #999;
+	}
 	.el-dialog__header{
 		border-bottom: 1px solid #ddd;
 	}
 	.el-dialog__body{
 		padding-left:30px !important;
 		padding-right:50px !important;
+	}
+	.toast.el-dialog .el-dialog__body{
+		padding-right:30px !important;
 	}
 	.el-form-item{
 		position: relative;

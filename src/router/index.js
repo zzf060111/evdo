@@ -1,13 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import VueRoute from 'vue-router' 
-const Index = () => import('@/page/index')
-const Professional = () => import('@/page/professional')
-const Enterprise = () => import('@/page/enterprise')
-const Fslist = () => import('@/page/fsList')
-const Fsitem = () => import('@/page/fsItem')
-const Search = () => import('@/page/search')
-const Personal = () => import('@/page/personal')
 Vue.use(Router)
 // 解决多次点击重复路由报错
 const originalPush = VueRoute.prototype.push
@@ -20,37 +13,42 @@ export default new Router({
     {
       path: '/',
       name: 'Index',
-      component: Index
+      component:resolve => require(['@/page/index'], resolve)
     },
     {
       path: '/professional',
       name: 'Professional',
-      component: Professional
+      component: resolve => require(['@/page/professional'], resolve)
     },
     {
       path: '/enterprise',
       name: 'Enterprise',
-      component: Enterprise
+      component: resolve => require(['@/page/enterprise'], resolve)
     },
     {
       path: '/fslist',
       name: 'Fslist',
-      component: Fslist
+      component: resolve => require(['@/page/fsList'], resolve)
     },
     {
       path: '/fsitem',
       name: 'Fsitem',
-      component: Fsitem
+      component: resolve => require(['@/page/fsItem'], resolve)
     },
     {
       path: '/search',
       name: 'Search',
-      component: Search
+      component: resolve => require(['@/page/search'], resolve)
     },
     {
       path: '/personal',
       name: 'Personal',
-      component: Personal
+      component: resolve => require(['@/page/personal'], resolve)
+    },
+    {
+      path: '/downLoad',
+      name: 'DownLoad',
+      component: resolve => require(['@/page/downLoad'], resolve)
     }
   ],
   scrollBehavior(to, from, saveTop) { 

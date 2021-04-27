@@ -354,9 +354,12 @@ export default {
         align-items: center;
     }
     .personalItem .bindBox .item .left{
-        width: 250px;
+        width: 300px;
         color: #333;
         font-size: 20px;
+    }
+    .personalItem .bindBox .item .left>p{
+        width: 150px;
     }
     .personalItem .bindBox .item .left>div{
         display: flex;

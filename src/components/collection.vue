@@ -19,18 +19,18 @@
                 </el-menu-item>
             </el-menu>
             <div class="right">
-                <p>0/25</p>
-                <p>全选</p>
+                <p>{{selNum}}/{{arr.length}}</p>
+                <p @click="selAll(setStr)">{{setStr}}</p>
                 <p>删除</p>
             </div>
         </div>
         <div class="pubBox"  :style="`height:${screenHeight-180}px`">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <div class="box boxJcyx" v-show="twoNavIndex==1">
-                    <div class="pubItem" v-for="(item,index) of 25" :key="index">
-                        <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
-                        <div class="imgTop" @click="lookItem">
-                            <img v-lazy="'../../static/image/professional/pic_changyong@2x.png'">
+                    <div class="pubItem" v-for="(item,index) of arr" :key="index">
+                        <img src="../../static/image/professional/bg_changyong@2x.png" class="bj">
+                        <div class="imgTop">
+                            <img src="../../static/image/professional/pic_changyong@2x.png"  @click="lookItem">
                             <div class="iconTop">
                                 <p>100</p>
                                 <img src="../../static/image/professional/icon_members@2x.png">
@@ -38,6 +38,7 @@
                             <div class="iconDown">
                                 <img src="../../static/image/professional/icon_view@2x.png">100
                             </div>
+                            <img :src="item.isSel==0?item.img1:item.img2" class="selBtn" @click="clickSel(index,item.isSel)">
                         </div>
                         <div class="txtDown">
                             <h2>上纵隔</h2>
@@ -46,10 +47,10 @@
                     </div>
                 </div>
                 <div class="box boxyxsp" v-show="twoNavIndex==5">
-                    <div class="pubItem" v-for="(item,index) of 25" :key="index">
-                        <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
-                        <div class="imgTop" @click="lookItem">
-                            <img v-lazy="'../../static/image/enterprise/pic_yxsp@2x.png'">
+                    <div class="pubItem" v-for="(item,index) of arr" :key="index">
+                        <img src="../../static/image/enterprise/bg_yxsp@2x.png" class="bj">
+                        <div class="imgTop">
+                            <img src="../../static/image/enterprise/pic_yxsp@2x.png"  @click="lookItem">
                             <div class="iconTop">
                                 <p>100</p>
                                 <img src="../../static/image/professional/icon_members@2x.png">
@@ -58,6 +59,7 @@
                                 <img src="../../static/image/professional/icon_view@2x.png">100
                             </div>
                             <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
+                            <img :src="item.isSel==0?item.img1:item.img2" class="selBtn" @click="clickSel(index,item.isSel)">
                         </div>
                         <div class="txtDown">
                             <h2>EVDO产品宣传片</h2>
@@ -75,7 +77,7 @@
             :current-page.sync="currentPage"
             :page-size="25"
             layout="total,prev, pager, next,jumper"
-            :total="200"
+            :total="9"
             hide-on-single-page
             >
             </el-pagination>
@@ -91,9 +93,36 @@ export default {
         return{
             twoNavIndex:'1',
             currentPage:1,
+            arr:[
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:1,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
+                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'}
+            ],
+            selNum:0,
+            setStr:''
         }
     },
     store,
+    created(){
+        let num=0;
+        for(let i=0;i<this.arr.length;i++){
+            if(this.arr[i].isSel==1){
+                num++;
+            }
+        }
+        this.selNum=num;
+        if(num==this.arr.length){
+            this.setStr="取消"
+        }else{
+            this.setStr="全选"
+        }
+    },
     mounted(){
         this.windowChange();
     },
@@ -125,6 +154,46 @@ export default {
         // 分页
         handleCurrentChange(val){
             this.toTop(50);
+        },
+        // 选择收藏
+        clickSel(num,sel){
+            let arr=this.arr;
+            let nums=0;
+            if(sel==0){
+                arr[num].isSel=1
+            }else if(sel==1){
+                arr[num].isSel=0
+            }
+            for(let i=0;i<arr.length;i++){
+                if(arr[i].isSel==1){
+                    nums++;
+                }
+            }
+            this.selNum=nums;
+            this.arr=arr;
+            if(nums==arr.length){
+                this.setStr="取消"
+            }else{
+                this.setStr="全选"
+            }
+        },
+        // 全选或者取消
+        selAll(str){
+            let arr=this.arr;
+            if(str=="全选"){
+                for(let i=0;i<arr.length;i++){
+                    arr[i].isSel=1
+                }
+                this.selNum=arr.length;
+                this.setStr="取消";
+            }else if(str=="取消"){
+                for(let i=0;i<arr.length;i++){
+                    arr[i].isSel=0
+                }
+                this.selNum=0;
+                this.setStr="全选";
+            }
+            this.arr=arr;
         }
     },
     computed:mapState(["opsx","screenHeight"])
@@ -155,6 +224,9 @@ export default {
         color: #333;
         font-size: 16px;
         width: 200px;
+    }
+    .collection .topNavBox .right p:hover{
+        cursor:pointer;
     }
     .collection .pubBox{
         width: 100%;
@@ -194,8 +266,16 @@ export default {
         width: 100%;
         height: 100%;
     }
+    .pubBox .box .pubItem .imgTop>img.selBtn{
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 1;
+    }
    .pubBox .box .pubItem .imgTop .iconTop,.pubBox .box .pubItem .imgTop .iconDown{
-        width: 200px;
+        width: 190px;
         display: flex;
         align-items: center;
         position: absolute;

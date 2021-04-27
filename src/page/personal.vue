@@ -36,6 +36,7 @@
             <div class="box">
                 <personalItem v-show="rightShow==3"></personalItem>
                 <collection v-show="rightShow==1"></collection>
+                <helpCenter v-show="rightShow==2"></helpCenter>
             </div>
         </div>
     </div>
@@ -44,8 +45,6 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
-import personalItem from '../components/personalItem'
-import collection from '../components/collection'
 export default {
     data(){
         return{
@@ -99,17 +98,21 @@ export default {
         ...mapMutations(["windowChange"]),
         // 切换左侧导航栏
         changeNav(index){
-            let arr=this.navArr;
-            for(let i=0;i<arr.length;i++){
-                if(index==i){
-                    arr[i].isSel=true;
-                    this.rightShow=arr[i].id;
-                    localStorage.setItem('rightShow',arr[i].id);
-                }else{
-                    arr[i].isSel=false;
+            if(index==3){
+                this.$router.push('/fsList');
+            }else{
+                let arr=this.navArr;
+                for(let i=0;i<arr.length;i++){
+                    if(index==i){
+                        arr[i].isSel=true;
+                        this.rightShow=arr[i].id;
+                        localStorage.setItem('rightShow',arr[i].id);
+                    }else{
+                        arr[i].isSel=false;
+                    }
                 }
+                this.navArr=arr;
             }
-            this.navArr=arr;
         }
     },
     beforeRouteLeave(to, form, next) {
@@ -118,8 +121,9 @@ export default {
     },
     components:{
         topnav,
-        personalItem,
-        collection
+        personalItem:resolve=>{require(['../components/personalItem'],resolve)},
+        collection:resolve=>{require(['../components/collection'],resolve)},
+        helpCenter:resolve=>{require(['../components/helpCenter'],resolve)}
     },
     computed:mapState(["ops","screenHeight","opsx"])
 }

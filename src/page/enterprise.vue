@@ -37,7 +37,7 @@
         </div>
         <div class="pubBox">
             <div class="box boxJcyx" v-show="twoNavIndex==1">
-                <div class="pubItem" v-for="(item,index) of 25" :key="index">
+                <div class="pubItem" v-for="(item,index) of 9" :key="index">
                     <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
                     <div class="imgTop" @click="lookItem">
                         <img v-lazy="'../../static/image/professional/pic_changyong@2x.png'">
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="box boxyxsp" v-show="twoNavIndex==2">
-                <div class="pubItem" v-for="(item,index) of 25" :key="index">
+                <div class="pubItem" v-for="(item,index) of 9" :key="index">
                     <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
                     <div class="imgTop" @click="lookItem">
                         <img v-lazy="'../../static/image/enterprise/pic_yxsp@2x.png'">

@@ -1,0 +1,73 @@
+<template>
+    <div class="downLoad" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <div class="topNav">
+            <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+        </div>
+        <div class="imgbox">
+            <img src="../../static/image/downLoad/pic_down_01@2x.png" alt="">
+            <div class="positionBox">
+                <a href="../../static/image/downLoad/pic_web@2x.png" download="">
+                    <img src="../../static/image/downLoad/pic_web@2x.png" alt="">
+                </a>
+                <img src="../../static/image/downLoad/pic_app@2x.png" alt="">
+                <img src="../../static/image/downLoad/pic_google@2x.png" alt="">
+                <img src="../../static/image/downLoad/pic_gzh@2x.png" alt="">
+            </div>
+        </div>
+        <div class="imgbox">
+            <img src="../../static/image/downLoad/pic_down_02@2x.png" alt="">
+        </div>
+        <div class="imgbox">
+            <img src="../../static/image/downLoad/pic_down_03@2x.png" alt="">
+        </div>
+        <div class="imgbox">
+            <img src="../../static/image/downLoad/pic_down_04@2x.png" alt="">
+        </div>
+        </vue-scroll>  
+    </div>
+</template>
+<script>
+import store from '../vuex/store'
+import {mapState,mapMutations} from 'vuex';
+import topnav from '../components/topnav'
+export default {
+    data(){
+        return{
+            topIcon:'../../static/image/top/logo2@2x.png',
+            activeIndex:'5'
+        }
+    },
+    store,
+    mounted(){
+        this.windowChange();
+    },
+    methods:{
+        ...mapMutations(["windowChange"]),
+    },
+    components:{
+        topnav
+    },
+    computed:mapState(["opsx","screenHeight"])
+}
+</script>
+<style scoped>
+    .downLoad .imgbox{
+        width: 100%;
+        position: relative;
+    }
+    .downLoad .imgbox img{
+        width: 100%;
+    }
+    .downLoad .imgbox .positionBox{
+        width: 39%;
+        position: absolute;
+        top: 21%;
+        right:9%;
+        z-index: 1;
+    }
+    .downLoad .imgbox .positionBox img{
+        width: 100%;
+        display: block;
+    }
+</style>

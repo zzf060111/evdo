@@ -104,7 +104,7 @@ export default {
                     console.log('确定')
                 }
             })
-        }
+        },
     },
     components:{
         topnav
