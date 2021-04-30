@@ -171,6 +171,11 @@ export default {
         }
     },
     store,
+    created(){
+        if(localStorage.getItem('endTime')&&localStorage.getItem('endTime')>new Date().getTime()){
+			this.forgetTime();
+		}
+    },
     methods:{
         ...mapMutations(["forgetTime"]),
         // 上传头像
@@ -246,12 +251,12 @@ export default {
 			const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
 			if(reg.test(this.phoneform.phone)){
 				if(this.forgetStr=='获取验证码'){
+                    localStorage.setItem('endTime',new Date().getTime()+60000);
 					this.forgetTime();
 				}else{
 					this.$message({
 						showClose: true,
 						message: '请在倒计时结束后获取验证码',
-						offset:300
 					});
 				}
 			}else{
@@ -259,7 +264,6 @@ export default {
 					showClose: true,
 					message: '请输入有效的手机号',
 					type: 'error',
-					offset:300
 				});
 			}
 		},

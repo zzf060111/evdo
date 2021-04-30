@@ -221,6 +221,9 @@ export default {
     }
     .publicBox .pubItem .txtDown p{
         font-size: 12px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     .pageBox{
         width: 100%;

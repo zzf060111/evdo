@@ -67,7 +67,7 @@
 				</el-form-item>
 				<el-form-item label="验证码" prop="regStr">
 					<el-input v-model="forgetform.regStr" type="password" placeholder="请输入验证码"></el-input>
-					<p @click="getForgetReg">{{forgetStr}}</p>
+					<p @click="getForgetReg(forgetform.phone)">{{forgetStr}}</p>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -88,11 +88,11 @@
 				</el-form-item>
 				<el-form-item label="验证码" prop="regStr">
 					<el-input v-model="regform.regStr" type="password" placeholder="请输入验证码"></el-input>
-					<p @click="getForgetReg">{{forgetStr}}</p>
+					<p @click="getForgetReg(regform.phone)">{{forgetStr}}</p>
 				</el-form-item>
-				<el-form-item label="邀请码" prop="inviteStr">
+				<!-- <el-form-item label="邀请码" prop="inviteStr">
 					<el-input v-model="regform.inviteStr" type="text" placeholder="请输入邀请码"></el-input>
-				</el-form-item>
+				</el-form-item> -->
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="regUser('regform')">注 册</el-button>
@@ -116,6 +116,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
+import {register,getUserCode} from '../services/api/topnav';
 export default {
 	data () {
 		// 验证手机号
@@ -137,7 +138,8 @@ export default {
 			if(!value){
 				return callback(new Error('请确认密码'))
 			}else{
-				if(value!=this.forgetform.pwd){
+				let pwd=this.forgetVisible?this.forgetform.pwd:this.regform.pwd;
+				if(value!=pwd){
 					return callback(new Error('两次密码不一致'));
 				}else{
 					callback();
@@ -198,6 +200,9 @@ export default {
 	created(){
 		this.searchstr=this.searchval;
 		this.toastVisible=localStorage.getItem('toastVisible')?false:true;
+		if(localStorage.getItem('endTime')&&localStorage.getItem('endTime')>new Date().getTime()){
+			this.forgetTime();
+		}
 	},
 	props: {
 		topIcon: {
@@ -244,8 +249,8 @@ export default {
 		},
 		// 是否登录
 		isLogin(){
-			// this.logoVisible=true;
-			this.$router.push('/personal');
+			this.logoVisible=true;
+			// this.$router.push('/personal');
 		},
 		// 登录
 		login(formName){
@@ -258,17 +263,33 @@ export default {
 			this.forgetVisible=true;
 		},
 		// 获取验证码
-		getForgetReg(){
+		getForgetReg(str){
 			const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
 			const emailreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-			if(reg.test(this.forgetform.phone)||emailreg.test(this.forgetform.phone)){
+			if(reg.test(str)||emailreg.test(str)){
 				if(this.forgetStr=='获取验证码'){
-					this.forgetTime();
+					getUserCode({username:str}).then((res)=>{
+						console.log(res);
+						if(res.data.code==0){
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'success'
+							});
+							localStorage.setItem('endTime',new Date().getTime()+60000);
+							this.forgetTime();
+						}else{
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'error'
+							});
+						}
+					})
 				}else{
 					this.$message({
 						showClose: true,
 						message: '请在倒计时结束后获取验证码',
-						offset:300
 					});
 				}
 			}else{
@@ -276,7 +297,6 @@ export default {
 					showClose: true,
 					message: '请输入有效的手机号或邮箱',
 					type: 'error',
-					offset:300
 				});
 			}
 		},
@@ -293,7 +313,16 @@ export default {
 		// 注册用户
 		regUser(formName){
 			this.$refs[formName].validate((valid)=>{
-				console.log(valid);
+				var data={};
+				if(valid){
+					data["username"]=this.regform.phone;
+					data["password"]=this.regform.pwd;
+					data["code"]=this.regform.regStr;
+					console.log(data);
+					register(data).then((res)=>{
+						console.log(res);
+					})
+				}
 			})
 		},
 		// 跳转路由
@@ -423,7 +452,7 @@ export default {
 		margin-right: 5px;
 	}
 	.searchBox{
-		width: 400px;
+		width: 480px;
 		height: 35px;
 		border: 1px solid #FFFFFF;
 		border-radius: 5px;
@@ -442,7 +471,7 @@ export default {
 		margin-right: 10px;
 	}
 	.searchBox input{
-		width: 230px;
+		width: 260px;
 		height: 28px;
 		background-color: #252B43;
 		outline: none;
@@ -451,14 +480,13 @@ export default {
 		font-size: 14px;
 	}
 	.searchBox .btnBox{
-		width: 128.59px;
+		width: 178.59px;
 		height: 100%;
 		border-radius: 0 3px 3px 0;
 		background-color: #fff;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 14px;
 		font-weight: 400;
 		color: #252B43;
 	}
@@ -466,10 +494,12 @@ export default {
 		cursor: pointer;
 	}
 	.searchBox .btnBox p:first-child{
-		margin-right: 5px;
+		width: 80px;
+		font-size: 14px;
 	}
 	.searchBox .btnBox p:last-child{
-		margin-left: 5px;
+		width: 80px;
+		font-size: 14px;
 	}
 	.userBox{
 		width:150px;

@@ -21,7 +21,7 @@
             <div class="cardBox card2">
                 <img src="../../static/image/personal/bg_members@2x.png" class="bj">
                 <p>开通专业版VIP</p>
-                <div class="btn">点击开通</div>
+                <div class="btn" @click="jumpMember">点击开通</div>
             </div>
             <div class="navBox">
                 <div class="navItem" v-for="(item,index) of navArr" :key="index" @click="changeNav(index)">
@@ -34,9 +34,10 @@
         </div>
         <div class="rightBox">
             <div class="box">
-                <personalItem v-show="rightShow==3"></personalItem>
-                <collection v-show="rightShow==1"></collection>
-                <helpCenter v-show="rightShow==2"></helpCenter>
+                <personalItem v-if="rightShow==3"></personalItem>
+                <collection v-else-if="rightShow==1"></collection>
+                <helpCenter v-else-if="rightShow==2"></helpCenter>
+                <member  v-else-if="rightShow==5"></member>
             </div>
         </div>
     </div>
@@ -113,6 +114,16 @@ export default {
                 }
                 this.navArr=arr;
             }
+        },
+        // 跳转会员套餐
+        jumpMember(){
+            this.rightShow='5';
+            localStorage.setItem('rightShow','5');
+            let arr=this.navArr;
+            for(let i=0;i<arr.length;i++){
+                arr[i].isSel=false;
+            }
+            this.navArr=arr;
         }
     },
     beforeRouteLeave(to, form, next) {
@@ -123,7 +134,8 @@ export default {
         topnav,
         personalItem:resolve=>{require(['../components/personalItem'],resolve)},
         collection:resolve=>{require(['../components/collection'],resolve)},
-        helpCenter:resolve=>{require(['../components/helpCenter'],resolve)}
+        helpCenter:resolve=>{require(['../components/helpCenter'],resolve)},
+        member:resolve=>{require(['../components/member'],resolve)}
     },
     computed:mapState(["ops","screenHeight","opsx"])
 }

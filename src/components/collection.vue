@@ -321,6 +321,9 @@ export default {
     }
     .pubBox .box .pubItem .txtDown p{
         font-size: 12px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     /* 医学视频 */
     .pubBox .boxyxsp .pubItem{

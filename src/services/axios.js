@@ -1,20 +1,29 @@
 import axios from 'axios'
-import { Message} from 'element-ui';
-
+import { Message,Loading } from 'element-ui';
 //1. 创建新的axios实例，
 const service = axios.create({
     // 公共接口--这里注意后面会讲
-    baseURL: 'https://mock.mengxuegu.com/mock/607407d056076a4a764846af/example/',
+    baseURL: 'https://www.evdo.vip/api/',
     // 超时时间 单位是ms，这里设置了3s的超时时间
     timeout: 3 * 1000
 })
 // 2.请求拦截器
+var loadingInstance
 service.interceptors.request.use(
     config => {
+        if(config.load){
+            loadingInstance = Loading.service({
+                lock: true,
+                text: 'Loading',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+        }
         //发请求前做的一些处理，数据转化，配置请求头，设置token,设置loading等，根据需求去添加
         config.data = JSON.stringify(config.data); //数据转化,也可以使用qs转换
         config.headers = {
-        'Content-Type':'application/x-www-form-urlencoded' //配置请求头
+        //'Content-Type':'application/x-www-form-urlencoded' //配置请求头
+            'content-type': "application/json; charset=utf-8"
         }
         //注意使用token的时候需要引入cookie方法或者用本地localStorage等方法，推荐js-cookie
         //const token = getCookie('名称');//这里取token之前，你肯定需要先拿到token,存一下
@@ -32,11 +41,16 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     response => {
         //接收到响应数据并成功后的一些共有的处理，关闭loading等
-        
+        if(loadingInstance){
+            loadingInstance.close();
+        }
         return response
     },
     error => {
         /***** 接收到异常响应的处理开始 *****/
+        if(loadingInstance){
+            loadingInstance.close();
+        }
         if (error && error.response) {
         // 1.公共错误处理
         // 2.根据响应码具体处理
@@ -86,9 +100,9 @@ service.interceptors.response.use(
             if (JSON.stringify(error).includes('timeout')) {
                 Message.error('服务器响应超时，请刷新当前页')
             }
-            error.message('连接服务器失败')
+            // error.message('连接服务器失败')
         }
-        Message.error(error.message)
+        // Message.error(error.message)
         /***** 处理结束 *****/
         //如果不需要错误处理，以上的处理过程都可省略
         return Promise.resolve(error.response)

@@ -1,6 +1,24 @@
 import request from './axios'
 
 const http ={
+    getLoad(url,params){
+        const config = {
+            method: 'get',
+            url:url,
+            load:true
+        }
+        if(params) config.params = params
+        return request(config)
+    },
+    postLoad(url,params){
+        const config = {
+            method: 'post',
+            url:url,
+            load:true
+        }
+        if(params) config.data = params
+        return request(config)
+    },
     get(url,params){
         const config = {
             method: 'get',

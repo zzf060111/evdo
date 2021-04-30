@@ -196,13 +196,14 @@
             },
             // 查看详情
             lookItem(){
-                this.$alert('此模型需开通会员','提示',{
-                    confirmButtonText:'立即开通',
-                    center:true,
-                    callback:()=>{
-                        console.log('确定')
-                    }
-                })
+                // this.$alert('此模型需开通会员','提示',{
+                //     confirmButtonText:'立即开通',
+                //     center:true,
+                //     callback:()=>{
+                //         console.log('确定')
+                //     }
+                // })
+                window.open('https://www.evdo.vip/portal/model/view/id/16496',"_self");
             },
             // 返回顶部
             toTop(i){
@@ -388,6 +389,9 @@
     }
     .pubBox .box .pubItem .txtDown p{
         font-size: 12px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     /* 医学视频 */
     .pubBox .boxyxsp .pubItem{
