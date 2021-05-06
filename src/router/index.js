@@ -49,6 +49,16 @@ export default new Router({
       path: '/downLoad',
       name: 'DownLoad',
       component: resolve => require(['@/page/downLoad'], resolve)
+    },
+    {
+      path: '/exercise',
+      name: 'Exercise',
+      component: resolve => require(['@/page/exercise'], resolve)
+    },
+    {
+      path: '/questions',
+      name: 'Questions',
+      component: resolve => require(['@/page/questions'], resolve)
     }
   ],
   scrollBehavior(to, from, saveTop) { 

@@ -274,7 +274,8 @@ export default {
                 center:true,
                 customClass:'errorAlert',
                 callback:()=>{
-                    console.log('确定')
+                    localStorage.removeItem('user');
+                    this.$router.push('/')
                 }
             })
         }

@@ -1,6 +1,6 @@
 <template>
   	<div class="topnav">
-		<el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" background-color="#252B43" text-color="#ffffff" active-text-color="#FFD302" @select="routerPath">
+		<el-menu :default-active="activeIndex" :class="activeIndex=='2'||activeIndex=='3'||activeIndex=='4'?'el-menu-demo':''" mode="horizontal" background-color="#252B43" text-color="#ffffff" active-text-color="#FFD302" @select="routerPath">
 		  	<el-menu-item index="1">
 				<img :src="topIcon" class="icon">  
 				医维度
@@ -29,8 +29,8 @@
 			</div>
 		</div>
 		<div class="userBox" @click="isLogin">
-			<img src="../../static/image/top/icon_user@2x.png">
-			<p>用户名</p>
+			<img :src="arrUser?arrUser.avatar?arrUser.avatar:'../../static/image/top/icon_user@2x.png':'../../static/image/top/icon_user@2x.png'">
+			<p>{{arrUser?arrUser.nickname?arrUser.nickname:'用户名':'用户名'}}</p>
 		</div>
 		<!-- 登陆、注册、忘记密码 -->
 		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center>
@@ -66,7 +66,7 @@
 					<el-input v-model="forgetform.truePwd" type="password" placeholder="请确定密码"></el-input>
 				</el-form-item>
 				<el-form-item label="验证码" prop="regStr">
-					<el-input v-model="forgetform.regStr" type="password" placeholder="请输入验证码"></el-input>
+					<el-input v-model="forgetform.regStr" type="text" placeholder="请输入验证码"></el-input>
 					<p @click="getForgetReg(forgetform.phone)">{{forgetStr}}</p>
 				</el-form-item>
 			</el-form>
@@ -87,7 +87,7 @@
 					<el-input v-model="regform.truePwd" type="password" placeholder="请确定密码"></el-input>
 				</el-form-item>
 				<el-form-item label="验证码" prop="regStr">
-					<el-input v-model="regform.regStr" type="password" placeholder="请输入验证码"></el-input>
+					<el-input v-model="regform.regStr" type="text" placeholder="请输入验证码"></el-input>
 					<p @click="getForgetReg(regform.phone)">{{forgetStr}}</p>
 				</el-form-item>
 				<!-- <el-form-item label="邀请码" prop="inviteStr">
@@ -116,7 +116,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
-import {register,getUserCode} from '../services/api/topnav';
+import {register,getUserCode,passwordReset,login} from '../services/api/topnav';
 export default {
 	data () {
 		// 验证手机号
@@ -193,7 +193,8 @@ export default {
 				truePwd:'',
 				regStr:'',
 				inviteStr:''
-			}
+			},
+			arrUser:localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):''
 		}
 	},
 	store,
@@ -249,13 +250,41 @@ export default {
 		},
 		// 是否登录
 		isLogin(){
-			this.logoVisible=true;
-			// this.$router.push('/personal');
+			let arr=localStorage.getItem('user');
+			if(arr){
+				this.$router.push('/personal')
+			}else{
+				this.logoVisible=true;
+			}
 		},
 		// 登录
 		login(formName){
 			this.$refs[formName].validate((valid)=>{
-				console.log(valid);
+				let data={};
+				if(valid){
+					data["username"]=this.logoform.name;
+					data["password"]=this.logoform.pwd;
+					login(data).then((res)=>{
+						if(res.data.code==0){
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'success',
+								onClose:()=>{
+									this.logoVisible=false;
+								}
+							});
+							localStorage.setItem('user',JSON.stringify(res.data.data));
+							this.arrUser=res.data.data;
+						}else{
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'error'
+							});
+						}
+					})
+				}
 			})
 		},
 		// 忘记密码
@@ -269,7 +298,6 @@ export default {
 			if(reg.test(str)||emailreg.test(str)){
 				if(this.forgetStr=='获取验证码'){
 					getUserCode({username:str}).then((res)=>{
-						console.log(res);
 						if(res.data.code==0){
 							this.$message({
 								showClose: true,
@@ -303,7 +331,31 @@ export default {
 		// 确定更改密码
 		changePwd(formName){
 			this.$refs[formName].validate((valid)=>{
-				console.log(valid);
+				let data={};
+				if(valid){
+					data["username"]=this.forgetform.phone;
+					data["password"]=this.forgetform.pwd;
+					data["confirm_password"]=this.forgetform.truePwd;
+					data["code"]=this.forgetform.regStr;
+					passwordReset(data).then((res)=>{
+						if(res.data.code==0){
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'success',
+								onClose:()=>{
+									this.forgetVisible=false;
+								}
+							});
+						}else{
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'error'
+							});
+						}
+					})
+				}
 			})
 		},
 		// 打开注册
@@ -313,14 +365,28 @@ export default {
 		// 注册用户
 		regUser(formName){
 			this.$refs[formName].validate((valid)=>{
-				var data={};
+				let data={};
 				if(valid){
 					data["username"]=this.regform.phone;
 					data["password"]=this.regform.pwd;
 					data["code"]=this.regform.regStr;
-					console.log(data);
 					register(data).then((res)=>{
-						console.log(res);
+						if(res.data.code==0){
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'success',
+								onClose:()=>{
+									this.regVisible=false;
+								}
+							});
+						}else{
+							this.$message({
+								showClose: true,
+								message: res.data.msg,
+								type:'error'
+							});
+						}
 					})
 				}
 			})
@@ -337,6 +403,8 @@ export default {
 				this.$router.push({path:'/fslist'})
 			}else if(key==5){
 				this.$router.push({path:'/downLoad'})
+			}else if(key==4){
+				this.$router.push({path:'/exercise'})
 			}
 		},
 		// 通知窗口关闭回调
@@ -427,6 +495,10 @@ export default {
 	.el-menu.el-menu--horizontal{
 		border-bottom: none !important;
 	}
+	.topnav .el-menu-demo>.el-menu-item.is-active{
+		border-bottom: none;
+		background-color: rgb(97, 101, 118)  !important;
+	}
 </style>
 <style scoped>
 	a{
@@ -513,9 +585,12 @@ export default {
 		z-index: 1;
 		font-size: 16px;
 	}
+	.userBox:hover{
+		cursor: pointer;
+	}
 	.userBox img{
 		width: 32px;
-		height: 36.19px;
+		height: 32px;
 		margin-right: 5px;
 	}
 	.userBox p{

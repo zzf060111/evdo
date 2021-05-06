@@ -4,7 +4,15 @@ import http from '../http'
 export function register(params){
     return http.post(`/v1/register`,params)
 }
-// 获取验证码4位
+// 忘记密码
+export function passwordReset(params){
+    return http.post(`/v1/passwordReset`,params)
+}
+// 获取验证码6位
 export function getUserCode(params){
     return http.post(`/v1/getUserCode`,params)
+}
+// 登陆
+export function login(params){
+    return http.post(`/v1/login`,params)
 }
