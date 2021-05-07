@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import {Menu,MenuItem,Form,FormItem,Dialog,Button,Input,Message,Carousel,CarouselItem,Pagination,MessageBox,Submenu,MenuItemGroup,Upload,Collapse,CollapseItem,Table,TableColumn,Loading,Breadcrumb,BreadcrumbItem} from 'element-ui'
+import {Menu,MenuItem,Form,FormItem,Dialog,Button,Input,Message,Carousel,CarouselItem,Pagination,MessageBox,Submenu,MenuItemGroup,Upload,Collapse,CollapseItem,Table,TableColumn,Loading,Breadcrumb,BreadcrumbItem,Switch} from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.component(Menu.name, Menu);
 Vue.component(MenuItem.name, MenuItem);
@@ -24,6 +24,7 @@ Vue.component(Table.name, Table);
 Vue.component(TableColumn.name, TableColumn);
 Vue.component(Breadcrumb.name, Breadcrumb);
 Vue.component(BreadcrumbItem.name, BreadcrumbItem);
+Vue.component(Switch.name, Switch);
 Vue.use(Loading.directive);
 
 Vue.prototype.$loading = Loading.service;
