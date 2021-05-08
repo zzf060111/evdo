@@ -6,8 +6,8 @@
         <div class="leftNav" :style="`height:${screenHeight-60}px`">
             <vue-scroll :ops="ops" style="width:100%;height:100%;">
             <div class="user">
-                <img src="../../static/image/personal/touxiang1@2x.png" class="headImg">
-                <h3>用户名</h3>
+                <img :src="arrUser.avatar" class="headImg" v-if="arrUser.avatar">
+                <h3 v-if="arrUser.nickname">{{arrUser.nickname}}</h3>
                 <div class="sign">
                     <img src="../../static/image/personal/signin@2x.png" class="bj">
                     签到
@@ -46,6 +46,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import {info} from '../services/api/personalItem'
 export default {
     data(){
         return{
@@ -82,6 +83,7 @@ export default {
     },
     store,
     created(){
+        // 判断侧边栏
         this.rightShow=localStorage.getItem('rightShow')?localStorage.getItem('rightShow'):'3';
         let arr=this.navArr;
         for(let i=0;i<arr.length;i++){
@@ -91,12 +93,22 @@ export default {
                 arr[i].isSel=false;
             }
         }
+        // 获取用户信息判断用户是否登录
+        info().then((res)=>{
+            if(res.data.code==-200){
+				localStorage.removeItem('token');
+				this.changeUser('');
+                this.$router.push('/');
+			}else{
+                this.changeUser(JSON.stringify(res.data.data));
+            }
+        })
     },
     mounted(){
         this.windowChange()
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","changeUser"]),
         // 切换左侧导航栏
         changeNav(index){
             if(index==3){
@@ -124,7 +136,7 @@ export default {
                 arr[i].isSel=false;
             }
             this.navArr=arr;
-        }
+        },
     },
     beforeRouteLeave(to, form, next) {
         next();
@@ -137,7 +149,7 @@ export default {
         helpCenter:resolve=>{require(['../components/helpCenter'],resolve)},
         member:resolve=>{require(['../components/member'],resolve)}
     },
-    computed:mapState(["ops","screenHeight","opsx"])
+    computed:mapState(["ops","screenHeight","opsx","arrUser"])
 }
 </script>
 <style scoped>

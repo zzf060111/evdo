@@ -117,6 +117,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
 import {register,getUserCode,passwordReset,login} from '../services/api/topnav';
+import {info} from '../services/api/personalItem'
 export default {
 	data () {
 		// 验证手机号
@@ -193,17 +194,30 @@ export default {
 				truePwd:'',
 				regStr:'',
 				inviteStr:''
-			},
-			arrUser:localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):''
+			}
 		}
 	},
 	store,
 	created(){
+		// 判断搜索值
 		this.searchstr=this.searchval;
+		// 判断确认弹窗
 		this.toastVisible=localStorage.getItem('toastVisible')?false:true;
+		// 判断获取验证码倒计时
 		if(localStorage.getItem('endTime')&&localStorage.getItem('endTime')>new Date().getTime()){
 			this.forgetTime();
 		}
+		// 判断用户登录失效
+		info().then((res)=>{
+			if(res.data.code==-200){
+				localStorage.removeItem('token');
+				this.changeUser('');
+				if(this.activeIndex=='8'||this.activeIndex=='3'||this.activeIndex=='4'){
+                	this.$router.push('/');
+				}
+			}
+		})
+
 	},
 	props: {
 		topIcon: {
@@ -214,7 +228,7 @@ export default {
 		}
 	},
 	methods:{
-		...mapMutations(["forgetTime","changeSearch"]),
+		...mapMutations(["forgetTime","changeSearch","alertTxt","changeUser"]),
 		// 改变搜索框内容
 		changVal(e){
 			this.searchstr=e.target.value;
@@ -250,12 +264,19 @@ export default {
 		},
 		// 是否登录
 		isLogin(){
-			let arr=localStorage.getItem('user');
-			if(arr){
-				this.$router.push('/personal')
-			}else{
-				this.logoVisible=true;
-			}
+			info().then((res)=>{
+				if(res.data.code==-200){
+					localStorage.removeItem('token');
+					this.changeUser('');
+					if(this.activeIndex=='8'||this.activeIndex=='3'||this.activeIndex=='4'){
+						this.$router.push('/');
+					}else{
+						this.logoVisible=true;
+					}
+				}else{
+					this.$router.push('/personal')
+				}
+			})
 		},
 		// 登录
 		login(formName){
@@ -266,22 +287,13 @@ export default {
 					data["password"]=this.logoform.pwd;
 					login(data).then((res)=>{
 						if(res.data.code==0){
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'success',
-								onClose:()=>{
-									this.logoVisible=false;
-								}
-							});
-							localStorage.setItem('user',JSON.stringify(res.data.data));
-							this.arrUser=res.data.data;
+							this.alertTxt({'msg':res.data.msg,'type':'success'});
+							this.logoVisible=false;
+							this.changeUser(JSON.stringify(res.data.data));
+							localStorage.setItem('token',res.data.data.token);
+							this.$router.go(0);
 						}else{
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'error'
-							});
+							this.alertTxt({'msg':res.data.msg,'type':'error'});
 						}
 					})
 				}
@@ -299,19 +311,11 @@ export default {
 				if(this.forgetStr=='获取验证码'){
 					getUserCode({username:str}).then((res)=>{
 						if(res.data.code==0){
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'success'
-							});
+							this.alertTxt({'msg':res.data.msg,'type':'success'});
 							localStorage.setItem('endTime',new Date().getTime()+60000);
 							this.forgetTime();
 						}else{
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'error'
-							});
+							this.alertTxt({'msg':res.data.msg,'type':'error'});
 						}
 					})
 				}else{
@@ -339,20 +343,9 @@ export default {
 					data["code"]=this.forgetform.regStr;
 					passwordReset(data).then((res)=>{
 						if(res.data.code==0){
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'success',
-								onClose:()=>{
-									this.forgetVisible=false;
-								}
-							});
+							this.alertTxt({'msg':res.data.msg,'type':'success','fun':()=>{this.forgetVisible=false}});
 						}else{
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'error'
-							});
+							this.alertTxt({'msg':res.data.msg,'type':'error'});
 						}
 					})
 				}
@@ -372,20 +365,9 @@ export default {
 					data["code"]=this.regform.regStr;
 					register(data).then((res)=>{
 						if(res.data.code==0){
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'success',
-								onClose:()=>{
-									this.regVisible=false;
-								}
-							});
+							this.alertTxt({'msg':res.data.msg,'type':'success','fun':()=>{this.regVisible=false}});
 						}else{
-							this.$message({
-								showClose: true,
-								message: res.data.msg,
-								type:'error'
-							});
+							this.alertTxt({'msg':res.data.msg,'type':'error'});
 						}
 					})
 				}
@@ -398,13 +380,25 @@ export default {
 			}else if(key==2){
 				this.$router.push({path:'/professional'})
 			}else if(key==3){
-				this.$router.push({path:'/enterprise'})
+				info().then((res)=>{
+					if(res.data.code==-200){
+						this.$router.push('/');
+					}else{
+						this.$router.push({path:'/enterprise'})
+					}
+				})
 			}else if(key==6){
 				this.$router.push({path:'/fslist'})
 			}else if(key==5){
 				this.$router.push({path:'/downLoad'})
 			}else if(key==4){
-				this.$router.push({path:'/exercise'})
+				info().then((res)=>{
+					if(res.data.code==-200){
+						this.$router.push('/');
+					}else{
+						this.$router.push({path:'/exercise'})
+					}
+				})
 			}
 		},
 		// 通知窗口关闭回调
@@ -412,7 +406,7 @@ export default {
 			localStorage.setItem('toastVisible',true);
 		}
 	},
-	computed:mapState(["forgetReg","forgetStr","searchval"])
+	computed:mapState(["forgetReg","forgetStr","searchval","arrUser"]),
 }
 </script>
 

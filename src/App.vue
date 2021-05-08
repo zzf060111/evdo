@@ -34,7 +34,8 @@ export default {
           //如果是登录状态，关闭窗口前，移除用户
           // console.log('关闭')
           // localStorage.clear();
-          localStorage.removeItem('toastVisible')
+          localStorage.removeItem('toastVisible');
+          localStorage.removeItem('searchval');
         }
     },
   }

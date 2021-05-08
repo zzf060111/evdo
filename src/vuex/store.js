@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { Message} from 'element-ui';
 
 Vue.use(Vuex);
 
@@ -40,7 +41,8 @@ const state={
             size:'12px'
         }
     },
-    screenHeight:document.documentElement.clientHeight
+    screenHeight:document.documentElement.clientHeight,
+    arrUser:localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):''
 }
 const mutations={
     forgetTime(state){
@@ -69,6 +71,26 @@ const mutations={
                 state.screenHeight = document.documentElement.clientHeight;
             })();
         };
+    },
+    // 公共提示
+    alertTxt(state,res){
+        Message({
+            showClose: true,
+            message:res.msg,
+            type:res.type,
+            onClose:res.fun?res.fun:()=>{}
+        })
+    },
+    // 改变用户信息
+    changeUser(state,str){
+        if(str){
+            state.arrUser=JSON.parse(str);
+            localStorage.setItem('user',str);
+        }else{
+            state.arrUser='';
+            localStorage.removeItem('user');
+        }
+        
     }
 }
 

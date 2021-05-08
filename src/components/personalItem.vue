@@ -4,19 +4,21 @@
         <div class="upload">
             <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="https://www.evdo.vip/api/v1/uploader/avatar"
+            :headers="{'content-type':'application/json; charset=utf-8','token':'96f0931ca208f685a68c80714ce5f3882c8f291d7eb440c10458fce73ac68065'}"
+            :data="{file:imageUrl}"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">
             <img src="../../static/image/personal/icon_xiangji@2x.png">
             </el-upload>
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-if="arrUser.avatar" :src="arrUser.avatar" class="avatar">
             <img v-else src="../../static/image/personal/touxiang1@2x.png" class="avatar">
         </div>
         <div class="formBox">
             <el-form  label-width="100px" >
 				<el-form-item label="昵称" prop="phone">
-					<el-input type="text" value="昵称" disabled></el-input>
+					<el-input type="text" :value="arrUser.nickname" disabled v-if="arrUser.nickname"></el-input>
                     <p @click="showName">修改</p>
 				</el-form-item>
 				<el-form-item label="账号" prop="pwd">
@@ -93,6 +95,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
+import {logout,info,profile} from '../services/api/personalItem'
 export default {
     data(){
         // 验证手机号
@@ -175,14 +178,19 @@ export default {
         if(localStorage.getItem('endTime')&&localStorage.getItem('endTime')>new Date().getTime()){
 			this.forgetTime();
 		}
+        info().then((res)=>{
+            // console.log(res)
+        })
     },
     methods:{
-        ...mapMutations(["forgetTime"]),
+        ...mapMutations(["forgetTime","alertTxt","changeUser"]),
         // 上传头像
         handleAvatarSuccess(res,file){
             this.imageUrl = URL.createObjectURL(file.raw);
         },
         beforeAvatarUpload(file) {
+            console.log(file)
+            this.imageUrl=file.name;
             // const isJPG = file.type === 'image/jpeg';
             // const isLt2M = file.size / 1024 / 1024 < 2;
 
@@ -200,7 +208,19 @@ export default {
         },
         nameChange(formName){
             this.$refs[formName].validate((valid)=>{
-				console.log(valid);
+				console.log(valid,this.nameform);
+                if(valid){
+                    profile({'nickname':this.nameform.name}).then((res)=>{
+                        console.log(res);
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.changeName=false;
+                            this.changeUser(JSON.stringify(res.data.data))
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }
+                    })
+                }
 			})
         },
         // 修改密码
@@ -274,13 +294,21 @@ export default {
                 center:true,
                 customClass:'errorAlert',
                 callback:()=>{
-                    localStorage.removeItem('user');
-                    this.$router.push('/')
+                    logout().then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({'msg':res.data.msg,'type':'success'});
+                            localStorage.removeItem('user');
+                            this.changeUser('')
+                            this.$router.push('/')
+                        }else{
+                            this.alertTxt({'msg':res.data.msg,'type':'error'});
+                        }
+                    })
                 }
             })
         }
     },
-    computed:mapState(["forgetStr","forgetReg"])
+    computed:mapState(["forgetStr","forgetReg","arrUser"])
 }
 </script>
 <style>
