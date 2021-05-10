@@ -382,7 +382,19 @@ export default {
 			}else if(key==3){
 				info().then((res)=>{
 					if(res.data.code==-200){
-						this.$router.push('/');
+						localStorage.removeItem('token');
+						this.changeUser('');
+						if(this.activeIndex=='8'||this.activeIndex=='3'||this.activeIndex=='4'){
+							this.$router.push('/');
+						}else{
+							this.$alert('请登录后访问此页面','提示',{
+								confirmButtonText:'确 定',
+								center:true,
+								callback:()=>{
+									this.$router.go(0);
+								}
+							})
+						}
 					}else{
 						this.$router.push({path:'/enterprise'})
 					}
@@ -394,7 +406,19 @@ export default {
 			}else if(key==4){
 				info().then((res)=>{
 					if(res.data.code==-200){
-						this.$router.push('/');
+						localStorage.removeItem('token');
+						this.changeUser('');
+						if(this.activeIndex=='8'||this.activeIndex=='3'||this.activeIndex=='4'){
+							this.$router.push('/');
+						}else{
+							this.$alert('请登录后访问此页面','提示',{
+								confirmButtonText:'确 定',
+								center:true,
+								callback:()=>{
+									this.$router.go(0);
+								}
+							})
+						}
 					}else{
 						this.$router.push({path:'/exercise'})
 					}

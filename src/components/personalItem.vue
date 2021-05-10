@@ -4,11 +4,10 @@
         <div class="upload">
             <el-upload
             class="avatar-uploader"
-            action="https://www.evdo.vip/api/v1/uploader/avatar"
-            :headers="{'content-type':'application/json; charset=utf-8','token':'96f0931ca208f685a68c80714ce5f3882c8f291d7eb440c10458fce73ac68065'}"
-            :data="{file:imageUrl}"
+            action="123"
+            :headers="{'Content-Type':'multipart/form-data'}"
+            :http-request="uploadFile"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">
             <img src="../../static/image/personal/icon_xiangji@2x.png">
             </el-upload>
@@ -18,11 +17,11 @@
         <div class="formBox">
             <el-form  label-width="100px" >
 				<el-form-item label="昵称" prop="phone">
-					<el-input type="text" :value="arrUser.nickname" disabled v-if="arrUser.nickname"></el-input>
+					<el-input type="text" :value="arrUser.nickname" disabled v-if="arrUser"></el-input>
                     <p @click="showName">修改</p>
 				</el-form-item>
 				<el-form-item label="账号" prop="pwd">
-					<el-input  type="text" value="18790692643" disabled></el-input>
+					<el-input  type="text" :value="arrUser.user_login" v-if="arrUser" disabled></el-input>
 				</el-form-item>
 				<el-form-item label="密码" prop="truePwd">
 					<el-input type="password" value="123456" disabled></el-input>
@@ -31,15 +30,35 @@
 			</el-form>
         </div>
         <div class="bindBox">
-            <div class="item" v-for="(item,index) of bindArr" :key="index">
+            <div class="item">
                 <div class="left">
                     <div>
-                        <img :src="item.isbind==0?item.img1:item.img2">
-                        {{item.txt}}
+                        <img :src="arrUser.mobile?'../../static/image/personal/icon_phone2@2x.png':'../../static/image/personal/icon_phone@2x.png'">
+                        手机
                     </div>
-                    <p>{{item.bindtxt}}</p>
+                    <p>{{arrUser.mobile?arrUser.mobile:'未绑定'}}</p>
                 </div>
-                <div :class="item.isbind==0?`btn`:`btn isbind`" @click="showAlert(item.txt,item.isbind)">{{item.btntxt}}</div>
+                <div :class="arrUser.mobile?`btn`:`btn isbind`" @click="showPhone">{{arrUser.mobile?'修改手机':'去绑定'}}</div>
+            </div>
+            <div class="item">
+                <div class="left">
+                    <div>
+                        <img :src="arrUser.weixin?'../../static/image/personal/icon_wechat2@2x.png':'../../static/image/personal/icon_wechat@2x.png'">
+                        微信
+                    </div>
+                    <p>{{arrUser.weixin?'已绑定':'未绑定'}}</p>
+                </div>
+                <div :class="arrUser.weixin?`btn`:`btn isbind`" @click="showAlert()">{{arrUser.weixin?'解绑':'去绑定'}}</div>
+            </div>
+            <div class="item">
+                <div class="left">
+                    <div>
+                        <img :src="arrUser.qq?'../../static/image/personal/icon_qq2@2x.png':'../../static/image/personal/icon_qq@2x.png'">
+                        QQ
+                    </div>
+                    <p>{{arrUser.qq?'已绑定':'未绑定'}}</p>
+                </div>
+                <div :class="arrUser.qq?`btn`:`btn isbind`" @click="showAlert()">{{arrUser.qq?'解绑':'去绑定'}}</div>
             </div>
         </div>
         <div class="loginOut" @click="logOut">退出登陆</div>
@@ -60,14 +79,10 @@
 				<el-form-item label="原密码" prop="oldPwd">
 					<el-input v-model="pwdform.oldPwd" type="password" placeholder="请输入原密码"></el-input>
 				</el-form-item>
-			</el-form>
-            <el-form :model="pwdform" label-width="80px" :rules="pwdrules" ref="pwdform">
-				<el-form-item label="新密码" prop="newPwd">
+                <el-form-item label="新密码" prop="newPwd">
 					<el-input v-model="pwdform.newPwd" type="password" placeholder="请输入新密码"></el-input>
 				</el-form-item>
-			</el-form>
-            <el-form :model="pwdform" label-width="80px" :rules="pwdrules" ref="pwdform">
-				<el-form-item label="确认密码" prop="truePwd">
+                <el-form-item label="确认密码" prop="truePwd">
 					<el-input v-model="pwdform.truePwd" type="password" placeholder="请再次确认新密码"></el-input>
 				</el-form-item>
 			</el-form>
@@ -95,7 +110,8 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
-import {logout,info,profile} from '../services/api/personalItem'
+import {logout,info,profile,password,user_mobile_code,mobileReg} from '../services/api/personalItem'
+import axios from 'axios'
 export default {
     data(){
         // 验证手机号
@@ -148,9 +164,11 @@ export default {
 			pwdrules:{
 				oldPwd:[
 					{ required: true, message: '请输入原密码', trigger: 'blur' },
+                    {min:6,message: '密码不能小于6个字符', trigger: 'blur' }
 				],
                 newPwd:[
 					{ required: true, message: '请输入新密码', trigger: 'blur' },
+                    {min:6,message: '密码不能小于6个字符', trigger: 'blur' }
 				],
                 truePwd:[
                     { required: true, message: '请确认新密码', trigger: 'blur' },
@@ -175,22 +193,45 @@ export default {
     },
     store,
     created(){
+        // 判断验证码倒计时
         if(localStorage.getItem('endTime')&&localStorage.getItem('endTime')>new Date().getTime()){
 			this.forgetTime();
 		}
-        info().then((res)=>{
-            // console.log(res)
-        })
+        // 判断账号登录是否失效
+        this.isLogin();
     },
     methods:{
         ...mapMutations(["forgetTime","alertTxt","changeUser"]),
         // 上传头像
-        handleAvatarSuccess(res,file){
-            this.imageUrl = URL.createObjectURL(file.raw);
+        uploadFile(params){
+            let file = params.file
+            let data=new FormData();
+            data.append('file',file);
+            axios({
+                url:'https://www.evdo.vip/api/v1/uploader/avatar',
+                method:'post',
+		        data:data,
+                headers: {
+                    'Content-Type':'multipart/form-data',
+                    'token':localStorage.getItem('token')
+                }
+            }).then((res)=>{
+                if(res.data.code==0){
+                    this.alertTxt({msg:res.data.msg,type:'success'});
+                    let arr=this.arrUser;
+                    arr.avatar=res.data.data.avatar;
+                    this.changeUser(JSON.stringify(arr));
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                     this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
         },
         beforeAvatarUpload(file) {
-            console.log(file)
-            this.imageUrl=file.name;
+            // console.log(file)
+            // this.imageUrl=file.name;
             // const isJPG = file.type === 'image/jpeg';
             // const isLt2M = file.size / 1024 / 1024 < 2;
 
@@ -208,14 +249,15 @@ export default {
         },
         nameChange(formName){
             this.$refs[formName].validate((valid)=>{
-				console.log(valid,this.nameform);
                 if(valid){
                     profile({'nickname':this.nameform.name}).then((res)=>{
-                        console.log(res);
                         if(res.data.code==0){
                             this.alertTxt({msg:res.data.msg,type:'success'});
                             this.changeName=false;
                             this.changeUser(JSON.stringify(res.data.data))
+                        }else if(res.data.code==-200){
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                            this.$router.push('/');
                         }else{
                             this.alertTxt({msg:res.data.msg,type:'error'});
                         }
@@ -229,7 +271,25 @@ export default {
         },
         pwdChange(formName){
             this.$refs[formName].validate((valid)=>{
-				console.log(valid);
+				console.log(valid,this.pwdform);
+                if(valid){
+                    let data={};
+                    data["old_password"]=this.pwdform.oldPwd;
+                    data["password"]=this.pwdform.newPwd;
+                    data["password_confirmation"]=this.pwdform.truePwd;
+                    password(data).then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.changePwd=false;
+                        }else if(res.data.code==-200){
+                            localStorage.removeItem('token');
+                            this.changeUser('');
+                            this.$router.push('/');
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }
+                    })
+                }
 			})
         },
         // 修改手机号
@@ -239,7 +299,7 @@ export default {
                 this.changePhone=true;
             }else if(str=="微信"){
                 if(isbind==1){
-                     this.$alert('确定解除绑定微信账号','解绑微信账号',{
+                    this.$alert('确定解除绑定微信账号','解绑微信账号',{
                         confirmButtonText:'解 绑',
                         center:true,
                         customClass:'errorAlert',
@@ -261,9 +321,28 @@ export default {
                 }
             }
         },
+        showPhone(){
+            this.changePhone=true;
+        },
         phoneChange(formName){
             this.$refs[formName].validate((valid)=>{
-				console.log(valid);
+				console.log(valid,this.phoneform);
+                if(valid){
+                    mobileReg({mobile:this.phoneform.phone,mobile_code:this.phoneform.regtxt}).then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.changePhone=false;
+                            let arr=this.arrUser;
+                            arr.mobile=this.phoneform.phone;
+                            this.changeUser(JSON.stringify(arr));
+                        }else if(res.data.code==-200){
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                            this.$router.push('/');
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }
+                    })
+                }
 			})
         },
         // 获取验证码
@@ -271,8 +350,15 @@ export default {
 			const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
 			if(reg.test(this.phoneform.phone)){
 				if(this.forgetStr=='获取验证码'){
-                    localStorage.setItem('endTime',new Date().getTime()+60000);
-					this.forgetTime();
+                    user_mobile_code({mobile:this.phoneform.phone,type:'unique'}).then((res)=>{
+                        if(res.data.code==0){
+							this.alertTxt({'msg':res.data.msg,'type':'success'});
+							localStorage.setItem('endTime',new Date().getTime()+60000);
+							this.forgetTime();
+						}else{
+							this.alertTxt({'msg':res.data.msg,'type':'error'});
+						}
+                    })
 				}else{
 					this.$message({
 						showClose: true,
@@ -304,6 +390,18 @@ export default {
                             this.alertTxt({'msg':res.data.msg,'type':'error'});
                         }
                     })
+                }
+            })
+        },
+        // 验证登录是否失效
+        isLogin(){
+            info().then((res)=>{
+                if(res.data.code==-200){
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.changeUser(JSON.stringify(res.data.data));
                 }
             })
         }
