@@ -381,17 +381,19 @@ export default {
                 confirmButtonText:'确 定',
                 center:true,
                 customClass:'errorAlert',
-                callback:()=>{
-                    logout().then((res)=>{
-                        if(res.data.code==0){
-                            this.alertTxt({'msg':res.data.msg,'type':'success'});
-                            localStorage.removeItem('user');
-                            this.changeUser('')
-                            this.$router.push('/')
-                        }else{
-                            this.alertTxt({'msg':res.data.msg,'type':'error'});
-                        }
-                    })
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        logout().then((res)=>{
+                            if(res.data.code==0){
+                                this.alertTxt({'msg':res.data.msg,'type':'success'});
+                                localStorage.removeItem('user');
+                                this.changeUser('')
+                                this.$router.push('/')
+                            }else{
+                                this.alertTxt({'msg':res.data.msg,'type':'error'});
+                            }
+                        })
+                    }
                 }
             })
         },

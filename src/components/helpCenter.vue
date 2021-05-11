@@ -257,7 +257,7 @@ export default {
     }
     .helpCenter .box .left .questionsBox{
         width: 100%;
-        height: 460px;
+        height: 420px;
         background-color: #F1F4F5;
         clear: both;
     }

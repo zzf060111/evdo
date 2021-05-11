@@ -1,8 +1,8 @@
 <template>
-    <div class="member" :style="`height:${screenHeight-60}px`">
+    <div class="member" :style="`height:${screenHeight-60}px`" v-if="vipList.length>0">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <p class="title">会员套餐</p>
-        <div class="pubBox" v-if="vipList.length>0">
+        <div class="pubBox">
             <div class="pubitem" v-for="(item,index) of vipList" :key="index">
                 <h2>{{item.day==365?'学霸必选':item.day==90?'学期搭配':'尝鲜套餐'}}</h2>
                 <h3>{{`¥${item.price}/`}}{{item.day==365?'年':item.day==90?'季':'月'}}</h3>
@@ -10,9 +10,10 @@
                     ¥{{item.original_price}}
                     <p></p>
                 </div>
-                <div class="btn">开通</div>
+                <div class="btn" @click="openPay(item.price,item.day)">{{arrUser.member_in?'续费':'开通'}}</div>
             </div>
         </div>
+        <div class="vipTip" v-if="arrUser.is_enterprise">您当前已经是企业版会员，包含全部专业版权限，请确认是否需要购买或续费之后再操作。</div>
         <div class="title">
             <p v-for="(item,index) of navArr" :key="index" @click="selNav(item.id)">
                 {{item.txt}}
@@ -45,6 +46,42 @@
             </div>
         </div>
         </vue-scroll>
+        <!-- 提示vip支付 -->
+		<el-dialog title="VIP充值" :visible.sync="vipTost" :append-to-body="true" :close-on-click-modal="false" center custom-class="vipTost" top="13vh" >
+			<div class="priceBox">
+                <p>支付金额</p>
+                <h3>¥{{payPrice}}</h3>
+                <p>{{payDay}}天</p>
+            </div>
+            <div class="paybox">
+                <p>请选择支付方式</p>
+                <div class="payTypebox">
+                    <div class="payTypeItem">
+                        <div class="left">
+                            <img src="../../static/image/personal/weixinpay.png" alt="">
+                            <p>微信支付</p>
+                        </div>
+                        <div class="right" @click="selPayType(1)">
+                            <img src="../../static/image/personal/paySel.png" alt="" v-if="payValue==1">
+                            <p v-else></p>
+                        </div>
+                    </div>
+                    <div class="payTypeItem">
+                        <div class="left">
+                            <img src="../../static/image/personal/zfbpay.png" alt="">
+                            <p>支付宝支付</p>
+                        </div>
+                        <div class="right" @click="selPayType(2)">
+                            <img src="../../static/image/personal/paySel.png" alt="" v-if="payValue==2">
+                            <p v-else></p>
+                        </div>
+                    </div>
+                    <div class="payBtn" @click="truePay">
+                        确认
+                    </div>
+                </div>
+            </div>
+		</el-dialog>
     </div>
 </template>
 <script>
@@ -76,21 +113,14 @@ export default {
                 // }
             ],
             tableData2:[
-                {
-                    name:'每日签到赠送会员时长',
-                    date:'2021-03-23  09:32:56',
-                    time:'1小时',
-                    type:'领取成功'
-                },
-                {
-                    name:'每日签到赠送会员时长',
-                    date:'2021-03-23  09:32:56',
-                    time:'1小时',
-                    type:'领取成功'
-                }
+                
             ],
             vipList:[],
-            loading:false
+            loading:false,
+            vipTost:false,
+            payPrice:'',
+            payDay:'',
+            payValue:1
         }
     },
     store,
@@ -156,14 +186,35 @@ export default {
         getVipOrderThis(){
             getVipOrder().then((res)=>{
                 if(res.data.code==0){
-                    this.tableData1=res.data.data.list
+                    let arr=res.data.data.list;
+                    if(arr.length>0){
+
+                    }else{
+                        this.tableData1=arr;
+                    }
                 }
             })
         },
         // 获取赠送记录
         getVipGiveThis(){
             getVipGive().then((res)=>{
-
+                if(res.data.code==0){
+                    let arr=res.data.data.list;
+                    if(arr.length>0){
+                        let newArr=[];
+                        for(let i=0;i<arr.length;i++){
+                            let obj={};
+                            obj['name']=arr[i].description;
+                            obj['date']=this.getDate(arr[i].create_time);
+                            obj['time']=arr[i].day==0?'一小时':`${arr[i].day}天`;
+                            obj['type']='领取成功';
+                            newArr.push(obj);
+                        }
+                        this.tableData2=newArr;
+                    }else{
+                        this.tableData1=arr;
+                    }
+                }
             })
         },
         // 验证登录是否失效
@@ -184,11 +235,38 @@ export default {
                 }
             })
         },
+        // 购买套餐
+        openPay(price,day){
+            this.vipTost=true;
+            this.payPrice=price;
+            this.payDay=day;
+        },
+            // 选择支付方式
+        selPayType(num){
+            this.payValue=num;
+        },
+            // 支付
+        truePay(){
+            let data={};
+            data['type']=this.payValue==1?'wxpay':'alipay';
+            data['price']=this.payPrice;
+        },
+        // 整理日期
+        getDate(time){
+            var date=new Date(time*1000);
+            var year=date.getFullYear();
+            var month=date.getMonth()+1>=10?date.getMonth()+1:`0${date.getMonth()+1}`;
+            var day=date.getDate()>=10?date.getDate():`0${date.getDate()}`;
+            var hours=date.getHours()>=10?date.getHours():`0${date.getHours()}`;
+            var minutes=date.getMinutes()>=10?date.getMinutes():`0${date.getMinutes()}`;
+            var seconds=date.getSeconds()>=10?date.getSeconds():`0${date.getSeconds()}`;
+            return year+'-'+month+'-'+day+' '+hours+':'+minutes+':'+seconds
+        }
     },
     destroyed(){
         localStorage.removeItem('showTable');
     },
-    computed:mapState(["ops","opsx","screenHeight"])
+    computed:mapState(["ops","opsx","screenHeight","arrUser"])
 }
 </script>
 <style>
@@ -214,11 +292,83 @@ export default {
         position: absolute;
         top: auto;
         bottom:200px;
-    } 
-    /* .member .el-loading-mask{
+    }
+    .vipTost.el-dialog{
+        width: 350px;
+        height: 450px;
+    }
+    .vipTost .el-dialog__header{
+        background-color: #6495ed;
+        border-radius: 8px 8px 0 0;
+        border-bottom: none;
+    }
+    .vipTost .el-dialog__title{
+        color: #fff;
+    }
+    .vipTost .el-dialog__headerbtn .el-dialog__close{
+        color: #fff;
+    }
+    .vipTost .el-dialog__body{
+        width:100%;
+        padding: 0 !important;
+    }
+    .vipTost.el-dialog .priceBox{
         width: 100%;
-        height: 400px;
-    }  */
+        height: 150px;
+        background:linear-gradient(2deg, #6951dc 0%, #5a6eda 50%, #6495ed 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+    }
+    .vipTost.el-dialog .priceBox p{
+        font-size: 18px;
+    }
+    .vipTost.el-dialog .priceBox h3{
+        font-size: 30px;
+        margin: 10px 0;
+    }
+    .vipTost.el-dialog .paybox{
+        width: 100%;
+        height: 230px;
+        padding: 20px 30px 0 30px;
+        box-sizing: border-box;
+    }
+    .vipTost.el-dialog .paybox .payTypeItem{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+    }
+    .vipTost.el-dialog .paybox .payTypeItem .left{
+        display: flex;
+        align-items: center;
+    }
+    .vipTost.el-dialog .paybox .payTypeItem .left img{
+        width: 36px;
+        height: 36px;
+        margin-right: 20px;
+    }
+    .vipTost.el-dialog .paybox .payTypeItem .right img{
+        width: 30px;
+        height: 30px;
+    }
+    .vipTost.el-dialog .paybox .payTypeItem .right p{
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        border: 1px solid #6495ed;
+    }
+    .vipTost.el-dialog .paybox .payBtn{
+        width: 150px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        color: #fff;
+        background-color:#6495ed;
+        margin:15px auto 0 auto;
+    }
 </style>
 <style scoped>
     .member .title{
@@ -319,7 +469,7 @@ export default {
     }
     .member .recordBox{
         width: 100%;
-        height: 400px;
+        height: 320px;
         padding: 0 50px;
         box-sizing: border-box;
         margin-top: 20px;
@@ -332,5 +482,9 @@ export default {
         line-height: 200px;
         font-size: 20px;
         color: #333;
+    }
+    .member .vipTip{
+        font-size: 20px;
+        color: #FD4344;
     }
 </style>
