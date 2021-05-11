@@ -2,30 +2,12 @@
     <div class="member" :style="`height:${screenHeight-60}px`">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <p class="title">会员套餐</p>
-        <div class="pubBox">
-            <div class="pubitem">
-                <h2>学霸必选</h2>
-                <h3>¥18/年</h3>
+        <div class="pubBox" v-if="vipList.length>0">
+            <div class="pubitem" v-for="(item,index) of vipList" :key="index">
+                <h2>{{item.day==365?'学霸必选':item.day==90?'学期搭配':'尝鲜套餐'}}</h2>
+                <h3>{{`¥${item.price}/`}}{{item.day==365?'年':item.day==90?'季':'月'}}</h3>
                 <div class="oldprice">
-                    ¥18
-                    <p></p>
-                </div>
-                <div class="btn">开通</div>
-            </div>
-            <div class="pubitem">
-                <h2>学期搭配</h2>
-                <h3>¥10/季</h3>
-                <div class="oldprice">
-                    ¥20
-                    <p></p>
-                </div>
-                <div class="btn">开通</div>
-            </div>
-            <div class="pubitem">
-                <h2>尝鲜套餐</h2>
-                <h3>¥5/月</h3>
-                <div class="oldprice">
-                    ¥10
+                    ¥{{item.original_price}}
                     <p></p>
                 </div>
                 <div class="btn">开通</div>
@@ -68,6 +50,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
+import {info,getVipInfo,getVipOrder,getVipGive} from '../services/api/personal'
 export default {
     data(){
         return{
@@ -77,20 +60,20 @@ export default {
             ],
             showTable:0,
             tableData1:[
-                {
-                    name:'学霸必选年卡',
-                    date:'2021-03-24  10:12:56',
-                    payType:'支付宝支付',
-                    price:'18元',
-                    type:'购买成功'
-                },
-                {
-                    name:'学霸必选年卡',
-                    date:'2021-03-24  10:12:56',
-                    payType:'支付宝支付',
-                    price:'18元',
-                    type:'购买成功'
-                }
+                // {
+                //     name:'学霸必选年卡',
+                //     date:'2021-03-24  10:12:56',
+                //     payType:'支付宝支付',
+                //     price:'18元',
+                //     type:'购买成功'
+                // },
+                // {
+                //     name:'学霸必选年卡',
+                //     date:'2021-03-24  10:12:56',
+                //     payType:'支付宝支付',
+                //     price:'18元',
+                //     type:'购买成功'
+                // }
             ],
             tableData2:[
                 {
@@ -106,6 +89,7 @@ export default {
                     type:'领取成功'
                 }
             ],
+            vipList:[],
             loading:false
         }
     },
@@ -129,12 +113,13 @@ export default {
                 }
             };
         }
+        this.isLogin();
     },
     mounted(){
         this.windowChange();
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","changeUser"]),
         selNav(id){
             localStorage.setItem('showTable',id);
             let arr=this.navArr;
@@ -147,13 +132,58 @@ export default {
             }
             this.navArr=arr;
             this.showTable=id;
+            if(id==1){
+                this.getVipOrderThis();
+            }else if(id==2){
+                this.getVipGiveThis();
+            }
         },
         handleScroll(vertical, horizontal, nativeEvent){
             console.log(nativeEvent.target.scrollTop,nativeEvent.target.clientHeight,nativeEvent.target.scrollHeight)
             if(nativeEvent.target.scrollTop+nativeEvent.target.clientHeight==nativeEvent.target.scrollHeight){
                 this.loading=true;
             }
-        }
+        },
+        // 获取会员套餐列表
+        getVipInfoThis(){
+            getVipInfo().then((res)=>{
+                if(res.data.code==0){
+                    this.vipList=res.data.data.list;
+                }
+            })
+        },
+        // 获取购买记录
+        getVipOrderThis(){
+            getVipOrder().then((res)=>{
+                if(res.data.code==0){
+                    this.tableData1=res.data.data.list
+                }
+            })
+        },
+        // 获取赠送记录
+        getVipGiveThis(){
+            getVipGive().then((res)=>{
+
+            })
+        },
+        // 验证登录是否失效
+        isLogin(){
+            info().then((res)=>{
+                if(res.data.code==-200){
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.changeUser(JSON.stringify(res.data.data));
+                    this.getVipInfoThis();
+                    if(this.showTable==1){
+                        this.getVipOrderThis();
+                    }else if(this.showTable==2){
+                        this.getVipGiveThis();
+                    }
+                }
+            })
+        },
     },
     destroyed(){
         localStorage.removeItem('showTable');

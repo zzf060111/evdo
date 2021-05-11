@@ -48,7 +48,7 @@
                     </div>
                     <p>{{arrUser.weixin?'已绑定':'未绑定'}}</p>
                 </div>
-                <div :class="arrUser.weixin?`btn`:`btn isbind`" @click="showAlert()">{{arrUser.weixin?'解绑':'去绑定'}}</div>
+                <div :class="arrUser.weixin?`btn`:`btn isbind`" @click="showWeixin(arrUser.weixin)">{{arrUser.weixin?'解绑':'去绑定'}}</div>
             </div>
             <div class="item">
                 <div class="left">
@@ -58,7 +58,7 @@
                     </div>
                     <p>{{arrUser.qq?'已绑定':'未绑定'}}</p>
                 </div>
-                <div :class="arrUser.qq?`btn`:`btn isbind`" @click="showAlert()">{{arrUser.qq?'解绑':'去绑定'}}</div>
+                <div :class="arrUser.qq?`btn`:`btn isbind`" @click="showQQ(arrUser.qq)">{{arrUser.qq?'解绑':'去绑定'}}</div>
             </div>
         </div>
         <div class="loginOut" @click="logOut">退出登陆</div>
@@ -110,7 +110,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
-import {logout,info,profile,password,user_mobile_code,mobileReg} from '../services/api/personalItem'
+import {logout,info,profile,password,user_mobile_code,mobileReg} from '../services/api/personal'
 import axios from 'axios'
 export default {
     data(){
@@ -293,34 +293,6 @@ export default {
 			})
         },
         // 修改手机号
-        showAlert(str,isbind){
-            console.log(str,isbind)
-            if(str=='手机'){
-                this.changePhone=true;
-            }else if(str=="微信"){
-                if(isbind==1){
-                    this.$alert('确定解除绑定微信账号','解绑微信账号',{
-                        confirmButtonText:'解 绑',
-                        center:true,
-                        customClass:'errorAlert',
-                        callback:()=>{
-                            console.log('确定')
-                        }
-                    })
-                }
-            }else if(str=="QQ"){
-                if(isbind==1){
-                     this.$alert('确定解除绑定QQ账号','解绑QQ账号',{
-                        confirmButtonText:'解 绑',
-                        center:true,
-                        customClass:'errorAlert',
-                        callback:()=>{
-                            console.log('确定')
-                        }
-                    })
-                }
-            }
-        },
         showPhone(){
             this.changePhone=true;
         },
@@ -344,6 +316,36 @@ export default {
                     })
                 }
 			})
+        },
+        // 解绑/绑定微信
+        showWeixin(isbind){
+            if(isbind){
+                this.$alert('确定解除绑定微信账号','解绑微信账号',{
+                    confirmButtonText:'解 绑',
+                    center:true,
+                    customClass:'errorAlert',
+                    callback:()=>{
+                        console.log('确定')
+                    }
+                })
+            }else{
+
+            }
+        },
+        // 解绑/绑定QQ
+        showQQ(isbind){
+            if(isbind){
+                this.$alert('确定解除绑定QQ账号','解绑QQ账号',{
+                    confirmButtonText:'解 绑',
+                    center:true,
+                    customClass:'errorAlert',
+                    callback:()=>{
+                        console.log('确定')
+                    }
+                })
+            }else{
+
+            }
         },
         // 获取验证码
 		getForgetReg(){

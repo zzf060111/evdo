@@ -117,7 +117,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
 import {register,getUserCode,passwordReset,login} from '../services/api/topnav';
-import {info} from '../services/api/personalItem'
+import {info} from '../services/api/personal'
 export default {
 	data () {
 		// 验证手机号

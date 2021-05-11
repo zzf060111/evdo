@@ -31,7 +31,23 @@ export function setClockIn(params){
 export function joinReq(params){
     return http.post(`v1/account/join`,params)
 }
+// 退出组织
+export function quitGroup(params){
+    return http.post(`v1/account/quitGroup`,params)
+}
 // 获取手机验证码
 export function user_mobile_code(params){
     return http.post(`/v1/user_mobile_code`,params)
+}
+// 获取会员套餐列表
+export function getVipInfo(params){
+    return http.get(`v1/vip/getVipInfo`,params)
+}
+// 获取会员购买记录
+export function getVipOrder(params){
+    return http.get(`v1/vip/getVipOrder`,params)
+}
+// 获取赠送会员记录
+export function getVipGive(params){
+    return http.get(`v1/vip/getVipGive`,params)
 }

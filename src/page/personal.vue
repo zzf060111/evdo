@@ -38,6 +38,7 @@
                 <collection v-else-if="rightShow==1"></collection>
                 <helpCenter v-else-if="rightShow==2"></helpCenter>
                 <member  v-else-if="rightShow==5"></member>
+                <detailsItem v-else-if="rightShow==6" @changeNav="changeNav"></detailsItem>
             </div>
         </div>
         <!-- 加入组织 -->
@@ -46,8 +47,8 @@
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="joinform.name" type="text" placeholder="请输入姓名"></el-input>
 				</el-form-item>
-                <el-form-item label="工号" prop="job">
-					<el-input v-model="joinform.job" type="text" placeholder="请输入工号"></el-input>
+                <el-form-item label="学号" prop="job">
+					<el-input v-model="joinform.job" type="text" placeholder="请输入学号"></el-input>
 				</el-form-item>
                 <el-form-item label="邀请码" prop="code">
 					<el-input v-model="joinform.code" type="text" placeholder="请输入邀请码"></el-input>
@@ -63,7 +64,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
-import {info,setClockIn,joinReq} from '../services/api/personalItem'
+import {info,setClockIn,joinReq} from '../services/api/personal'
 export default {
     data(){
         return{
@@ -152,6 +153,7 @@ export default {
                     }
                 }
                 this.navArr=arr;
+                this.isLogin();
             }
         },
         // 跳转会员套餐
@@ -186,16 +188,22 @@ export default {
         },
         // 加入组织
         jumpJoin(){
-            console.log(this.btnTxt1)
             if(this.btnTxt1=='加入组织'){
                 this.joinIn=true;
             }else if(this.btnTxt1=='审核中'){
                 this.isLogin();
+            }else if(this.btnTxt1=="查看详情"){
+                this.rightShow='6';
+                localStorage.setItem('rightShow','6');
+                let arr=this.navArr;
+                for(let i=0;i<arr.length;i++){
+                    arr[i].isSel=false;
+                }
+                this.navArr=arr;
             }
         },
         joinInclick(formName){
              this.$refs[formName].validate((valid)=>{
-				console.log(valid,this.joinform);
                 if(valid){
                     let data={};
                     data["code"]=this.joinform.code;
@@ -204,9 +212,10 @@ export default {
                     joinReq(data).then((res)=>{
                         if(res.data.code==0){
                             this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.joinIn=false;
                             let arr=this.arrUser;
                             arr.user_status=3;
-                            this.changeUser(JSON.stringify(arr));
+                            this.isLogin();
                         }else if(res.data.code==-200){
                             this.alertTxt({msg:res.data.msg,type:'error'});
                             this.$router.push('/');
@@ -247,7 +256,8 @@ export default {
         personalItem:resolve=>{require(['../components/personalItem'],resolve)},
         collection:resolve=>{require(['../components/collection'],resolve)},
         helpCenter:resolve=>{require(['../components/helpCenter'],resolve)},
-        member:resolve=>{require(['../components/member'],resolve)}
+        member:resolve=>{require(['../components/member'],resolve)},
+        detailsItem:resolve=>{require(['../components/details'],resolve)}
     },
     computed:mapState(["ops","screenHeight","opsx","arrUser"])
 }
@@ -317,7 +327,6 @@ export default {
         font-size: 18px;
         color: #333;
         display: flex;
-        align-items: center;
         justify-content: center;
         flex-wrap: wrap;
     }
