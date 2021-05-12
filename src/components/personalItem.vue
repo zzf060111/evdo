@@ -271,7 +271,6 @@ export default {
         },
         pwdChange(formName){
             this.$refs[formName].validate((valid)=>{
-				console.log(valid,this.pwdform);
                 if(valid){
                     let data={};
                     data["old_password"]=this.pwdform.oldPwd;

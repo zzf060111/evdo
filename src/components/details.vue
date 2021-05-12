@@ -78,18 +78,20 @@ export default {
                 confirmButtonText:'确定',
                 center:true,
                 customClass:'errorAlert',
-                callback:()=>{
-                   quitGroup().then((res)=>{
-                        if(res.data.code==0){
-                            this.alertTxt({msg:res.data.msg,type:'success'});
-                            this.$emit('changeNav',2);
-                        }else if(res.data.code==-200){
-                            this.alertTxt({msg:res.data.msg,type:'error'});
-                            this.$router.push('/');
-                        }else{
-                            this.alertTxt({msg:res.data.msg,type:'error'});
-                        }
-                   })
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        quitGroup().then((res)=>{
+                            if(res.data.code==0){
+                                this.alertTxt({msg:res.data.msg,type:'success'});
+                                this.$emit('changeNav',2);
+                            }else if(res.data.code==-200){
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                                this.$router.push('/');
+                            }else{
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                            }
+                        })
+                    }
                 }
             })
         }

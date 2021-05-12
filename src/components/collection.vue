@@ -5,7 +5,7 @@
                 <el-menu-item index="1"> 
                     模型
                 </el-menu-item>
-                <el-menu-item index="2">
+                <!-- <el-menu-item index="2">
                     切片
                 </el-menu-item>
                 <el-menu-item index="3">
@@ -13,59 +13,65 @@
                 </el-menu-item>
                 <el-menu-item index="4">
                     课件
-                </el-menu-item>
-                 <el-menu-item index="5">
+                </el-menu-item> -->
+                 <el-menu-item index="2">
                     视频
                 </el-menu-item>
             </el-menu>
             <div class="right">
                 <p>{{selNum}}/{{arr.length}}</p>
                 <p @click="selAll(setStr)">{{setStr}}</p>
-                <p>删除</p>
+                <p @click="deleteSc">删除</p>
             </div>
         </div>
         <div class="pubBox"  :style="`height:${screenHeight-180}px`">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
-                <div class="box boxJcyx" v-show="twoNavIndex==1">
+                <div class="box boxJcyx" v-if="showValue&&twoNavIndex==1&&arr.length>0">
                     <div class="pubItem" v-for="(item,index) of arr" :key="index">
                         <img src="../../static/image/professional/bg_changyong@2x.png" class="bj">
                         <div class="imgTop">
-                            <img src="../../static/image/professional/pic_changyong@2x.png"  @click="lookItem">
+                            <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
-                                <p>100</p>
-                                <img src="../../static/image/professional/icon_members@2x.png">
+                                <!-- <p>{{item.price}}</p> -->
+                                <img v-show="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                             </div>
                             <div class="iconDown">
-                                <img src="../../static/image/professional/icon_view@2x.png">100
+                                <img src="../../static/image/professional/icon_view@2x.png">{{item.price}}
                             </div>
-                            <img :src="item.isSel==0?item.img1:item.img2" class="selBtn" @click="clickSel(index,item.isSel)">
+                            <img :src="item.isSel==0?'../../static/image/personal/icon_wgx@2x.png':'../../static/image/personal/icon_selected@2x.png'" class="selBtn" @click="clickSel(index,item.isSel,item.object_id)">
                         </div>
                         <div class="txtDown">
-                            <h2>上纵隔</h2>
-                            <p>系统解剖学标本  呼吸系统</p>
+                            <h2>{{item.title}}</h2>
+                            <p>{{item.sub_title}}  {{item.sub_title2}}</p>
                         </div>
                     </div>
                 </div>
-                <div class="box boxyxsp" v-show="twoNavIndex==5">
+                <div v-else-if="showValue&&twoNavIndex==1&&arr.length==0">
+                    暂无收藏
+                </div>
+                <div class="box boxyxsp" v-if="showValue&&twoNavIndex==2&&arr.length>0">
                     <div class="pubItem" v-for="(item,index) of arr" :key="index">
                         <img src="../../static/image/enterprise/bg_yxsp@2x.png" class="bj">
                         <div class="imgTop">
-                            <img src="../../static/image/enterprise/pic_yxsp@2x.png"  @click="lookItem">
+                            <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
-                                <p>100</p>
-                                <img src="../../static/image/professional/icon_members@2x.png">
+                                <!-- <p>100</p> -->
+                                <img v-show="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                             </div>
                             <div class="iconDown">
-                                <img src="../../static/image/professional/icon_view@2x.png">100
+                                <img src="../../static/image/professional/icon_view@2x.png">{{item.price}}
                             </div>
                             <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
-                            <img :src="item.isSel==0?item.img1:item.img2" class="selBtn" @click="clickSel(index,item.isSel)">
+                            <img :src="item.isSel==0?'../../static/image/personal/icon_wgx@2x.png':'../../static/image/personal/icon_selected@2x.png'" class="selBtn" @click="clickSel(index,item.isSel,item.object_id)">
                         </div>
                         <div class="txtDown">
-                            <h2>EVDO产品宣传片</h2>
-                            <p>中博科技15周年宣传片</p>
+                            <h2>{{item.title}}</h2>
+                            <p>{{item.sub_title2}}</p>
                         </div>
                     </div>
+                </div>
+                <div v-else-if="showValue&&twoNavIndex==2&&arr.length==0" style="padding-top:20px;font-size:20px;font-weight:bold">
+                    暂无收藏
                 </div>
             </vue-scroll>
         </div>
@@ -88,56 +94,65 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
+import {favorites,delfavorites,info} from '../services/api/personal'
 export default {
     data(){
         return{
-            twoNavIndex:'1',
+            twoNavIndex:'',
             currentPage:1,
             arr:[
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:1,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'},
-                {isSel:0,img1:'../../static/image/personal/icon_wgx@2x.png',img2:'../../static/image/personal/icon_selected@2x.png'}
             ],
+            arrId:[],
             selNum:0,
-            setStr:''
+            setStr:'',
+            showValue:false
         }
     },
     store,
     created(){
-        let num=0;
-        for(let i=0;i<this.arr.length;i++){
-            if(this.arr[i].isSel==1){
-                num++;
-            }
-        }
-        this.selNum=num;
-        if(num==this.arr.length){
-            this.setStr="取消"
+        if(localStorage.getItem('collection-nav')){
+            this.twoNavIndex=localStorage.getItem('collection-nav');
         }else{
-            this.setStr="全选"
+            this.twoNavIndex='1';
         }
+        this.reqfavorites();
     },
     mounted(){
         this.windowChange();
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","alertTxt","changeUser"]),
         changeNav(key){
+            this.showValue=false;
+            this.arrId=[];
             this.twoNavIndex=key;
+            localStorage.setItem('collection-nav',key);
+            this.reqfavorites();
         },
         // 查看详情
-        lookItem(){
-            this.$alert('此模型需开通会员','提示',{
-                confirmButtonText:'立即开通',
-                center:true,
-                callback:()=>{
-                    console.log('确定')
+        lookItem(id,isVip){
+            info().then((res)=>{
+                if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.changeUser(JSON.stringify(res.data.data));
+                    if(isVip){
+                        this.$alert('此模型需开通会员','提示',{
+                            confirmButtonText:'立即开通',
+                            center:true
+                        })
+                    }else{
+                        if(this.twoNavIndex=='1'){
+                            // window.open(`https://www.evdo.vip/portal/model/view/id/${id}`,"_self");
+                            window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token');
+                        }else if(this.twoNavIndex=='2'){
+                            // window.open(`https://www.evdo.vip/portal/video/view/id/${id}`,"_self");
+                            window.location.href='https://www.evdo.vip/portal/video/view/id/'+id;
+                        }
+                    }
                 }
             })
         },
@@ -156,13 +171,20 @@ export default {
             this.toTop(50);
         },
         // 选择收藏
-        clickSel(num,sel){
+        clickSel(num,sel,id){
             let arr=this.arr;
+            let arrid=this.arrId;
             let nums=0;
             if(sel==0){
                 arr[num].isSel=1
+                arrid.push(id);
             }else if(sel==1){
-                arr[num].isSel=0
+                arr[num].isSel=0;
+                for(let i=0;i<arrid.length;i++){
+                    if(arrid[i]==id){
+                        arrid.splice(i,1);
+                    }
+                }
             }
             for(let i=0;i<arr.length;i++){
                 if(arr[i].isSel==1){
@@ -171,6 +193,7 @@ export default {
             }
             this.selNum=nums;
             this.arr=arr;
+            this.arrId=arrid;
             if(nums==arr.length){
                 this.setStr="取消"
             }else{
@@ -180,9 +203,11 @@ export default {
         // 全选或者取消
         selAll(str){
             let arr=this.arr;
+            let arrid=[];
             if(str=="全选"){
                 for(let i=0;i<arr.length;i++){
                     arr[i].isSel=1
+                    arrid.push(arr[i].object_id);
                 }
                 this.selNum=arr.length;
                 this.setStr="取消";
@@ -194,7 +219,95 @@ export default {
                 this.setStr="全选";
             }
             this.arr=arr;
+            this.arrId=arrid;
+        },
+        // 删除收藏
+        deleteSc(){
+            let arr=this.arrId;
+            if(arr.length==0){
+                this.$alert('请选择要删除的收藏','提示',{
+                    confirmButtonText:'确 定',
+                    center:true,
+                })
+            }else if(arr.length>0){
+                this.$alert('确定取消收藏吗？','提示',{
+                    confirmButtonText:'确 定',
+                    center:true,
+                    customClass:'errorAlert',
+                    callback:(action)=>{
+                        if(action=='confirm'){
+                            let data={};
+                            if(this.twoNavIndex=='1'){
+                                data['type']='model'
+                            }else if(this.twoNavIndex=='2'){
+                                data['type']='video'
+                            }
+                            let str=this.arrId.join(',');
+                            data['ids']=str;
+                            delfavorites(data).then((res)=>{
+                                if(res.data.code==0){
+                                    this.alertTxt({msg:res.data.msg,type:'success'});
+                                    this.reqfavorites();
+                                }else if(res.data.code==-200){
+                                    this.alertTxt({msg:res.data.msg,type:'error'});
+                                    localStorage.removeItem('token');
+                                    this.changeUser('');
+                                    this.$router.push('/');
+                                }else{
+                                    this.alertTxt({msg:res.data.msg,type:'error'});
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        },
+        // 请求接口获取收藏列表
+        reqfavorites(){
+            let data={};
+            if(this.twoNavIndex=='1'){
+                data['type']='model'
+            }else if(this.twoNavIndex=='2'){
+                data['type']='video'
+            }
+            favorites(data).then((res)=>{
+                if(res.data.code==0){
+                    this.showValue=true;
+                    let newArr=res.data.data.list;
+                    if(newArr.length>0){
+                        for(let i=0;i<newArr.length;i++){
+                            newArr[i]['isSel']=0;
+                        }
+                        let num=0;
+                        let arrid=[];
+                        for(let i=0;i<newArr.length;i++){
+                            if(newArr[i].isSel==1){
+                                num++;
+                                arrid.push(newArr[i].id);
+                            }
+                        }
+                        this.selNum=num;
+                        this.arrId=arrid;
+                        if(num==newArr.length){
+                            this.setStr="取消"
+                        }else{
+                            this.setStr="全选"
+                        }
+                    }
+                    this.arr=newArr;
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
         }
+    },
+    destroyed(){
+        localStorage.removeItem('collection-nav');
     },
     computed:mapState(["opsx","screenHeight"])
 }
@@ -272,7 +385,7 @@ export default {
         position: absolute;
         top: 5px;
         right: 5px;
-        z-index: 1;
+        z-index: 9;
     }
    .pubBox .box .pubItem .imgTop .iconTop,.pubBox .box .pubItem .imgTop .iconDown{
         width: 190px;
@@ -291,12 +404,13 @@ export default {
         bottom: 20px;
     }
     .pubBox .box .pubItem .imgTop .iconTop p{
-        width: 32px;
+        width: 40px;
         height: 20px;
         border-radius: 10px;
         background-color: rgba(0,0,0,0.2);
         text-align: center;
         line-height: 20px;
+        font-size: 12px;
     }
     .pubBox .box .pubItem .imgTop .iconTop img{
         width: 20px;
@@ -318,6 +432,9 @@ export default {
     }
     .pubBox .box .pubItem .txtDown h2{
         font-size: 16px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     .pubBox .box .pubItem .txtDown p{
         font-size: 12px;

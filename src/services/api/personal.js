@@ -51,3 +51,11 @@ export function getVipOrder(params){
 export function getVipGive(params){
     return http.get(`v1/vip/getVipGive`,params)
 }
+// 获取收藏列表
+export function favorites(params){
+    return http.get(`v1/account/favorites`,params)
+}
+// 删除收藏
+export function delfavorites(params){
+    return http.delete(`v1/account/favorites/del`,params)
+}

@@ -149,7 +149,7 @@ export default {
         this.windowChange();
     },
     methods:{
-        ...mapMutations(["windowChange","changeUser"]),
+        ...mapMutations(["windowChange","changeUser","alertTxt"]),
         selNav(id){
             localStorage.setItem('showTable',id);
             let arr=this.navArr;
@@ -179,6 +179,13 @@ export default {
             getVipInfo().then((res)=>{
                 if(res.data.code==0){
                     this.vipList=res.data.data.list;
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
                 }
             })
         },
@@ -192,6 +199,13 @@ export default {
                     }else{
                         this.tableData1=arr;
                     }
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
                 }
             })
         },
@@ -214,6 +228,13 @@ export default {
                     }else{
                         this.tableData1=arr;
                     }
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
                 }
             })
         },

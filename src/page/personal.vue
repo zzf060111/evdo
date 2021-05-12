@@ -142,18 +142,26 @@ export default {
             if(index==3){
                 this.$router.push('/fsList');
             }else{
-                let arr=this.navArr;
-                for(let i=0;i<arr.length;i++){
-                    if(index==i){
-                        arr[i].isSel=true;
-                        this.rightShow=arr[i].id;
-                        localStorage.setItem('rightShow',arr[i].id);
+                info().then((res)=>{
+                    if(res.data.code==-200){
+                        localStorage.removeItem('token');
+                        this.changeUser('');
+                        this.$router.push('/');
                     }else{
-                        arr[i].isSel=false;
+                        this.changeUser(JSON.stringify(res.data.data));
+                        let arr=this.navArr;
+                        for(let i=0;i<arr.length;i++){
+                            if(index==i){
+                                arr[i].isSel=true;
+                                this.rightShow=arr[i].id;
+                                localStorage.setItem('rightShow',arr[i].id);
+                            }else{
+                                arr[i].isSel=false;
+                            }
+                        }
+                        this.navArr=arr;
                     }
-                }
-                this.navArr=arr;
-                this.isLogin();
+                })
             }
         },
         // 跳转会员套餐
