@@ -257,7 +257,10 @@ export default {
     },
     beforeRouteLeave(to, form, next) {
         next();
-        localStorage.removeItem('rightShow');
+        if(to.name!="VideoItem"){
+            localStorage.removeItem('rightShow');
+            localStorage.removeItem('collection-nav');
+        }
     },
     components:{
         topnav,
@@ -267,7 +270,14 @@ export default {
         member:resolve=>{require(['../components/member'],resolve)},
         detailsItem:resolve=>{require(['../components/details'],resolve)}
     },
-    computed:mapState(["ops","screenHeight","opsx","arrUser"])
+    computed:mapState(["ops","screenHeight","opsx","arrUser"]),
+    watch:{
+        rightShow:(newVal,oldVal)=>{
+            if(newVal!=1){
+                localStorage.removeItem('collection-nav');
+            }
+        }
+    }
 }
 </script>
 <style scoped>

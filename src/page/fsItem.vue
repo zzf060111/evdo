@@ -4,13 +4,13 @@
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
         </div>
-        <div class="itemBox">
+        <div class="itemBox" v-if="objItem">
             <div class="title">
                 <img src="../../static/image/fslist/back.png" class="back" @click="back">
-                医维度虚拟仿真教学软件系统
+                {{objItem.post_title}}
             </div>
-            <p class="time">时间：2021-01-26 15:42:00</p>
-            <div class="content">
+            <p class="time">时间：{{objItem.published_time}}</p>
+            <div class="content" v-html="objItem.post_content">
                 
             </div>
         </div>
@@ -19,24 +19,35 @@
 </template>
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
+import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import {articles} from '../services/api/fsList'
 export default {
     data(){
         return{
             topIcon:'../../static/image/top/logo2@2x.png',
             activeIndex:'6',
+            objItem:'',
         }
     },
     store,
     created(){
-        console.log(this.$route.params.id);
+        // 获取文章详情
+        let data={};
+        data['id']=this.$route.query.id;
+        articles(data).then((res)=>{
+            if(res.data.code==0){
+                this.objItem=res.data.data;
+            }else{
+                this.alertTxt({'msg':res.data.msg,'type':'error'});
+            }
+        })
     },
     mounted(){
         this.windowChange();
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","alertTxt"]),
         // 返回上一页
         back(){
             this.$router.go(-1);
@@ -86,5 +97,8 @@ export default {
     .itemBox .content{
         padding: 30px;
         box-sizing: border-box;
+    }
+    .itemBox .content{
+        text-align:left !important;
     }
 </style>

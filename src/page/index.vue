@@ -71,8 +71,8 @@
                 <p>方便快捷的在线3D人体解剖平台</p>
             </div>
             <div class="btn">
-                <p :class="isUser==0?'isSel':''" @click="changeUser(0)">专业版</p>
-                <p :class="isUser==1?'isSel':''" @click="changeUser(1)">企业版</p>
+                <p :class="arrUser&&!arrUser.is_enterprise?'isSel':''" @click="changeUser(0)">专业版</p>
+                <p :class="arrUser&&arrUser.is_enterprise?'isSel':''" @click="changeUser(1)">企业版</p>
             </div>
         </div>
         <div class="bottomTitle">
@@ -96,8 +96,7 @@
         data(){
             return{
                 topIcon:'../../static/image/top/logo@2x.png',
-                activeIndex:'1',
-                isUser:1
+                activeIndex:'1'
             }
         },
         store,
@@ -115,13 +114,29 @@
            },
             //切换用户版本
             changeUser(num){
-                this.isUser=num;
+               if(num==0){
+                   this.$router.push('/professional')
+               }else if(num==1){
+                   if(!this.arrUser){
+                       this.$alert('请登录后访问此页面','提示',{
+                            confirmButtonText:'确 定',
+                            center:true,
+                        })
+                   }else if(this.arrUser&&!this.arrUser.is_enterprise){
+                        this.$alert('此页面需企业级账号权限，请加入组织后访问','提示',{
+                            confirmButtonText:'确 定',
+                            center:true,
+                        })
+                   }else if(this.arrUser&&this.arrUser.is_enterprise){
+                        this.$router.push('/enterprise')
+                   }
+               }
             }   
         },
         components:{
             topnav
         },
-        computed:mapState(["opsx","screenHeight"])
+        computed:mapState(["opsx","screenHeight","arrUser"])
     }
 </script>
 <style>

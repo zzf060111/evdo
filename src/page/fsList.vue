@@ -4,14 +4,14 @@
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
         </div>
-        <div class="listBox">
+        <div class="listBox" v-if="fsArr.length>0">
             <div class="itemLi" v-for="(item,index) of fsArr" :key="index" @click="lookItem(item.id)">
                 <div class="txtBox">
-                    <h2>{{item.title}}</h2>
-                    <h3>{{item.txt}}</h3>
-                    <p>{{item.time}}</p>
+                    <h2>{{item.post_title}}</h2>
+                    <h3>{{item.post_excerpt}}</h3>
+                    <p>{{item.published_time}}</p>
                 </div>
-                <img v-lazy="item.img" class="imgright">
+                <img v-lazy="item.more.thumbnail" class="imgright">
             </div>
         </div>
         </vue-scroll>
@@ -19,57 +19,44 @@
 </template>
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
+import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import {getCategoryPostLists} from '../services/api/fsList'
 export default {
     data(){
         return{
             topIcon:'../../static/image/top/logo2@2x.png',
             activeIndex:'6',
-            fsArr:[
-                {
-                    id:1,
-                    title:'医维度虚拟仿真教学软件系统',
-                    txt:'医维度特点、功能、内容等介绍，医维度全景展馆、医学视频、考试系统及医维度的下载与注册。',
-                    time:'2021-01-26 15:42:00',
-                    img:'../../static/image/fslist/pic_jxxtrj@2x.png'
-                },
-                {
-                    id:2,
-                    title:'医维度虚拟仿真教学解决方案',
-                    txt:'医维度虚拟仿真教学工作站、一体机、医维度虚拟仿真立体教室、数字教室、数字实验室、VR实验室、医维度人体断层三维重建数字解剖台。',
-                    time:'2021-01-26 15:57:00',
-                    img:'../../static/image/fslist/pic_ jxjjfa@2x.png'
-                },
-                {
-                    id:3,
-                    title:'医维度智能设备配套方案',
-                    txt:'医维度智能互动设备、智能查询浏览系统。',
-                    time:'2021-01-26 16:01:00',
-                    img:'../../static/image/fslist/pic_sbptfa@2x.png'
-                }, 
-                {
-                    id:4,
-                    title:'医维度操作手册',
-                    txt:'医维度平台高级查看器、标准查看器、切片查看器以及视频播放器的功能介绍及详细操作说明。',
-                    time:'2020-04-03 08:50:00',
-                    img:'../../static/image/fslist/pic_czsc@2x.png'
-                }
-            ]
+            fsArr:[]
         }
     },
     store,
+    created(){
+        this.getList();
+    },
     mounted(){
         this.windowChange();
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","alertTxt"]),
         // 查看详情
         lookItem(id){
             this.$router.push({
-                name: 'Fsitem',
-                params: {
+                path: '/fsitem',
+                query: {
                     id: id
+                }
+            })
+        },
+        // 获取文章列表
+        getList(){
+            let data={};
+            data['category_id']=5;
+            getCategoryPostLists(data).then((res)=>{
+                if(res.data.code==0){
+                    this.fsArr=res.data.data.list;
+                }else{
+                    this.alertTxt({'msg':res.data.msg,'type':'error'});
                 }
             })
         }

@@ -30,6 +30,9 @@ Vue.use(Loading.directive);
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$message = Message;
 Vue.prototype.$alert = MessageBox.alert
+
+import vshare from 'vshare'
+Vue.use(vshare)
 // 滚动条样式
 import vuescroll from 'vuescroll';
 import 'vuescroll/dist/vuescroll.css';

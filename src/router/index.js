@@ -59,6 +59,11 @@ export default new Router({
       path: '/questions',
       name: 'Questions',
       component: resolve => require(['@/page/questions'], resolve)
+    },
+    {
+      path: '/videoItem',
+      name: 'VideoItem',
+      component: resolve => require(['@/page/videoItem'], resolve)
     }
   ],
   scrollBehavior(to, from, saveTop) { 

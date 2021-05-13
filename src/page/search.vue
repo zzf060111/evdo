@@ -137,12 +137,12 @@ export default {
 }
 </script>
 <style>
-    .twoNav .el-menu-demo{
+    .search .twoNav .el-menu-demo{
         height: 100%;
         display: flex;
         justify-content: center;
     }
-    .twoNav .el-menu-item{
+    .search .twoNav .el-menu-item{
         height: 60px !important;
         font-size: 18px !important;
         margin: 0 20px;

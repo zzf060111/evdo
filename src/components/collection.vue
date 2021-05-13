@@ -61,7 +61,7 @@
                             <div class="iconDown">
                                 <img src="../../static/image/professional/icon_view@2x.png">{{item.price}}
                             </div>
-                            <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
+                            <img src="../../static/image/enterprise/icon_bf@2x.png" class="module"  @click="lookItem(item.object_id,item.need_vip)">
                             <img :src="item.isSel==0?'../../static/image/personal/icon_wgx@2x.png':'../../static/image/personal/icon_selected@2x.png'" class="selBtn" @click="clickSel(index,item.isSel,item.object_id)">
                         </div>
                         <div class="txtDown">
@@ -146,11 +146,15 @@ export default {
                         })
                     }else{
                         if(this.twoNavIndex=='1'){
-                            // window.open(`https://www.evdo.vip/portal/model/view/id/${id}`,"_self");
-                            window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token');
+                            window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
                         }else if(this.twoNavIndex=='2'){
-                            // window.open(`https://www.evdo.vip/portal/video/view/id/${id}`,"_self");
-                            window.location.href='https://www.evdo.vip/portal/video/view/id/'+id;
+                            // window.location.href='https://www.evdo.vip/portal/video/view/id/'+id;
+                            this.$router.push({
+                                path:'/videoItem',
+                                query:{
+                                    id:id
+                                }
+                            })
                         }
                     }
                 }
@@ -306,9 +310,6 @@ export default {
             })
         }
     },
-    destroyed(){
-        localStorage.removeItem('collection-nav');
-    },
     computed:mapState(["opsx","screenHeight"])
 }
 </script>
@@ -361,6 +362,9 @@ export default {
         box-sizing: border-box;
         position: relative;
         padding: 21px;
+    }
+    .pubBox .box .pubItem:hover{
+        cursor: pointer;
     }
     .pubBox .box .pubItem .bj{
         width: 100%;

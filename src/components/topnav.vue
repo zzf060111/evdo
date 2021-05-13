@@ -396,7 +396,17 @@ export default {
 							})
 						}
 					}else{
-						this.$router.push({path:'/enterprise'})
+						if(res.data.data.is_enterprise){
+							this.$router.push({path:'/enterprise'})
+						}else{
+							this.$alert('此页面需企业级账号权限，请加入组织后访问','提示',{
+								confirmButtonText:'确 定',
+								center:true,
+								callback:()=>{
+									this.$router.go(0);
+								}
+							})
+						}
 					}
 				})
 			}else if(key==6){
