@@ -30,9 +30,11 @@ Vue.use(Loading.directive);
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$message = Message;
 Vue.prototype.$alert = MessageBox.alert
-
+// 分享组件
 import vshare from 'vshare'
 Vue.use(vshare)
+// 动画
+import 'vue2-animate/dist/vue2-animate.min.css'
 // 滚动条样式
 import vuescroll from 'vuescroll';
 import 'vuescroll/dist/vuescroll.css';

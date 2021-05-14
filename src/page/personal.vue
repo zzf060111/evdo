@@ -331,6 +331,9 @@ export default {
         text-align: center;
         line-height: 58px;
     }
+    .personal .leftNav .user .sign:hover{
+        cursor: pointer;
+    }
     .personal .leftNav .cardBox{
         width: 100%;
         height: 140px;
@@ -383,6 +386,9 @@ export default {
         line-height: 40px;
         margin-top: 30px;
     }
+    .personal .leftNav .cardBox .btn:hover{
+        cursor: pointer;
+    }
     .personal .leftNav .navBox .navItem{
         width: 100%;
         height: 68px;
@@ -392,6 +398,9 @@ export default {
         position: relative;
         font-size: 20px;
         color: #333;
+    }
+    .personal .leftNav .navBox .navItem:hover{
+        cursor: pointer;
     }
     .personal .leftNav .navBox .navItem .bj{
         background-color: rgba(128, 148, 148, 0.1);

@@ -16,7 +16,7 @@
             <p></p>
         </div>
         <div class="productBox">
-            <div class="boxleft" @mouseenter="mEnter($event,'left1')" @mouseleave="mLeave($event,'left1')">
+            <div class="boxleft" @mouseenter="mEnter($event,'left1')" @mouseleave="mLeave($event,'left1')" @click="jumpfslist()">
                 <img v-lazy="'../../static/image/index/pic1@2x.png'" class="bj">
                 <h2>医维度在线版</h2>
                 <p>
@@ -26,14 +26,14 @@
             </div>
             <div class="boxright">
                 <div class="top">
-                    <div @mouseenter="mEnter($event,'right1')" @mouseleave="mLeave($event,'right1')">
+                    <div @mouseenter="mEnter($event,'right1')" @mouseleave="mLeave($event,'right1')" @click="jumpfslist()">
                         <img v-lazy="'../../static/image/index/pic2@2x.png'" class="bj">
                         <h2>医维度在线版</h2>
                         <h2>企业定制独立部署版</h2>
                         <p>重建人体精细模型达一万多件，结构位置准确，形态纹理逼真</p>
                         <img src="../../static/image/index/right.png" class="rd right1">
                     </div>
-                    <div @mouseenter="mEnter($event,'right2')" @mouseleave="mLeave($event,'right2')">
+                    <div @mouseenter="mEnter($event,'right2')" @mouseleave="mLeave($event,'right2')" @click="jumpfslist()">
                         <img v-lazy="'../../static/image/index/pic4@2x.png'" class="bj">
                         <h2>医维度单机版系列软件</h2>
                         <p>一点触控旋转，两点触控缩放与平移，鼠标左键旋转，滚轮</p>
@@ -42,20 +42,20 @@
                     </div>
                 </div>
                 <div class="down">
-                    <div @mouseenter="mEnter($event,'right3')" @mouseleave="mLeave($event,'right3')">
+                    <div @mouseenter="mEnter($event,'right3')" @mouseleave="mLeave($event,'right3')" @click="jumpfslist()">
                         <img v-lazy="'../../static/image/index/pic3@2x.png'" class="bj">
                         <h2>医维度XR系列</h2>
                         <p>配合VR眼镜在VR模式下浏览标本，可对标本进行贴图切换</p>
                         <img src="../../static/image/index/right.png" class="rd right3">
                     </div>
-                    <div @mouseenter="mEnter($event,'right4')" @mouseleave="mLeave($event,'right4')">
+                    <div @mouseenter="mEnter($event,'right4')" @mouseleave="mLeave($event,'right4')" @click="jumpfslist()">
                         <img v-lazy="'../../static/image/index/pic5@2x.png'" class="bj">
                         <h2>九大系统</h2>
                         <h2>三维科普动画</h2>
                         <p>反色显示切片用以观察</p>
                         <img src="../../static/image/index/right.png" class="rd right4">
                     </div>
-                    <div @mouseenter="mEnter($event,'right5')" @mouseleave="mLeave($event,'right5')">
+                    <div @mouseenter="mEnter($event,'right5')" @mouseleave="mLeave($event,'right5')" @click="jumpfslist()">
                         <img v-lazy="'../../static/image/index/pic6@2x.png'" class="bj">
                         <h2>在线三维</h2>
                         <h2>全景展馆</h2>
@@ -131,7 +131,11 @@
                         this.$router.push('/enterprise')
                    }
                }
-            }   
+            },
+             // 跳转功能列表
+            jumpfslist(){
+                this.$router.push('/fsList');
+            },   
         },
         components:{
             topnav

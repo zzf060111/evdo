@@ -36,6 +36,8 @@ export default {
           // localStorage.clear();
           localStorage.removeItem('toastVisible');
           localStorage.removeItem('searchval');
+          localStorage.removeItem('rightShow');
+          localStorage.removeItem('collection-nav');
         }
     },
   }

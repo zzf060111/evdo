@@ -1,5 +1,5 @@
 <template>
-    <div class="videoItem" :style="`height:${screenHeight-60}px`">
+    <div class="videoItem" :style="`height:${screenHeight-60}px`" v-show="valueShow">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
@@ -8,21 +8,25 @@
             <div class="videoBox" :style="`height:${screenHeight-160}px`">
                 <div class="video" :style="`height:${screenHeight-210}px`">
                     <img src="../../static/image/fslist/stop.png" alt="" class="stopIcon" v-if="isStop" @click="playVideoi">
-                    <video ref="myVideo" src="https://www.evdo.vip/upload/admin/20210227/fd85ddf6f3d4734bc3285a026919e1f1.mp4" controls poster="https://www.evdo.vip/upload/admin/20210227/51096e87e3c044ebe17cde991b758130.png"></video>
+                    <video ref="myVideo" :src="videoObj.video_url" controls :poster="videoObj.thumbnail"></video>
                     <div>
-                        <p>
-                            <vshare :vshareConfig="vshareConfig"></vshare>
-                            <img src="../../static/image/fslist/fenxiang.png" alt="" @click="fenxiang">分享
+                        <transition name="fade">
+                            <div v-if="isfenx">
+                                <vshare :vshareConfig="vshareConfig"></vshare>
+                            </div>
+                        </transition>
+                        <p @click="fenxiang">
+                            <img src="../../static/image/fslist/fenxiang.png" alt="">分享
                         </p>
-                        <p>
-                            <img src="../../static/image/fslist/star.png" alt="">收藏
+                        <p @click="addSc" :class="videoObj.is_favorite?'isSc':''">
+                            <img :src="videoObj.is_favorite?'../../static/image/fslist/star1.png':'../../static/image/fslist/star.png'" alt="">收藏
                         </p>
                     </div>
                 </div>
                 <div class="text">
-                    <h2>医维度宣传片</h2>
+                    <h2>{{videoObj.title}}</h2>
                     <h3>简介：</h3>
-                    <p>欢迎使用医维度平台欢迎使用医维度平台欢迎使用医维度平台欢迎使用医维度平台欢迎使用医维度平台欢迎使用医维度平台欢迎使用医维度平台欢迎使用医维度平台欢迎使用医维度平台</p>
+                    <div v-html="videoObj.content"></div>
                 </div>
             </div>
         </vue-scroll>
@@ -30,8 +34,9 @@
 </template>
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
+import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import {videoDetail,addfavorites} from '../services/api/modelVideo'
 export default {
     data(){
         return{
@@ -40,13 +45,27 @@ export default {
             isStop:true,
             isfenx:false,
             vshareConfig:{
-                shareList: ['weixin','sqq','qzone'],
-            }
+                shareList: ['more','weixin','sqq'],
+            },
+            videoObj:"",
+            valueShow:false
         }
     },
     store,
+    beforeCreate(){
+        window._bd_share_main = "";
+    },
     created(){
-        console.log(this.$route.query.id)
+        let data={};
+        data['id']=this.$route.query.id;
+        videoDetail(data).then((res)=>{
+            if(res.data.code==0){
+                this.videoObj=res.data.data;
+                this.valueShow=true;
+            }else{
+                this.alertTxt({msg:res.data.msg,type:'error'});
+            }
+        })
     },
     mounted(){
         this.windowChange();
@@ -60,7 +79,7 @@ export default {
         });
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","alertTxt"]),
         // 返回上一页
         backJump(){
             this.$router.go(-1);
@@ -72,7 +91,25 @@ export default {
         },
         // 分享
         fenxiang(){
-            this.isfenx=true;
+            if(this.isfenx){
+                this.isfenx=false;
+                window._bd_share_main = "";
+            }else{
+                this.isfenx=true;
+            }
+        },
+        // 收藏
+        addSc(){
+            let data={};
+            data['id']=this.videoObj.id;
+            data['table']='video';
+            addfavorites(data).then((res)=>{
+                if(res.data.code==0){
+                    this.alertTxt({msg:res.data.msg,type:'success'});
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'warning'});
+                }
+            })
         }
     },
     components:{
@@ -123,12 +160,15 @@ export default {
         object-fit: fill;
         border-radius: 10px 0 0 0;
     }
-    .videoBox .video div{
+    .videoBox .video>div{
         height: 50px;
         display: flex;
         align-items: center;
         padding-left: 50px;
         box-sizing: border-box;
+    }
+    .videoBox .video>div .isSc{
+        color: #6495ed;
     }
     .videoBox .video div p{
         display: flex;
@@ -163,7 +203,7 @@ export default {
         padding-left: 40px;
         box-sizing: border-box;
     }
-    .videoBox .text p{
+    .videoBox .text div{
         text-align: left;
         font-size: 16px;
         padding:0 40px;

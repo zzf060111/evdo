@@ -4,49 +4,40 @@
         <div class="topNav">
              <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
         </div>
-        <div class="twoNav">
+        <div class="twoNav" v-if="twoNavList.length>0">
             <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
-                <el-menu-item index="1"> 
-                    常用
-                </el-menu-item>
-                <el-menu-item index="2">
-                    系统解剖学
-                </el-menu-item>
-                <el-menu-item index="3">
-                    局部解剖学
-                </el-menu-item>
-                <el-menu-item index="4">
-                    断层解剖学
+                <el-menu-item :index="item.num" v-for="(item,index) of twoNavList" :key="index"> 
+                    {{item.name}}
                 </el-menu-item>
             </el-menu>
         </div>
-        <div class="publicBox">
-            <div class="pubItem" v-for="(item,index) of 36" :key="index">
+        <div class="publicBox" v-if="itemArr.length>0">
+            <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
                 <div class="imgTop" @click="lookItem">
-                    <img v-lazy="'../../static/image/professional/pic_changyong@2x.png'">
+                    <img v-lazy="item.thumbnail">
                     <div class="iconTop">
-                        <p>100</p>
-                        <img src="../../static/image/professional/icon_members@2x.png">
+                        <!-- <p></p> -->
+                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">100
+                        <img src="../../static/image/professional/icon_view@2x.png">{{item.view_count}}
                     </div>
                 </div>
                 <div class="txtDown">
-                    <h2>上纵隔</h2>
-                    <p>系统解剖学标本  呼吸系统</p>
+                    <h2>{{item.title}}</h2>
+                    <p>{{item.subtitle}}  {{item.sub_title2}}</p>
                 </div>
             </div>
         </div>
-        <div class="pageBox">
+        <div class="pageBox" v-if="itemArr.length>0">
             <el-pagination
             background
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-size="24"
+            :page-size="pageSize"
             layout="total,prev, pager, next,jumper"
-            :total="200"
+            :total="total"
             hide-on-single-page
             >
             </el-pagination>
@@ -56,30 +47,39 @@
 </template>
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
+import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import {professionalCategory,professionalModel} from '../services/api/modelVideo'
 export default {
     data(){
         return{
             topIcon:'../../static/image/top/logo2@2x.png',
             activeIndex:'2',
-            twoNavIndex:'1',
-            currentPage:1
+            twoNavIndex:'',
+            twoNavList:[],
+            currentPage:1,
+            pageSize:0,
+            total:0,
+            itemArr:[]
         }
     },
     store,
+    created(){
+        // 获取列表
+        this.getFenlei()
+    },
     mounted(){
         this.windowChange()
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","alertTxt"]),
         // 本页搜索
         searchPage(str){
             console.log(str);
         },
         // 导航
         changeNav(key){
-            // console.log(key)
+            console.log(this.twoNavList[parseInt(key)-1].id)
         },
         // 分页
         handleCurrentChange(val){
@@ -105,6 +105,49 @@ export default {
                 }
             })
         },
+        // 获取分类
+        getFenlei(){
+            let data={};
+            data['type']='M';
+            professionalCategory(data).then((res)=>{
+                if(res.data.code==0){
+                    let arr=res.data.data;
+                    let newArr=[];
+                    for(let i=0;i<arr.length;i++){
+                        let obj={};
+                        obj['id']=arr[i].id;
+                        obj['name']=arr[i].name;
+                        newArr.push(obj);
+                    }
+                    newArr.unshift({id:0,name:'常用'});
+                    newArr.push({id:-1,name:'视频'});
+                    for(let i=0;i<newArr.length;i++){
+                        newArr[i]['num']=(i+1).toString();
+                    }
+                    this.twoNavIndex=newArr[0].num;
+                    this.twoNavList=newArr;
+                    let data={};
+                    data['type']='M';
+                    data['page']=this.currentPage;
+                    data['isRecommaned']=1;
+                    this.getList(data);
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 获取列表
+        getList(data){
+            professionalModel(data).then((res)=>{
+                if(res.data.code==0){
+                    this.itemArr=res.data.data.data;
+                    this.pageSize=res.data.data.per_page;
+                    this.total=res.data.data.total;
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        }
     },
     components:{
         topnav
@@ -218,6 +261,9 @@ export default {
     }
     .publicBox .pubItem .txtDown h2{
         font-size: 16px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     .publicBox .pubItem .txtDown p{
         font-size: 12px;

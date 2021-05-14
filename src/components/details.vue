@@ -67,7 +67,7 @@ export default {
                     obj['class']=res.data.data.class;
                     obj['name']=res.data.data.realname;
                     obj['sno']=res.data.data.student_id;
-                    obj['code']='';
+                    obj['code']=res.data.data.class_code;
                     this.detailform=obj;
                 }
             })
