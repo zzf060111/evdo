@@ -12,66 +12,69 @@
                 <el-menu-item index="2">
                     医学视频
                 </el-menu-item>
-                <el-menu-item index="3">
+                <!-- <el-menu-item index="3">
                     图谱
                 </el-menu-item>
                 <el-menu-item index="4">
                     课件
-                </el-menu-item>
+                </el-menu-item> -->
             </el-menu>
         </div>
-        <div class="leftNav" :style="`height:${screenHeight-110}px`">
+        <div class="leftNav" :style="`height:${screenHeight-110}px`" v-if="leftNav.length>0">
             <vue-scroll :ops="ops" style="width:100%;height:100%;">
-            <el-menu class="left-menu" :default-active="leftNav[0].childrens[0].id" background-color="#F6F6F6" unique-opened @select="changLeftNav">
-                <el-submenu :index="item.id" v-for="(item,index) of leftNav" :key="index">
+            <el-menu class="left-menu" :default-active="leftIndex" background-color="#F6F6F6" unique-opened @select="changLeftNav">
+                <el-submenu :index="item.num" v-for="(item,index) of leftNav" :key="index">
                     <template slot="title">
-                        <img :src="item.icon">
-                        <span>{{item.title}} <b>|</b> {{item.num}}</span>
+                        <img :src="item.more.thumbnail">
+                        <span>{{item.name}} <b>|</b> {{item.id}}</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item :index="item2.id" v-for="(item2,index2) of item.childrens" :key="index2">{{item2.title}} <b>|</b> {{item2.num}}</el-menu-item>
+                        <el-menu-item :index="item2.num" v-for="(item2,index2) of item.child" :key="index2">{{item2.name}} <b>|</b> {{item2.id}}</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>
             </vue-scroll>
         </div>
         <div class="pubBox">
-            <div class="box boxJcyx" v-show="twoNavIndex==1">
-                <div class="pubItem" v-for="(item,index) of 9" :key="index">
+            <div class="box boxJcyx" v-show="twoNavIndex==1&&itemArr.length>0">
+                <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
                     <div class="imgTop" @click="lookItem">
-                        <img v-lazy="'../../static/image/professional/pic_changyong@2x.png'">
+                        <img v-lazy="item.thumbnail">
                         <div class="iconTop">
-                            <p>100</p>
-                            <img src="../../static/image/professional/icon_members@2x.png">
+                            <!-- <p>100</p> -->
+                            <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                         </div>
                         <div class="iconDown">
-                            <img src="../../static/image/professional/icon_view@2x.png">100
+                            <img src="../../static/image/professional/icon_view@2x.png">{{item.view_count}}
                         </div>
                     </div>
                     <div class="txtDown">
-                        <h2>上纵隔</h2>
-                        <p>系统解剖学标本  呼吸系统</p>
+                        <h2>{{item.title}}</h2>
+                        <p>{{item.subtitle}}  {{item.sub_title2}}</p>
                     </div>
                 </div>
             </div>
-            <div class="box boxyxsp" v-show="twoNavIndex==2">
-                <div class="pubItem" v-for="(item,index) of 9" :key="index">
+            <div v-show="twoNavIndex==1&&itemArr.length==0&&showValue" style="padding-top:20px;font-size:20px;font-weight:bold">
+                暂无数据
+            </div>
+            <div class="box boxyxsp" v-show="twoNavIndex==2&&itemArr.length>0">
+                <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
                     <div class="imgTop" @click="lookItem">
-                        <img v-lazy="'../../static/image/enterprise/pic_yxsp@2x.png'">
+                        <img v-lazy="item.thumbnail">
                         <div class="iconTop">
-                            <p>100</p>
-                            <img src="../../static/image/professional/icon_members@2x.png">
+                            <!-- <p>100</p> -->
+                            <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                         </div>
                         <div class="iconDown">
-                            <img src="../../static/image/professional/icon_view@2x.png">100
+                            <img src="../../static/image/professional/icon_view@2x.png">{{item.hits}}
                         </div>
                         <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
                     </div>
                     <div class="txtDown">
-                        <h2>EVDO产品宣传片</h2>
-                        <p>中博科技15周年宣传片</p>
+                        <h2>{{item.title}}</h2>
+                        <p>{{item.sub_title}} {{item.sub_title2}}</p>
                     </div>
                 </div>
             </div>
@@ -80,9 +83,9 @@
                 background
                 @current-change="handleCurrentChange"
                 :current-page.sync="currentPage"
-                :page-size="25"
+                :page-size="pageSize"
                 layout="total,prev, pager, next,jumper"
-                :total="200"
+                :total="total"
                 hide-on-single-page
                 >
                 </el-pagination>
@@ -93,94 +96,32 @@
 </template>
 <script>
     import store from '../vuex/store'
-    import {mapState,mapMutations} from 'vuex';
+    import {mapState,mapMutations} from 'vuex'
     import topnav from '../components/topnav'
+    import {enterpriseCategory,enterpriseModel} from '../services/api/modelVideo'
     export default {
         data(){
             return{
                 topIcon:'../../static/image/top/logo2@2x.png',
                 activeIndex:'3',
-                twoNavIndex:'1',
-                leftNav:[
-                    {
-                        id:'1',
-                        icon:'../../static/image/enterprise/icon_szr@2x.png',
-                        title:'医维度数字人',
-                        num:418,
-                        childrens:[
-                            {
-                                id:'1-1',
-                                title:'新品推荐',
-                                num:18
-                            },
-                            {
-                                id:'1-2',
-                                title:'系统解剖学',
-                                num:216
-                            }
-                        ]
-                    },
-                    {
-                        id:'2',
-                        icon:'../../static/image/enterprise/icon_xj@2x.png',
-                        title:'系解体验组',
-                        num:108,
-                        childrens:[
-                            {
-                                id:'2-1',
-                                title:'新品推荐',
-                                num:18
-                            },
-                            {
-                                id:'2-2',
-                                title:'系统解剖学',
-                                num:216
-                            }
-                        ]
-                    },
-                    {
-                        id:'3',
-                        icon:'../../static/image/enterprise/icon_xtjp@2x.png',
-                        title:'系统解剖学标本',
-                        num:1085,
-                        childrens:[
-                            {
-                                id:'3-1',
-                                title:'新品推荐',
-                                num:18
-                            },
-                            {
-                                id:'3-2',
-                                title:'系统解剖学',
-                                num:216
-                            }
-                        ]
-                    },
-                    {
-                        id:'4',
-                        icon:'../../static/image/enterprise/icon_jbjp@2x.png',
-                        title:'局部解剖学标本',
-                        num:281,
-                        childrens:[
-                            {
-                                id:'4-1',
-                                title:'新品推荐',
-                                num:18
-                            },
-                            {
-                                id:'4-2',
-                                title:'系统解剖学',
-                                num:216
-                            }
-                        ]
-                    }
-                ],
-                currentPage:1
+                twoNavIndex:'',
+                leftIndex:'',
+                leftNav:[],
+                currentPage:1,
+                data:{},
+                itemArr:[],
+                showValue:false,
+                pageSize:0,
+                total:0
             }
         },
         store,
+        created(){
+            this.twoNavIndex=localStorage.getItem('entindex')?localStorage.getItem('entindex'):'1';
+            this.getFenlei(this.twoNavIndex);
+        },
         methods:{
-            ...mapMutations(["windowChange"]),
+            ...mapMutations(["windowChange","alertTxt"]),
             // 本页搜索
             searchPage(str){
                 console.log(str);
@@ -188,11 +129,25 @@
             // 导航
             changeNav(key){
                 this.twoNavIndex=key;
+                this.leftNav=[];
+                this.itemArr=[];
+                localStorage.setItem('entindex',key);
+                localStorage.removeItem('entLeftnav');
+                localStorage.removeItem('entdata');
+                this.getFenlei(key);
                 this.toTop(50)
             },
             // 切换左侧导航
             changLeftNav(key,keyPath){
-                console.log(key,keyPath)
+                localStorage.setItem('entLeftnav',key);
+                let obj=this.data;
+                let arr=this.leftNav;
+                let id1=arr[parseInt(keyPath[0])-1].id;
+                let id2=arr[parseInt(keyPath[0])-1].child[parseInt(key.split('-')[1])-1].id;
+                obj.parent_id=id1;
+                obj.category_id=id2;
+                obj.page=1;
+                this.getList(obj);
             },
             // 查看详情
             lookItem(){
@@ -218,6 +173,65 @@
             // 分页
             handleCurrentChange(val){
                 this.toTop(50);
+            },
+            // 获取企业版分类
+            getFenlei(index){
+                let data={};
+                if(index==1){
+                    data['type']='M';
+                }else if(index==2){
+                    data['type']='V';
+                }
+                enterpriseCategory(data).then((res)=>{
+                    if(res.data.code==0){
+                        let arr=res.data.data;
+                        for(let i=0;i<arr.length;i++){
+                            arr[i]['num']=(i+1).toString();
+                            for(let j=0;j<arr[i].child.length;j++){
+                                arr[i].child[j]['num']=`${i+1}-${(j+1)}`;
+                            }
+                        }
+                        this.leftNav=arr;
+                        this.leftIndex=localStorage.getItem('entLeftnav')?localStorage.getItem('entLeftnav'):arr[0].child[0].num;
+                        let data1={};
+                        if(localStorage.getItem('entdata')){
+                            data1=JSON.parse(localStorage.getItem('entdata'));
+                        }else{
+                            if(index==1){
+                                data1['type']='M';
+                            }else if(index==2){
+                                data1['type']='V';
+                            }
+                            data1['page']=this.currentPage;
+                            data1['parent_id']=arr[0].id;
+                            data1['category_id']=arr[0].child[0].id;
+                        }
+                        this.getList(data1);
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }
+                })
+            },
+            // 获取企业列表
+            getList(data){
+                this.data=data;
+                localStorage.setItem('entdata',JSON.stringify(data));
+                enterpriseModel(data).then((res)=>{
+                    this.valueShow=true;
+                    if(res.data.code==0){
+                        this.itemArr=res.data.data.data;
+                        this.pageSize=res.data.data.per_page;
+                        this.total=res.data.data.total;
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }
+                })
             }
         },
         mounted(){
@@ -386,6 +400,9 @@
     }
     .pubBox .box .pubItem .txtDown h2{
         font-size: 16px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     .pubBox .box .pubItem .txtDown p{
         font-size: 12px;

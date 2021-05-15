@@ -46,7 +46,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-else-if="showValue&&twoNavIndex==1&&arr.length==0">
+                <div v-else-if="showValue&&twoNavIndex==1&&arr.length==0" style="padding-top:20px;font-size:20px;font-weight:bold">
                     暂无收藏
                 </div>
                 <div class="box boxyxsp" v-if="showValue&&twoNavIndex==2&&arr.length>0">

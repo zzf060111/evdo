@@ -11,10 +11,10 @@
                 </el-menu-item>
             </el-menu>
         </div>
-        <div class="publicBox" v-if="itemArr.length>0">
+        <div class="publicBox" v-if="twoNavIndex!=5&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
-                <div class="imgTop" @click="lookItem">
+                <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                     <img v-lazy="item.thumbnail">
                     <div class="iconTop">
                         <!-- <p></p> -->
@@ -29,6 +29,32 @@
                     <p>{{item.subtitle}}  {{item.sub_title2}}</p>
                 </div>
             </div>
+        </div>
+        <div v-else-if="twoNavIndex!=5&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
+            暂无数据
+        </div>
+        <div class="publicBox boxyxsp"  v-if="twoNavIndex==5&&itemArr.length>0">
+            <div class="pubItem" v-for="(item,index) of 9" :key="index">
+                <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
+                <div class="imgTop" @click="lookItem">
+                    <img v-lazy="'../../static/image/enterprise/pic_yxsp@2x.png'">
+                    <div class="iconTop">
+                        <p>100</p>
+                        <img src="../../static/image/professional/icon_members@2x.png">
+                    </div>
+                    <div class="iconDown">
+                        <img src="../../static/image/professional/icon_view@2x.png">100
+                    </div>
+                    <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
+                </div>
+                <div class="txtDown">
+                    <h2>EVDO产品宣传片</h2>
+                    <p>中博科技15周年宣传片</p>
+                </div>
+            </div>
+        </div>
+        <div v-else-if="twoNavIndex==5&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
+            暂无数据
         </div>
         <div class="pageBox" v-if="itemArr.length>0">
             <el-pagination
@@ -60,7 +86,9 @@ export default {
             currentPage:1,
             pageSize:0,
             total:0,
-            itemArr:[]
+            itemArr:[],
+            valueShow:false,
+            data:{}
         }
     },
     store,
@@ -75,15 +103,43 @@ export default {
         ...mapMutations(["windowChange","alertTxt"]),
         // 本页搜索
         searchPage(str){
-            console.log(str);
+            let obj=this.data;
+            obj['keywords']=str;
+            this.itemArr=[];
+            this.valueShow=false;
+            this.getList(obj);
         },
         // 导航
         changeNav(key){
-            console.log(this.twoNavList[parseInt(key)-1].id)
+            this.twoNavIndex=key;
+            localStorage.setItem('proindex',key);
+            this.itemArr=[];
+            this.valueShow=false;
+            this.currentPage=1;
+            let id=this.twoNavList[parseInt(key)-1].id;
+            let data={};
+            if(id==0){
+                data['type']='M';
+                data['page']=this.currentPage;
+                data['isRecommaned']=1;
+            }else if(id==-1){
+                data['type']='V';
+                data['page']=this.currentPage;
+            }else{
+                data['type']='M';
+                data['page']=this.currentPage;
+                data['parent_id']=id;
+            }
+            this.getList(data);
         },
         // 分页
         handleCurrentChange(val){
-           this.toTop(50)
+            this.itemArr=[];
+            this.valueShow=false;
+            let obj=this.data;
+            obj.page=val;
+            this.getList(obj);
+            this.toTop(50)
         },
         // 返回顶部
         toTop(i){
@@ -96,14 +152,24 @@ export default {
             }
         },
         // 查看详情
-        lookItem(){
-            this.$alert('此模型需开通会员','提示',{
-                confirmButtonText:'立即开通',
-                center:true,
-                callback:()=>{
-                    console.log('确定')
+        lookItem(id,isVip){
+            if(isVip){
+                this.$alert('此模型需开通会员','提示',{
+                    confirmButtonText:'立即开通',
+                    center:true
+                })
+            }else{
+                if(this.twoNavIndex!='5'){
+                    window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                }else if(this.twoNavIndex=='5'){
+                    this.$router.push({
+                        path:'/videoItem',
+                        query:{
+                            id:id
+                        }
+                    })
                 }
-            })
+            }
         },
         // 获取分类
         getFenlei(){
@@ -124,13 +190,18 @@ export default {
                     for(let i=0;i<newArr.length;i++){
                         newArr[i]['num']=(i+1).toString();
                     }
-                    this.twoNavIndex=newArr[0].num;
+                    this.twoNavIndex=localStorage.getItem('proindex')?localStorage.getItem('proindex'):newArr[0].num;
+                    this.currentPage=localStorage.getItem('prodata')?JSON.parse(localStorage.getItem('prodata')).page:1;
                     this.twoNavList=newArr;
-                    let data={};
-                    data['type']='M';
-                    data['page']=this.currentPage;
-                    data['isRecommaned']=1;
-                    this.getList(data);
+                    let data1={};
+                    if(localStorage.getItem('prodata')){
+                        data1=JSON.parse(localStorage.getItem('prodata'));
+                    }else{
+                        data1['type']='M';
+                        data1['page']=this.currentPage;
+                        data1['isRecommaned']=1;
+                    }
+                    this.getList(data1);
                 }else{
                     this.alertTxt({msg:res.data.msg,type:'error'});
                 }
@@ -138,7 +209,10 @@ export default {
         },
         // 获取列表
         getList(data){
+            this.data=data;
+            localStorage.setItem('prodata',JSON.stringify(data));
             professionalModel(data).then((res)=>{
+                this.valueShow=true;
                 if(res.data.code==0){
                     this.itemArr=res.data.data.data;
                     this.pageSize=res.data.data.per_page;
@@ -147,6 +221,13 @@ export default {
                     this.alertTxt({msg:res.data.msg,type:'error'});
                 }
             })
+        }
+    },
+    beforeRouteLeave(to, form, next) {
+        next();
+        if(to.name!="VideoItem"){
+            localStorage.removeItem('proindex');
+            localStorage.removeItem('prodata');
         }
     },
     components:{
@@ -275,5 +356,20 @@ export default {
         width: 100%;
         display: flex;
         justify-content: center;
+    }
+     /* 医学视频 */
+    .publicBox.boxyxsp .pubItem{
+        height: 265px;
+    }
+    .publicBox.boxyxsp .pubItem .imgTop{
+        height: 160px;
+    }
+    .publicBox.boxyxsp .pubItem .imgTop .module{
+        width: 36px;
+        height: 36px;
+        position: absolute;
+        top: 62px;
+        left: 102px;
+        z-index: 1;
     }
 </style>

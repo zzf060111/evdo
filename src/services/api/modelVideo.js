@@ -8,6 +8,14 @@ export function professionalCategory(params){
 export function professionalModel(params){
     return http.getLoad(`/v1/home/professionalModel`,params)
 }
+// 获取企业版分类
+export function enterpriseCategory(params){
+    return http.get(`/v1/home/enterpriseCategory`,params)
+}
+// 获取企业版列表
+export function enterpriseModel(params){
+    return http.getLoad(`/v1/home/enterpriseModel`,params)
+}
 // 获取视频详情
 export function videoDetail(params){
     return http.get(`/v1/home/videoDetail`,params)
