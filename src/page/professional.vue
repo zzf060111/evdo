@@ -34,22 +34,22 @@
             暂无数据
         </div>
         <div class="publicBox boxyxsp"  v-if="twoNavIndex==5&&itemArr.length>0">
-            <div class="pubItem" v-for="(item,index) of 9" :key="index">
+            <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
-                <div class="imgTop" @click="lookItem">
-                    <img v-lazy="'../../static/image/enterprise/pic_yxsp@2x.png'">
+                <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
+                    <img v-lazy="item.thumbnail">
                     <div class="iconTop">
-                        <p>100</p>
-                        <img src="../../static/image/professional/icon_members@2x.png">
+                        <!-- <p>100</p> -->
+                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">100
+                        <img src="../../static/image/professional/icon_view@2x.png">{{item.hits}}
                     </div>
                     <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
                 </div>
                 <div class="txtDown">
-                    <h2>EVDO产品宣传片</h2>
-                    <p>中博科技15周年宣传片</p>
+                    <h2>{{item.title}}</h2>
+                    <p>{{item.sub_title}} {{item.sub_title2}}</p>
                 </div>
             </div>
         </div>
@@ -100,17 +100,20 @@ export default {
         this.windowChange()
     },
     methods:{
-        ...mapMutations(["windowChange","alertTxt"]),
+        ...mapMutations(["windowChange","alertTxt","changeSearch"]),
         // 本页搜索
         searchPage(str){
             let obj=this.data;
+            this.currentPage=1;
             obj['keywords']=str;
+            obj.page=1;
             this.itemArr=[];
             this.valueShow=false;
             this.getList(obj);
         },
         // 导航
         changeNav(key){
+            this.changeSearch('');
             this.twoNavIndex=key;
             localStorage.setItem('proindex',key);
             this.itemArr=[];

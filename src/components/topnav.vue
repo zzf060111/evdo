@@ -23,7 +23,7 @@
 	  	</el-menu>
 		<div class="searchBox">
 			<img src="../../static/image/top/icon_search@2x.png" @click="searchAll">
-			<input type="text" placeholder="搜索标本、视频以及更多内容"  @input="changVal($event)" :value="searchstr">
+			<input type="text" placeholder="搜索标本、视频以及更多内容"  @input="changVal($event)" :value="searchval">
 			<div class="btnBox">
 				<p @click="searchAll">搜全站</p>|<p @click="searchPage">搜本页</p>
 			</div>
@@ -236,14 +236,13 @@ export default {
 		},
 		// 全站查询
 		searchAll(){
-			this.changeSearch(this.searchstr);
 			if(this.activeIndex=='0'){
-				this.$emit('searchFu',this.searchstr)
+				this.$emit('searchFu',this.searchval)
 			}else{
 				this.$router.push({
-					name:'Search',
-					params:{
-						val:this.searchstr
+					path:'/search',
+					query:{
+						val:this.searchval
 					}
 				})
 			}
@@ -251,13 +250,12 @@ export default {
 		// 搜索本页
 		searchPage(){
 			if(this.activeIndex=='0'||this.activeIndex=='2'||this.activeIndex=='3'){
-				this.$emit('searchPage',this.searchstr)
+				this.$emit('searchPage',this.searchval)
 			}else{
 				 this.$alert('此页面不支持本页搜索','提示',{
 					confirmButtonText:'确定',
 					center:true,
 					callback:()=>{
-						console.log('确定')
 					}
 				})
 			}

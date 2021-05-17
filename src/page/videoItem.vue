@@ -106,6 +106,7 @@ export default {
             addfavorites(data).then((res)=>{
                 if(res.data.code==0){
                     this.alertTxt({msg:res.data.msg,type:'success'});
+                    this.videoObj.is_favorite=true;
                 }else{
                     this.alertTxt({msg:res.data.msg,type:'warning'});
                 }

@@ -8,7 +8,8 @@ const service = axios.create({
     timeout: 3 * 1000
 })
 // 2.请求拦截器
-var loadingInstance
+var loadingInstance;
+var isloading;
 service.interceptors.request.use(
     config => {
         if(config.load){
@@ -18,6 +19,7 @@ service.interceptors.request.use(
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
+            isloading=true;
         }
         //发请求前做的一些处理，数据转化，配置请求头，设置token,设置loading等，根据需求去添加
         config.data = JSON.stringify(config.data); //数据转化,也可以使用qs转换
@@ -41,14 +43,17 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     response => {
         //接收到响应数据并成功后的一些共有的处理，关闭loading等
-        if(loadingInstance){
-            loadingInstance.close();
+        if(isloading){
+            
+            setTimeout(() => {
+                loadingInstance.close();
+            }, 1000);
         }
         return response
     },
     error => {
         /***** 接收到异常响应的处理开始 *****/
-        if(loadingInstance){
+        if(isloading){
             loadingInstance.close();
         }
         if (error && error.response) {

@@ -14,53 +14,59 @@
                 </el-menu-item>
             </el-menu>
         </div>
-        <div class="publicBox" v-show="twoNavIndex==1">
-            <div class="pubItem" v-for="(item,index) of 36" :key="index">
+        <div class="publicBox" v-if="twoNavIndex==1&&itemArr.length>0">
+            <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
-                <div class="imgTop" @click="lookItem">
-                    <img v-lazy="'../../static/image/professional/pic_changyong@2x.png'">
+                <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
+                    <img v-lazy="item.thumbnail">
                     <div class="iconTop">
-                        <p>100</p>
-                        <img src="../../static/image/professional/icon_members@2x.png">
+                        <!-- <p>100</p> -->
+                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">100
+                        <img src="../../static/image/professional/icon_view@2x.png">{{item.view_count}}
                     </div>
                 </div>
                 <div class="txtDown">
-                    <h2>上纵隔</h2>
-                    <p>系统解剖学标本  呼吸系统</p>
+                    <h2>{{item.title}}</h2>
+                    <p>{{item.subtitle}}  {{item.sub_title2}}</p>
                 </div>
             </div>
         </div>
-        <div class="publicBox boxyxsp" v-show="twoNavIndex==2">
-            <div class="pubItem" v-for="(item,index) of 36" :key="index">
+        <div v-else-if="twoNavIndex==1&&itemArr.length==0&&showVal" style="padding-top:20px;font-size:20px;font-weight:bold">
+            暂无数据
+        </div>
+        <div class="publicBox boxyxsp" v-if="twoNavIndex==2&&itemArr.length>0">
+            <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
-                <div class="imgTop" @click="lookItem">
-                    <img v-lazy="'../../static/image/enterprise/pic_yxsp@2x.png'">
+                <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
+                    <img v-lazy="item.thumbnail">
                     <div class="iconTop">
-                        <p>100</p>
-                        <img src="../../static/image/professional/icon_members@2x.png">
+                        <!-- <p>100</p> -->
+                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">100
+                        <img src="../../static/image/professional/icon_view@2x.png">{{item.hits}}
                     </div>
                     <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
                 </div>
                 <div class="txtDown">
-                    <h2>EVDO产品宣传片</h2>
-                    <p>中博科技15周年宣传片</p>
+                    <h2>{{item.title}}</h2>
+                    <p>{{item.sub_title}} {{item.sub_title2}}</p>
                 </div>
             </div>
         </div>
-        <div class="pageBox">
+        <div v-else-if="twoNavIndex==2&&itemArr.length==0&&showVal" style="padding-top:20px;font-size:20px;font-weight:bold">
+            暂无数据
+        </div>
+        <div class="pageBox" v-if="itemArr.length>0">
             <el-pagination
             background
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-size="24"
+            :page-size="pageSize"
             layout="total,prev, pager, next,jumper"
-            :total="200"
+            :total="total"
             hide-on-single-page
             >
             </el-pagination>
@@ -70,54 +76,110 @@
 </template>
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
+import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import {professionalModel,enterpriseModel} from '../services/api/modelVideo'
+import {info} from '../services/api/personal'
 export default {
     data(){
         return{
             topIcon:'../../static/image/top/logo2@2x.png',
             activeIndex:'0',
             twoNavIndex:'1',
-            currentPage:1
+            currentPage:1,
+            data:{},
+            itemArr:[],
+            pageSize:0,
+            total:0,
+            showVal:false
         }
     },
     store,
     created(){
-        // console.log(this.$route.params.val)
+        let data1={};
+        if(localStorage.getItem('searchData')){
+            data1=JSON.parse(localStorage.getItem('searchData'));
+            this.currentPage=JSON.parse(localStorage.getItem('searchData')).page;
+            this.twoNavIndex=localStorage.getItem('searchIndex')?localStorage.getItem('searchIndex'):'1';
+        }else{
+            data1['type']='M';
+            data1['page']=1,
+            data1['keywords']=this.$route.query.val?this.$route.query.val:'';
+        }
+        this.islogin(data1);
     },
     mounted(){
         this.windowChange()
     },
     methods:{
-         ...mapMutations(["windowChange"]),
+         ...mapMutations(["windowChange","changeUser","changeSearch"]),
         // 本页全站搜索
         searchFu(str){
-            // console.log(str);
+            this.itemArr=[];
+            this.showVal=false;
+            this.currentPage=1;
+            this.twoNavIndex='1';
+            let obj=this.data;
+            obj.page=1;
+            obj.keywords=str;
+            obj.type='M';
+            this.islogin(obj);
         },
         // 搜索本页
         searchPage(str){
-            console.log(str);
+            this.itemArr=[];
+            this.showVal=false;
+            this.currentPage=1;
+            let obj=this.data;
+            obj.page=1;
+            obj.keywords=str;
+            this.islogin(obj);
         },
         // 导航
         changeNav(key){
-            console.log(key)
+            this.itemArr=[];
+            this.showVal=false;
             this.twoNavIndex=key;
-            this.toTop(50);
+            localStorage.setItem('searchIndex',key);
             this.currentPage=1;
+            let obj=this.data;
+            obj.page=1;
+            if(key=='1'){
+                obj.type='M';
+            }else if(key=='2'){
+                obj.type='V';
+            }
+            this.islogin(obj);
+            this.toTop(50);
         },
         // 查看详情
-        lookItem(){
-            this.$alert('此模型需开通会员','提示',{
-                confirmButtonText:'立即开通',
-                center:true,
-                callback:()=>{
-                    console.log('确定')
+        lookItem(id,isVip){
+            if(isVip){
+                this.$alert('此模型需开通会员','提示',{
+                    confirmButtonText:'立即开通',
+                    center:true
+                })
+            }else{
+                if(this.twoNavIndex=='1'){
+                    window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                }else if(this.twoNavIndex=='2'){
+                    this.$router.push({
+                        path:'/videoItem',
+                        query:{
+                            id:id
+                        }
+                    })
                 }
-            })
+            }
         },
         // 分页
         handleCurrentChange(val){
-           this.toTop(50)
+            this.itemArr=[];
+            this.showVal=false;
+            let obj=this.data;
+            obj.page=val;
+            this.islogin(obj);
+            this.toTop(50)
         },
         // 返回顶部
         toTop(i){
@@ -128,12 +190,65 @@ export default {
             }else {
                 clearTimeout(c);
             }
+        },
+        // 判断是否登录以及登录类型
+        islogin(data){
+            info().then((res)=>{
+                if(res.data.code==-200){
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.getProList(data);
+                }else{
+                    if(res.data.data.is_enterprise){
+                        this.getEntList(data)
+                    }else{
+                        this.getProList(data);
+                    }
+                }
+            })
+        },
+        // 获取专业版模型、视频列表
+        getProList(data){
+            this.data=data;
+            localStorage.setItem('searchData',JSON.stringify(data));
+            professionalModel(data).then((res)=>{
+                if(res.data.code==0){
+                    this.itemArr=res.data.data.data;
+                    this.pageSize=res.data.data.per_page;
+                    this.total=res.data.data.total;
+                    this.showVal=true;
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 获取专业版模型、视频列表
+        getEntList(data){
+            this.data=data;
+            localStorage.setItem('searchData',JSON.stringify(data));
+            enterpriseModel(data).then((res)=>{
+                if(res.data.code==0){
+                    this.itemArr=res.data.data.data;
+                    this.pageSize=res.data.data.per_page;
+                    this.total=res.data.data.total;
+                    this.showVal=true;
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        }
+    },
+    beforeRouteLeave(to, form, next) {
+        next();
+        if(to.name!="VideoItem"){
+            localStorage.removeItem('searchData');
+            localStorage.removeItem('searchIndex');
         }
     },
     components:{
         topnav
     },
-    computed:mapState(["opsx","screenHeight"])
+    computed:mapState(["opsx","screenHeight","searchval"])
 }
 </script>
 <style>
@@ -240,6 +355,9 @@ export default {
     }
     .publicBox .pubItem .txtDown h2{
         font-size: 16px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     .publicBox .pubItem .txtDown p{
         font-size: 12px;

@@ -39,7 +39,7 @@
             <div class="box boxJcyx" v-show="twoNavIndex==1&&itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
-                    <div class="imgTop" @click="lookItem">
+                    <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                         <img v-lazy="item.thumbnail">
                         <div class="iconTop">
                             <!-- <p>100</p> -->
@@ -61,7 +61,7 @@
             <div class="box boxyxsp" v-show="twoNavIndex==2&&itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
-                    <div class="imgTop" @click="lookItem">
+                    <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                         <img v-lazy="item.thumbnail">
                         <div class="iconTop">
                             <!-- <p>100</p> -->
@@ -78,7 +78,10 @@
                     </div>
                 </div>
             </div>
-            <div class="pageBox" v-show="twoNavIndex==1||twoNavIndex==2">
+            <div v-show="twoNavIndex==2&&itemArr.length==0&&showValue" style="padding-top:20px;font-size:20px;font-weight:bold">
+                暂无数据
+            </div>
+            <div class="pageBox" v-if="itemArr.length>0">
                 <el-pagination
                 background
                 @current-change="handleCurrentChange"
@@ -121,16 +124,23 @@
             this.getFenlei(this.twoNavIndex);
         },
         methods:{
-            ...mapMutations(["windowChange","alertTxt"]),
+            ...mapMutations(["windowChange","alertTxt","changeSearch"]),
             // 本页搜索
             searchPage(str){
-                console.log(str);
+                let obj=this.data;
+                this.currentPage=1;
+                obj['keywords']=str;
+                obj.page=1;
+                this.showValue=false;
+                this.getList(obj);
             },
             // 导航
             changeNav(key){
+                this.changeSearch('');
                 this.twoNavIndex=key;
                 this.leftNav=[];
                 this.itemArr=[];
+                this.showValue=false;
                 localStorage.setItem('entindex',key);
                 localStorage.removeItem('entLeftnav');
                 localStorage.removeItem('entdata');
@@ -139,7 +149,10 @@
             },
             // 切换左侧导航
             changLeftNav(key,keyPath){
+                this.changeSearch('');
                 localStorage.setItem('entLeftnav',key);
+                this.itemArr=[];
+                this.showValue=false;
                 let obj=this.data;
                 let arr=this.leftNav;
                 let id1=arr[parseInt(keyPath[0])-1].id;
@@ -147,18 +160,28 @@
                 obj.parent_id=id1;
                 obj.category_id=id2;
                 obj.page=1;
+                obj['keywords']='';
                 this.getList(obj);
             },
             // 查看详情
-            lookItem(){
-                // this.$alert('此模型需开通会员','提示',{
-                //     confirmButtonText:'立即开通',
-                //     center:true,
-                //     callback:()=>{
-                //         console.log('确定')
-                //     }
-                // })
-                window.open('https://www.evdo.vip/portal/model/view/id/16496',"_self");
+            lookItem(id,isVip){
+                if(isVip){
+                    this.$alert('此模型需开通会员','提示',{
+                        confirmButtonText:'立即开通',
+                        center:true
+                    })
+                }else{
+                    if(this.twoNavIndex=='1'){
+                        window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                    }else if(this.twoNavIndex=='2'){
+                        this.$router.push({
+                            path:'/videoItem',
+                            query:{
+                                id:id
+                            }
+                        })
+                    }
+                }
             },
             // 返回顶部
             toTop(i){
@@ -172,6 +195,11 @@
             },
             // 分页
             handleCurrentChange(val){
+                this.itemArr=[];
+                this.showValue=false;
+                let obj=this.data;
+                obj.page=val;
+                this.getList(obj);
                 this.toTop(50);
             },
             // 获取企业版分类
@@ -193,6 +221,7 @@
                         }
                         this.leftNav=arr;
                         this.leftIndex=localStorage.getItem('entLeftnav')?localStorage.getItem('entLeftnav'):arr[0].child[0].num;
+                        this.currentPage=localStorage.getItem('entdata')?JSON.parse(localStorage.getItem('entdata')).page:1;
                         let data1={};
                         if(localStorage.getItem('entdata')){
                             data1=JSON.parse(localStorage.getItem('entdata'));
@@ -220,7 +249,7 @@
                 this.data=data;
                 localStorage.setItem('entdata',JSON.stringify(data));
                 enterpriseModel(data).then((res)=>{
-                    this.valueShow=true;
+                    this.showValue=true;
                     if(res.data.code==0){
                         this.itemArr=res.data.data.data;
                         this.pageSize=res.data.data.per_page;
@@ -236,6 +265,14 @@
         },
         mounted(){
             this.windowChange()
+        },
+        beforeRouteLeave(to, form, next) {
+            next();
+            if(to.name!="VideoItem"){
+                localStorage.removeItem('entindex');
+                localStorage.removeItem('entdata');
+                localStorage.removeItem('entLeftnav');
+            }
         },
         components:{
             topnav
