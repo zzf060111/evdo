@@ -26,10 +26,10 @@
                 <el-submenu :index="item.num" v-for="(item,index) of leftNav" :key="index">
                     <template slot="title">
                         <img :src="item.more.thumbnail">
-                        <span>{{item.name}} <b>|</b> {{item.id}}</span>
+                        <span>{{item.name}} <b>|</b> {{item.auth_count}}</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item :index="item2.num" v-for="(item2,index2) of item.child" :key="index2">{{item2.name}} <b>|</b> {{item2.id}}</el-menu-item>
+                        <el-menu-item :index="item2.num" v-for="(item2,index2) of item.child" :key="index2">{{item2.name}} <b>|</b> {{item2.auth_child_count}}</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>

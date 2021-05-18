@@ -16,3 +16,7 @@ export function getUserCode(params){
 export function login(params){
     return http.post(`/v1/login`,params)
 }
+// 第三方登录
+export function socials(params){
+    return http.get(`/v1/socials`,params)
+}

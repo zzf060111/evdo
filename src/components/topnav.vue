@@ -48,8 +48,8 @@
 				<div class="fdiv1">还没有账号？<span @click="openReg">注册</span></div>
 				<div class="fdiv2">用第三方账号登录</div>
 				<div class="fdiv3">
-					<img src="../../static/image/top/icon_qq@2x.png">
-					<img src="../../static/image/top/icon_wechat@2x.png">
+					<img src="../../static/image/top/icon_qq@2x.png" @click="thirdParty('qq')">
+					<img src="../../static/image/top/icon_wechat@2x.png" @click="thirdParty('wechat')">
 				</div>
 			</div>
 		</el-dialog>
@@ -116,7 +116,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
-import {register,getUserCode,passwordReset,login} from '../services/api/topnav';
+import {register,getUserCode,passwordReset,login,socials} from '../services/api/topnav';
 import {info} from '../services/api/personal'
 export default {
 	data () {
@@ -436,6 +436,19 @@ export default {
 		// 通知窗口关闭回调
 		Toastclose(){
 			localStorage.setItem('toastVisible',true);
+		},
+		// 第三方登录
+		thirdParty(str){
+			let data={};
+			data['type']=str;
+			data['path']='http://127.0.0.1:8080/';
+			socials(data).then((res)=>{
+				if(res.data.code==0){
+					window.location.href=res.data.data;
+				}else{
+					this.alertTxt({'msg':res.data.msg,'type':'error'});
+				}
+			})
 		}
 	},
 	computed:mapState(["forgetReg","forgetStr","searchval","arrUser"]),
@@ -645,5 +658,8 @@ export default {
 		width:30px;
 		height: 30px;
 		margin:0 5px;
+	}
+	.fdiv3 img:hover{
+		cursor: pointer;
 	}
 </style>

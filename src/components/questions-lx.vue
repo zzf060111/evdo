@@ -3,12 +3,12 @@
         <div class="topBox">
             <div class="quTitle">
                 <div class="left">
-                    <p>单选</p>
-                    <span>1. 可屈髋关节和膝关节的肌是？</span>
+                    <p>{{queArr[indexd].question.type==1?'判断':'单选'}}</p>
+                    <span>{{`${indexd+1}. ${queArr[indexd].question.title}`}}</span>
                 </div>
-                <div class="right">
-                    <img src="../../static/image/question/icon_collection2.png" alt="">
-                    <span>收藏</span>
+                <div :class="queArr[indexd].question.favorite_count==0?'right':'right isSc'">
+                    <img :src="queArr[indexd].question.favorite_count==0?'../../static/image/question/icon_collection2.png':'../../static/image/question/icon_collection3.png'" alt="">
+                    <span>{{queArr[indexd].question.favorite_count==0?'收藏':'已收藏'}}</span>
                 </div>
             </div>
             <div class="quSelBox">
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="quSolt">
-                <div class="itemQu" v-for="(item,index) of 100" :key="index">{{index+1}}</div>
+                <div :class="indexd==index?`itemQu ishere`:item.is_answer==0?'itemQu':item.answer_status==0?'itemQu isNo':'itemQu isYes'" v-for="(item,index) of queArr" :key="index">{{index+1}}</div>
             </div>
             <div class="pageBox">
                 <p>上一页</p>
@@ -75,6 +75,7 @@
             </div>
         </div>
         <img src="../../static/image/question/icon_dk.png" alt="" class="dkShow" @click="trueDk">
+        <transition name="slideRight">
         <div class="dkBox" v-show="isDk">
             <div class="title">
                 <img src="../../static/image/question/icon_back.png" alt="" @click="isDk=false">
@@ -107,9 +108,11 @@
                 </div>
             </div>
         </div>
+        </transition>
     </div>
 </template>
 <script>
+import {question} from '../services/api/exercise'
 export default {
     data(){
         return{
@@ -122,8 +125,30 @@ export default {
             zmArr:['A','B','C','D','E','F','G','H','I','J','K'],
             isDown:false,
             isDk:false,
-            isAnalysis:false
+            isAnalysis:false,
+            data:{},
+            page:1,
+            indexd:0,
+            queArr:[]
         }
+    },
+    props: {
+		idObj:{
+            type:Object
+        }
+	},
+    created(){
+        let data={};
+        if(localStorage.getItem('quesData')){
+            data=JSON.parse(localStorage.getItem('quesData'));
+        }else{
+            data['category_id']=this.idObj.id;
+            data['level']=this.idObj.lev;
+            data['type']=this.idObj.type;
+            data['page']=this.page;
+            data['limit']=100;
+        }
+        this.getQuestions(data);
     },
     methods:{
         // 选择答案
@@ -160,10 +185,49 @@ export default {
         // 确定打卡
         trueDk(){
             this.isDk=true;
+        },
+        // 获取题库
+        getQuestions(data){
+            this.data=data;
+            localStorage.setItem('quesData',JSON.stringify(data));
+            question(data).then((res)=>{
+                if(res.data.code==0){
+                    this.queArr=res.data.data.questions.data;
+                    if(localStorage.getItem('queindex')){
+                        this.indexd=localStorage.getItem('queindex');
+                    }else{
+                        this.indexd=0;
+                    }
+                    console.log(this.queArr);
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
         }
     }
 }
 </script>
 <style scoped>
-    
+    .quSolt .itemQu.ishere{
+        background-color: #6495ED;
+        border: 1px solid #6495ED;
+        color: #fff !important;
+    }
+    .quSolt .itemQu.isYes{
+        background-color: #34C758;
+        border: 1px solid #34C758;
+        color: #fff !important;
+    }
+    .quSolt .itemQu.isNo{
+        background-color: #EB4847;
+        border: 1px solid #EB4847;
+        color: #fff !important;
+    }
+    .questionsItem .topBox .quTitle .right.isSc{
+        border: 1px solid #FFD302 !important;
+        color: #FFD302 !important;
+    }
 </style>

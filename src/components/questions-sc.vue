@@ -12,7 +12,7 @@
                     <p>单选</p>
                     <span>1. 可屈髋关节和膝关节的肌是？</span>
                 </div>
-                <div class="right">
+                <div class="right isSc">
                     <img src="../../static/image/question/icon_collection3.png" alt="">
                     <span>已收藏</span>
                 </div>
@@ -171,7 +171,7 @@ export default {
 }
 </script>
 <style scoped>
-    .questionsItem .topBox .quTitle .right{
+    .questionsItem .topBox .quTitle .right.isSc{
         border: 1px solid #FFD302 !important;
         color: #FFD302 !important;
     }

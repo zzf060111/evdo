@@ -103,7 +103,7 @@ service.interceptors.response.use(
         } else {
             // 超时处理
             if (JSON.stringify(error).includes('timeout')) {
-                Message.error('服务器响应超时，请刷新当前页')
+                Message.error('服务器响应超时')
             }
             // error.message('连接服务器失败')
         }
