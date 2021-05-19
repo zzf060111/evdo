@@ -155,7 +155,7 @@ export default {
                 qunum=this.leftNav[parseInt(arr[0]-1)].childrens[parseInt(arr[1]-1)].nums;
             }
             if(qunum==0){
-                this.$alert('此类题型暂无数据','提示',{
+                this.$alert('此类题型暂无题','提示',{
                     confirmButtonText:'确定',
                     center:true
                 })

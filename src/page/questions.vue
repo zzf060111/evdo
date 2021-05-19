@@ -10,7 +10,8 @@
                 </el-breadcrumb>
             </div>
             <div class="questionsBox">
-                <questionslx v-if="arrTxt[arrTxt.length-1]=='顺序练习'||arrTxt[arrTxt.length-1]=='随机练习'" :idObj="idObj"></questionslx>
+                <questionslx v-if="arrTxt[arrTxt.length-1]=='顺序练习'" :idObj="idObj"></questionslx>
+                <questionsSjlx v-else-if="arrTxt[arrTxt.length-1]=='随机练习'" :idObj="idObj"></questionsSjlx>
                 <questionsks v-else-if="arrTxt[arrTxt.length-1]=='模拟考试'"></questionsks>
                 <questionssc v-else-if="arrTxt[arrTxt.length-1]=='我的收藏'"></questionssc>
                 <questionsct v-else-if="arrTxt[arrTxt.length-1]=='我的错题'"></questionsct>
@@ -52,6 +53,7 @@ export default {
     components:{
         topnav,
         questionslx:resolve=>{require(['../components/questions-lx'],resolve)},
+        questionsSjlx:resolve=>{require(['../components/questions-sjlx'],resolve)},
         questionsks:resolve=>{require(['../components/questions-ks'],resolve)},
         questionssc:resolve=>{require(['../components/questions-sc'],resolve)},
         questionsct:resolve=>{require(['../components/questions-ct'],resolve)}
@@ -61,6 +63,10 @@ export default {
         next();
         localStorage.removeItem('arrTxt');
         localStorage.removeItem('idObj');
+        if(to.name!="Exercise"){
+            localStorage.removeItem('exetwoIndex');
+            localStorage.removeItem('exeleftIndex');
+        }
     },
 }
 </script>
@@ -127,8 +133,12 @@ export default {
         margin-right: 10px;
     }
     .questionsItem >>> .topBox .quTitle>div.left span{
+        text-align: left;
         font-size: 18px;
         color: #333;
+        display: block;
+        padding-right: 10px;
+        box-sizing: border-box;
     }
     .questionsItem >>> .topBox .quTitle>div.right{
         width: 120px;

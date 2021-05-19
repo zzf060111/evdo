@@ -4,7 +4,7 @@
             <div class="quTitle">
                 <div class="left">
                     <p>{{queArr[indexd].question.type==1?'判断':'单选'}}</p>
-                    <span>{{`${(page-1)*100+(indexd+1)}. ${queArr[indexd].question.title}`}}</span>
+                    <span>{{`${(page-1)*100+indexd+1}. ${queArr[indexd].question.title}`}}</span>
                 </div>
                 <div :class="queArr[indexd].question.favorite_count==0?'right':'right isSc'" @click="clickSc">
                     <img :src="queArr[indexd].question.favorite_count==0?'../../static/image/question/icon_collection2.png':'../../static/image/question/icon_collection3.png'" alt="">
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="quSolt">
-                <div :class="indexd==index?`itemQu ishere`:item.is_answer==0?'itemQu':item.answer_status==0?'itemQu isNo':'itemQu isYes'" v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{(page-1)*100+(index+1)}}</div>
+                <div :class="indexd==index?`itemQu ishere`:item.is_answer==0?'itemQu':item.answer_status==0?'itemQu isNo':'itemQu isYes'" v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{(page-1)*100+index+1}}</div>
             </div>
             <div class="pageBox">
                 <p @click="upPage">上一页</p>
@@ -142,15 +142,15 @@ export default {
 	},
     created(){
         // 判断是否选中答对自动下一题
-        if(localStorage.getItem(`queIsdownLx${this.idObj.id}`)=='1'){
+        if(localStorage.getItem(`queIsdownsjLx${this.idObj.id}`)=='1'){
             this.isDown=true;
         }else{
             this.isDown=false;
         }
         // 判断题题库初始加载
         let data={};
-        if(localStorage.getItem(`quesDataLx${this.idObj.id}`)){
-            data=JSON.parse(localStorage.getItem(`quesDataLx${this.idObj.id}`));
+        if(localStorage.getItem(`quesDatasjLx${this.idObj.id}`)){
+            data=JSON.parse(localStorage.getItem(`quesDatasjLx${this.idObj.id}`));
             this.page=data.page;
         }else{
             data['category_id']=this.idObj.id;
@@ -175,6 +175,7 @@ export default {
                         arr[i].isSel=0
                     }
                 }
+                console.log(id,this.queArr[this.indexd].paper_id,this.queArr[this.indexd].question_id);
                 let data={};
                 data['question_id']=this.queArr[this.indexd].question_id;
                 data['answer']=id;
@@ -192,9 +193,9 @@ export default {
         // 是否答对自动下一题
         changeIsdowm(){
             if(this.isDown){
-                localStorage.setItem(`queIsdownLx${this.idObj.id}`,'1')
+                localStorage.setItem(`queIsdownsjLx${this.idObj.id}`,'1')
             }else{
-                localStorage.setItem(`queIsdownLx${this.idObj.id}`,'0')
+                localStorage.setItem(`queIsdownsjLx${this.idObj.id}`,'0')
             }
         },
         // 取消答案
@@ -240,7 +241,7 @@ export default {
                                 obj.page=1;
                                 this.page=1;
                                 this.getQuestions(obj);
-                                localStorage.removeItem(`queindexLx${this.idObj.id}`);
+                                localStorage.removeItem(`queindexsjLx${this.idObj.id}`);
                                 this.indexd=0;
                             }else if(res.data.code==-200){
                                 this.alertTxt({msg:res.data.msg,type:'error'});
@@ -291,7 +292,7 @@ export default {
                 }
                 this.selArr=arr;
                 this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
-                localStorage.setItem(`queindexLx${this.idObj.id}`,this.indexd);
+                localStorage.setItem(`queindexsjLx${this.idObj.id}`,this.indexd);
             }
         },
         // 下一题
@@ -315,7 +316,7 @@ export default {
                 }
                 this.selArr=arr;
                 this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
-                localStorage.setItem(`queindexLx${this.idObj.id}`,this.indexd);
+                localStorage.setItem(`queindexsjLx${this.idObj.id}`,this.indexd);
             }
         },
         // 跳转题目
@@ -336,7 +337,7 @@ export default {
             }
             this.selArr=arr;
             this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
-            localStorage.setItem(`queindexLx${this.idObj.id}`,this.indexd);
+            localStorage.setItem(`queindexsjLx${this.idObj.id}`,this.indexd);
         },
         // 上一页
         upPage(){
@@ -344,7 +345,7 @@ export default {
                 this.alertTxt({msg:'已到第一页',type:'warning'});
             }else{
                 this.queArr=[];
-                localStorage.removeItem(`queindexLx${this.idObj.id}`);
+                localStorage.removeItem(`queindexsjLx${this.idObj.id}`);
                 this.page--;
                 let obj=this.data;
                 obj.page=this.page;
@@ -357,7 +358,7 @@ export default {
                 this.alertTxt({msg:'已到最后页',type:'warning'});
             }else{
                 this.queArr=[];
-                localStorage.removeItem(`queindexLx${this.idObj.id}`);
+                localStorage.removeItem(`queindexsjLx${this.idObj.id}`);
                 this.page++;
                 let obj=this.data;
                 obj.page=this.page;
@@ -367,12 +368,12 @@ export default {
         // 获取题库
         getQuestions(data){
             this.data=data;
-            localStorage.setItem(`quesDataLx${this.idObj.id}`,JSON.stringify(data));
+            localStorage.setItem(`quesDatasjLx${this.idObj.id}`,JSON.stringify(data));
             question(data).then((res)=>{
                 if(res.data.code==0){
                     this.queArr=res.data.data.questions.data;
-                    if(localStorage.getItem(`queindexLx${this.idObj.id}`)){
-                        this.indexd=parseInt(localStorage.getItem(`queindexLx${this.idObj.id}`));
+                    if(localStorage.getItem(`queindexsjLx${this.idObj.id}`)){
+                        this.indexd=parseInt(localStorage.getItem(`queindexsjLx${this.idObj.id}`));
                     }else{
                         this.indexd=0;
                     }
@@ -425,7 +426,7 @@ export default {
                             }
                             this.selArr=arr;
                             this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
-                            localStorage.setItem(`queindexLx${this.idObj.id}`,this.indexd);
+                            localStorage.setItem(`queindexsjLx${this.idObj.id}`,this.indexd);
                         }
                     }
                 }else if(res.data.code==-200){
