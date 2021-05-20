@@ -14,13 +14,13 @@
                     <p>{{zmArr[index]+'.'+item.txt}}</p>
                 </div>
             </div>
-            <div class="quImg">
+            <!-- <div class="quImg">
                 <img src="../../static/image/question/0b9d68bbb683fa45920f795485e4524a.png" alt="">
-            </div>
+            </div> -->
             <div class="quBottom">
                 <div class="left">
-                    <img src="../../static/image/question/icon_djs2.png" alt="">
-                    <p>倒计时：42:52</p>
+                    <img src="../../static/image/question/icon_djs.png" alt="">
+                    <p>倒计时：{{ksTime}}</p>
                     <p>提示：单选题，请选择你认为正确的答案</p>
                 </div>
                 <div class="right">
@@ -32,7 +32,7 @@
         </div>
         <div class="bottomBox">
             <div class="title">
-                <div class="left">
+                <!-- <div class="left">
                     <div>
                         <img src="../../static/image/question/icon_xz.png" alt="">当前选择
                     </div>
@@ -42,21 +42,30 @@
                     <div>
                         <img src="../../static/image/question/icon_error.png" alt="">错误：1题
                     </div>
+                </div> -->
+                <div class="left">
+                    <div>
+                        <img src="../../static/image/question/icon_xz.png" alt="">已答：{{}}题
+                    </div>
+                    <div>
+                        <img src="../../static/image/question/round.png" alt="">未答：{{}}题
+                    </div>
                 </div>
-                <div class="right">
+                <!-- <div class="right">
                     清除当前做题记录
-                </div>
+                </div> -->
             </div>
             <div class="quSolt">
                 <div class="itemQu" v-for="(item,index) of 100" :key="index">{{index+1}}</div>
             </div>
-            <div class="pageBox">
+            <!-- <div class="pageBox">
                 <p>上一页</p>
                 <p>下一页</p>
-            </div>
+            </div> -->
         </div>
         <!-- 题目讲解 -->
         <img src="../../static/image/question/icon_dk.png" alt="" class="dkShow" @click="trueDk">
+        <transition name="slideRight">
         <div class="dkBox" v-show="isDk">
             <div class="title">
                 <img src="../../static/image/question/icon_back.png" alt="" @click="isDk=false">
@@ -89,9 +98,13 @@
                 </div>
             </div>
         </div>
+        </transition>
     </div>
 </template>
 <script>
+import store from '../vuex/store'
+import {mapMutations} from 'vuex'
+import {question,answer,signIn} from '../services/api/exercise'
 export default {
     data(){
         return{
@@ -103,10 +116,36 @@ export default {
             ],
             zmArr:['A','B','C','D','E','F','G','H','I','J','K'],
             isDown:false,
-            isDk:false
+            isDk:false,
+            data:{},
+            queArr:[],
+            indexd:0,
+            page:1,
+            ksTime:''
         }
     },
+    store,
+    props: {
+		idObj:{
+            type:Object
+        }
+	},
+    created(){
+        let data={};
+        data['category_id']=this.idObj.id;
+        data['level']=this.idObj.lev;
+        data['type']=this.idObj.type;
+        data['page']=this.page;
+        data['limit']=100;
+        this.getQuestions(data);
+        // if(localStorage.getItem('queKstime')){
+        //     this.changeTime(parseInt(localStorage.getItem('queKstime')))
+        // }else{
+        //     this.changeTime(3600);
+        // }
+    },
     methods:{
+        ...mapMutations(["alertTxt"]),
         // 选择答案
         selAnswer(index){
             let str="判断";
@@ -130,17 +169,59 @@ export default {
         },
         // 取消答案
         clearAnswer(index){
-            let arr=this.selArr;
-            for(let i=0;i<arr.length;i++){
-                if(index==i){
-                    arr[i].isSel=0
-                }
-            }
-            this.selArr=arr;
+            // let arr=this.selArr;
+            // for(let i=0;i<arr.length;i++){
+            //     if(index==i){
+            //         arr[i].isSel=0
+            //     }
+            // }
+            // this.selArr=arr;
         },
         // 确定打卡
         trueDk(){
             this.isDk=true;
+        },
+        // 获取考试题库
+        getQuestions(data){
+            this.data=data;
+            question(data).then((res)=>{
+                if(res.data.code==0){
+                    this.queArr=res.data.data.questions.data;
+                    if(localStorage.getItem(`queindexks${this.idObj.id}`)){
+                        this.indexd=parseInt(localStorage.getItem(`queindexks${this.idObj.id}`));
+                    }else{
+                        this.indexd=0;
+                    }
+                    if(res.data.data.paper.simulate_time<3600){
+
+                    }else{
+
+                    }
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 计算倒计时
+        changeTime(num){
+            clearInterval(timeKs);
+           let min,sec;
+           let timeKs=setInterval(()=>{
+               if(num>0){
+                   num--
+                   localStorage.setItem('queKstime',num);
+                   min=Math.floor(num/60);
+                   sec=num%60>=10?num%60:`0${num%60}`;
+                   this.ksTime=`${min}:${sec}`;
+                   this.$emit('changeSec',num);
+               }else{
+
+               }
+           },1000)
+           this.$emit('changetimeKs',timeKs);
         }
     }
 }

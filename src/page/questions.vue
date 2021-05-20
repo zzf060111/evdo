@@ -1,5 +1,6 @@
 <template>
     <div class="questions" :style="`height:${screenHeight-60}px`">
+        <img src="../../static/image/fslist/back.png" alt="" class="jumpBack" @click="jumpBack">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
@@ -12,7 +13,7 @@
             <div class="questionsBox">
                 <questionslx v-if="arrTxt[arrTxt.length-1]=='顺序练习'" :idObj="idObj"></questionslx>
                 <questionsSjlx v-else-if="arrTxt[arrTxt.length-1]=='随机练习'" :idObj="idObj"></questionsSjlx>
-                <questionsks v-else-if="arrTxt[arrTxt.length-1]=='模拟考试'"></questionsks>
+                <questionsks v-else-if="arrTxt[arrTxt.length-1]=='模拟考试'" :idObj="idObj" @changetimeKs="changetimeKs" @changeSec="changeSec"></questionsks>
                 <questionssc v-else-if="arrTxt[arrTxt.length-1]=='我的收藏'"></questionssc>
                 <questionsct v-else-if="arrTxt[arrTxt.length-1]=='我的错题'"></questionsct>
             </div>
@@ -29,7 +30,9 @@ export default {
             topIcon:'../../static/image/top/logo2@2x.png',
             activeIndex:'4',
             arrTxt:[],
-            idObj:{}
+            idObj:{},
+            timeKs:'',
+            timeSec:''
         }
     },
     store,
@@ -48,7 +51,19 @@ export default {
         this.windowChange()
     },
     methods:{
-        ...mapMutations(["windowChange"])
+        ...mapMutations(["windowChange"]),
+        // 返回上一页
+        jumpBack(){
+            this.$router.go(-1);
+        },
+        // 改变
+        changetimeKs(str){
+            this.timeKs=str;
+        },
+        // 考试时间
+        changeSec(str){
+            this.timeSec=str;
+        }
     },
     components:{
         topnav,
@@ -60,13 +75,37 @@ export default {
     },
     computed:mapState(["opsx","ops","screenHeight"]),
     beforeRouteLeave(to, form, next) {
-        next();
-        localStorage.removeItem('arrTxt');
-        localStorage.removeItem('idObj');
-        if(to.name!="Exercise"){
-            localStorage.removeItem('exetwoIndex');
-            localStorage.removeItem('exeleftIndex');
+        if(this.arrTxt[this.arrTxt.length-1]=='模拟考试'){
+            this.$alert('确定离开？','提示',{
+                confirmButtonText:'确 定',
+                center:true,
+                customClass:'errorAlert',
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        next();
+                        clearInterval(this.timeKs);
+                        localStorage.removeItem('arrTxt');
+                        localStorage.removeItem('idObj');
+                        localStorage.removeItem('queKstime');
+                        if(to.name!="Exercise"){
+                            localStorage.removeItem('exetwoIndex');
+                            localStorage.removeItem('exeleftIndex');
+                        }
+                    }else{
+                        this.$router.go(1);
+                    }
+                }
+            })
+        }else{
+            next();
+            localStorage.removeItem('arrTxt');
+            localStorage.removeItem('idObj');
+            if(to.name!="Exercise"){
+                localStorage.removeItem('exetwoIndex');
+                localStorage.removeItem('exeleftIndex');
+            }
         }
+        
     },
 }
 </script>
@@ -84,6 +123,15 @@ export default {
     .questions{
         padding-top: 50px;
         box-sizing: border-box;
+        position: relative;
+    }
+    .questions .jumpBack{
+        width: 50px;
+        height: 55px;
+        position: absolute;
+        top: 60px;
+        left: 20px;
+        z-index: 1;
     }
     .twoNav{
         width: 100%;
