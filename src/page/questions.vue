@@ -1,6 +1,6 @@
 <template>
     <div class="questions" :style="`height:${screenHeight-60}px`">
-        <img src="../../static/image/fslist/back.png" alt="" class="jumpBack" @click="jumpBack">
+        <img src="../../static/image/question/back.png" alt="" class="jumpBack" @click="jumpBack">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
@@ -13,7 +13,7 @@
             <div class="questionsBox">
                 <questionslx v-if="arrTxt[arrTxt.length-1]=='顺序练习'" :idObj="idObj"></questionslx>
                 <questionsSjlx v-else-if="arrTxt[arrTxt.length-1]=='随机练习'" :idObj="idObj"></questionsSjlx>
-                <questionsks v-else-if="arrTxt[arrTxt.length-1]=='模拟考试'" :idObj="idObj" @changetimeKs="changetimeKs" @changeSec="changeSec"></questionsks>
+                <questionsks v-else-if="arrTxt[arrTxt.length-1]=='模拟考试'" :idObj="idObj" @changetimeKs="changetimeKs" @baocunId="baocunId"></questionsks>
                 <questionssc v-else-if="arrTxt[arrTxt.length-1]=='我的收藏'"></questionssc>
                 <questionsct v-else-if="arrTxt[arrTxt.length-1]=='我的错题'"></questionsct>
             </div>
@@ -24,6 +24,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
+import {paperLeave} from '../services/api/exercise'
 export default {
     data(){
         return{
@@ -32,7 +33,7 @@ export default {
             arrTxt:[],
             idObj:{},
             timeKs:'',
-            timeSec:''
+            paperId:0
         }
     },
     store,
@@ -60,9 +61,9 @@ export default {
         changetimeKs(str){
             this.timeKs=str;
         },
-        // 考试时间
-        changeSec(str){
-            this.timeSec=str;
+        // 保存考试卷id
+        baocunId(id){
+            this.paperId=id;
         }
     },
     components:{
@@ -75,22 +76,36 @@ export default {
     },
     computed:mapState(["opsx","ops","screenHeight"]),
     beforeRouteLeave(to, form, next) {
-        if(this.arrTxt[this.arrTxt.length-1]=='模拟考试'){
+        let arrTxt=JSON.parse(localStorage.getItem('arrTxt'));
+        if(arrTxt[this.arrTxt.length-1]=='模拟考试'){
             this.$alert('确定离开？','提示',{
                 confirmButtonText:'确 定',
                 center:true,
                 customClass:'errorAlert',
                 callback:(action)=>{
                     if(action=='confirm'){
-                        next();
                         clearInterval(this.timeKs);
-                        localStorage.removeItem('arrTxt');
-                        localStorage.removeItem('idObj');
-                        localStorage.removeItem('queKstime');
-                        if(to.name!="Exercise"){
-                            localStorage.removeItem('exetwoIndex');
-                            localStorage.removeItem('exeleftIndex');
-                        }
+                        let data={};
+                        data['paper_id']=this.paperId;
+                        data['simulate_time']=localStorage.getItem('queKstime');
+                        paperLeave(data).then((res)=>{
+                            if(res.data.code==0){
+                                next();
+                                localStorage.removeItem('arrTxt');
+                                localStorage.removeItem('idObj');
+                                localStorage.removeItem('queKstime');
+                                localStorage.removeItem('stopVisible');
+                                if(to.name!="Exercise"){
+                                    localStorage.removeItem('exetwoIndex');
+                                    localStorage.removeItem('exeleftIndex');
+                                }
+                            }else if(res.data.code==-200){
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                                this.$router.push('/');
+                            }else{
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                            }
+                        })
                     }else{
                         this.$router.go(1);
                     }
@@ -100,6 +115,9 @@ export default {
             next();
             localStorage.removeItem('arrTxt');
             localStorage.removeItem('idObj');
+            localStorage.removeItem('queKstime');
+            localStorage.removeItem('stopVisible');
+            localStorage.removeItem(`queindexks${this.idObj.id}`);
             if(to.name!="Exercise"){
                 localStorage.removeItem('exetwoIndex');
                 localStorage.removeItem('exeleftIndex');
@@ -126,11 +144,11 @@ export default {
         position: relative;
     }
     .questions .jumpBack{
-        width: 50px;
-        height: 55px;
+        width: 40px;
+        height: 40px;
         position: absolute;
-        top: 60px;
-        left: 20px;
+        top: 70px;
+        left: 30px;
         z-index: 1;
     }
     .twoNav{

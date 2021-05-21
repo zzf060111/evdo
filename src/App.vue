@@ -13,6 +13,8 @@ export default {
       _gap_time:0
     }
   },
+  created(){
+  },
   mounted(){
     window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
     window.addEventListener('unload', e => this.unloadHandler(e))

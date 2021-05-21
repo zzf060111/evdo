@@ -226,8 +226,8 @@ export default {
         },
         // 重新生成试卷
         clearTjl(){
-            this.$alert('确定清楚当前做题记录？','提示',{
-                confirmButtonText:'确 定',
+            this.$alert('清除记录，重新开始练习！','提示',{
+                confirmButtonText:'清除记录',
                 center:true,
                 customClass:'errorAlert',
                 callback:(action)=>{

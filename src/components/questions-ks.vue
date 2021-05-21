@@ -1,17 +1,17 @@
 <template>
-    <div class="questions-lx questionsItem">
+    <div class="questions-lx questionsItem" v-if="queArr.length>0">
         <div class="topBox">
             <div class="quTitle">
                 <div class="left">
-                    <p>单选</p>
-                    <span>1. 可屈髋关节和膝关节的肌是？</span>
+                    <p>{{queArr[indexd].question.type==1?'判断':'单选'}}</p>
+                    <span>{{`${(indexd+1)}. ${queArr[indexd].question.title}`}}</span>
                 </div>
             </div>
-            <div class="quSelBox">
+            <div class="quSelBox" v-if="selArr.length>0">
                 <div class="quSelItem" v-for="(item,index) of selArr" :key="index">
-                    <div class="icon" v-show="item.isSel==0" @click="selAnswer(index)"></div>
-                    <img src="../../static/image/question/icon_xz.png" alt=""  v-show="item.isSel==1" @click="clearAnswer(index)">
-                    <p>{{zmArr[index]+'.'+item.txt}}</p>
+                    <div class="icon" v-show="item.isSel==0&&item.txt" @click="selAnswer(index,item.id)"></div>
+                    <img src="../../static/image/question/icon_xz.png" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
+                    <p v-show="item.txt">{{zmArr[index]}}.{{item.txt}}</p>
                 </div>
             </div>
             <!-- <div class="quImg">
@@ -19,14 +19,14 @@
             </div> -->
             <div class="quBottom">
                 <div class="left">
-                    <img src="../../static/image/question/icon_djs.png" alt="">
+                    <img :src="stopVisible?'../../static/image/question/icon_djs2.png':'../../static/image/question/icon_djs.png'" alt="" @click="pauseTime">
                     <p>倒计时：{{ksTime}}</p>
-                    <p>提示：单选题，请选择你认为正确的答案</p>
+                    <p>提示：{{queArr[indexd].question.type==1?'提示：判断题，请判断对错':'单选题，请选择你认为正确的答案'}}</p>
                 </div>
                 <div class="right">
-                    <p>上一题</p>
-                    <p>下一题</p>
-                    <p>交卷</p>
+                    <p @click="upQuestion">上一题</p>
+                    <p @click="downQuestion">下一题</p>
+                    <p @click="handedIn">交卷</p>
                 </div>
             </div>
         </div>
@@ -45,10 +45,10 @@
                 </div> -->
                 <div class="left">
                     <div>
-                        <img src="../../static/image/question/icon_xz.png" alt="">已答：{{}}题
+                        <img src="../../static/image/question/icon_xz.png" alt="">已答：{{yesAnswer}}题
                     </div>
                     <div>
-                        <img src="../../static/image/question/round.png" alt="">未答：{{}}题
+                        <img src="../../static/image/question/round.png" alt="">未答：{{noAnswer}}题
                     </div>
                 </div>
                 <!-- <div class="right">
@@ -56,14 +56,14 @@
                 </div> -->
             </div>
             <div class="quSolt">
-                <div class="itemQu" v-for="(item,index) of 100" :key="index">{{index+1}}</div>
+                <div :class="indexd==index?'itemQu ishere':item.is_answer==0?'itemQu':'itemQu isAnswer'" v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{index+1}}</div>
             </div>
             <!-- <div class="pageBox">
                 <p>上一页</p>
                 <p>下一页</p>
             </div> -->
         </div>
-        <!-- 题目讲解 -->
+        <!-- 打卡 -->
         <img src="../../static/image/question/icon_dk.png" alt="" class="dkShow" @click="trueDk">
         <transition name="slideRight">
         <div class="dkBox" v-show="isDk">
@@ -99,21 +99,54 @@
             </div>
         </div>
         </transition>
+        <!-- 暂停、提醒框 -->
+        <el-dialog title="" :visible.sync="stopVisible" :append-to-body="true" :close-on-click-modal="false" :show-close="false" center custom-class="stop" top="30vh">
+			<div class="textCount">
+                <p>当前做题进度{{yesAnswer}}/{{yesAnswer+noAnswer}}题</p>
+                <div>
+                    <img src="../../static/image/question/icon_djstime.png" alt="">倒计时{{ksTime}}
+                </div>
+            </div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="abandonks">放弃本次考试</el-button>
+                <el-button type="primary" @click="continueks">继续答题</el-button>
+			</div>
+		</el-dialog>
+        <!-- 提示交卷 -->
+        <el-dialog title="" :visible.sync="ishandeVisible" :append-to-body="true" :close-on-click-modal="false" :show-close="false" center custom-class="stop" top="30vh">
+			<div class="textCount">
+                <div>
+                    <img src="../../static/image/question/icon_djstime.png" alt="">剩余时间{{ksTime}}
+                </div>
+                <p> 已答题数：{{yesAnswer}} | 未答题数{{noAnswer}}</p>
+            </div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="noHande">暂不交卷</el-button>
+                <el-button type="primary" @click="yesHande">现在交卷</el-button>
+			</div>
+		</el-dialog>
+        <!-- 交卷完成提示 -->
+        <el-dialog title="" :visible.sync="handedVisible" :append-to-body="true" :close-on-click-modal="false" :show-close="false" center custom-class="stop handed" top="30vh">
+			<div class="textCount">
+                <h4>成绩优秀</h4>
+                <h2>{{score}}分</h2>
+                <p> 错题：{{errorCount}} | 答题数：{{yesAnswer}} | 未答题数：{{noAnswer}}</p>
+            </div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="jumpGetout">离开</el-button>
+                <el-button type="primary" @click="seeErrorque">查看错题</el-button>
+			</div>
+		</el-dialog>
     </div>
 </template>
 <script>
 import store from '../vuex/store'
 import {mapMutations} from 'vuex'
-import {question,answer,signIn} from '../services/api/exercise'
+import {question,answer,signIn,paperReset,paperSubmit,getPaperQuestion} from '../services/api/exercise'
 export default {
     data(){
         return{
-            selArr:[
-                {id:"1",txt:'髂腰肌',isSel:0},
-                {id:"2",txt:'髂腰肌',isSel:0},
-                {id:"3",txt:'髂腰肌',isSel:0},
-                {id:"4",txt:'髂腰肌',isSel:0}
-            ],
+            selArr:[],
             zmArr:['A','B','C','D','E','F','G','H','I','J','K'],
             isDown:false,
             isDk:false,
@@ -121,7 +154,16 @@ export default {
             queArr:[],
             indexd:0,
             page:1,
-            ksTime:''
+            ksTime:'',
+            yesAnswer:0,
+            noAnswer:0,
+            stopVisible:false,
+            ishandeVisible:false,
+            handedVisible:false,
+            timeInterval:'',
+            paperId:0,
+            score:0,
+            errorCount:0,
         }
     },
     store,
@@ -147,8 +189,8 @@ export default {
     methods:{
         ...mapMutations(["alertTxt"]),
         // 选择答案
-        selAnswer(index){
-            let str="判断";
+        selAnswer(index,id){
+            let str=this.queArr[this.indexd].question.type==1?"判断":'单选';
             let arr=this.selArr;
             if(str=="单选"||str=="判断"){
                 for(let i=0;i<arr.length;i++){
@@ -158,6 +200,11 @@ export default {
                         arr[i].isSel=0
                     }
                 }
+                let data={};
+                data['question_id']=this.queArr[this.indexd].question_id;
+                data['answer']=id;
+                data['paper_id']=this.queArr[this.indexd].paper_id;
+                this.clickDt(data);
             }else if(str=="多选"){
                for(let i=0;i<arr.length;i++){
                     if(index==i){
@@ -181,22 +228,228 @@ export default {
         trueDk(){
             this.isDk=true;
         },
+        // 上一题
+        upQuestion(){
+            if(this.indexd==0){
+                this.alertTxt({msg:'已到第一题',type:'warning'});
+            }else{
+                this.indexd--;
+                let obj=this.queArr[this.indexd].question.option;
+                let arr=[];
+                for(let i in obj){
+                    let newObj={};
+                    newObj['id']=i;
+                    newObj['txt']=obj[i];
+                    if(this.queArr[this.indexd].answer==i){
+                        newObj['isSel']=1;
+                    }else{
+                        newObj['isSel']=0;
+                    }
+                    arr.push(newObj);
+                }
+                this.selArr=arr;
+                localStorage.setItem(`queindexks${this.idObj.id}`,this.indexd);
+            }
+        },
+        // 下一题
+        downQuestion(){
+            if(this.indexd==(this.queArr.length-1)){
+                this.alertTxt({msg:'已到当前页最后一题',type:'warning'});
+            }else{
+                this.indexd++;
+                let obj=this.queArr[this.indexd].question.option;
+                let arr=[];
+                for(let i in obj){
+                    let newObj={};
+                    newObj['id']=i;
+                    newObj['txt']=obj[i];
+                    if(this.queArr[this.indexd].answer==i){
+                        newObj['isSel']=1;
+                    }else{
+                        newObj['isSel']=0;
+                    }
+                    arr.push(newObj);
+                }
+                this.selArr=arr;
+                localStorage.setItem(`queindexks${this.idObj.id}`,this.indexd);
+            }
+        },
+        // 跳转题目
+        jumpQuestion(num){
+            this.indexd=num;
+            let obj=this.queArr[this.indexd].question.option;
+            let arr=[];
+            for(let i in obj){
+                let newObj={};
+                newObj['id']=i;
+                newObj['txt']=obj[i];
+                if(this.queArr[this.indexd].answer==i){
+                    newObj['isSel']=1;
+                }else{
+                    newObj['isSel']=0;
+                }
+                arr.push(newObj);
+            }
+            this.selArr=arr;
+            localStorage.setItem(`queindexks${this.idObj.id}`,this.indexd);
+        },
+        // 暂停考试
+        pauseTime(){
+            if(this.stopVisible){
+                this.stopVisible=false;
+            }else{
+                this.stopVisible=true;
+                localStorage.setItem('stopVisible',1);
+                clearInterval(this.timeInterval);
+            }
+        },
+        // 放弃考试
+        abandonks(){
+            let data={};
+            data['paper_id']=this.paperId;
+            data['page']=this.page;
+            data['limit']=100
+            paperReset(data).then((res)=>{
+                if(res.data.code==0){
+                    this.stopVisible=false;
+                    localStorage.removeItem('queKstime');
+                    localStorage.removeItem(`queindexks${this.idObj.id}`);
+                    this.getQuestions(this.data); 
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 继续考试
+        continueks(){
+            localStorage.setItem('stopVisible',0);
+            this.stopVisible=false;
+            this.changeTime(parseInt(localStorage.getItem('queKstime')));
+        },
+        // 提交试卷
+        handedIn(){
+            this.ishandeVisible=true;
+        },
+        // 暂不交卷
+        noHande(){
+            this.ishandeVisible=false;
+        },
+        // 交卷
+        yesHande(){
+            let data={};
+            data['paper_id']=this.paperId;
+            paperSubmit(data).then((res)=>{
+                if(res.data.code==0){
+                    this.handedVisible=true;
+                    clearInterval(this.timeInterval);
+                    this.noAnswer=res.data.data.paper_unanswered_count;
+                    this.yesAnswer=res.data.data.paper_answered_count;
+                    this.score=res.data.data.score;
+                    this.errorCount=res.data.data.paper_error_count;
+                    let arrTxt=JSON.parse(localStorage.getItem('arrTxt'));
+                    arrTxt[arrTxt.length-1]='提交考试';
+                    localStorage.setItem('arrTxt',JSON.stringify(arrTxt));
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 离开考试
+        jumpGetout(){
+            this.$router.go(-1);
+        },
+        // 查看错题
+        seeErrorque(){
+            
+        },
         // 获取考试题库
         getQuestions(data){
             this.data=data;
             question(data).then((res)=>{
                 if(res.data.code==0){
                     this.queArr=res.data.data.questions.data;
+                    this.yesAnswer=res.data.data.paper.paper_answered_count;
+                    this.noAnswer=parseInt(res.data.data.paper.paper_answer_count)-parseInt(res.data.data.paper.paper_answered_count);
+                    this.paperId=res.data.data.questions.data[0].paper_id;
+                    this.$emit('baocunId',this.paperId);
                     if(localStorage.getItem(`queindexks${this.idObj.id}`)){
                         this.indexd=parseInt(localStorage.getItem(`queindexks${this.idObj.id}`));
                     }else{
                         this.indexd=0;
                     }
-                    if(res.data.data.paper.simulate_time<3600){
-
-                    }else{
-
+                    let obj=this.queArr[this.indexd].question.option;
+                    let arr=[];
+                    for(let i in obj){
+                        let newObj={};
+                        newObj['id']=i;
+                        newObj['txt']=obj[i];
+                        if(this.queArr[this.indexd].answer==i){
+                            newObj['isSel']=1;
+                        }else{
+                            newObj['isSel']=0;
+                        }
+                        arr.push(newObj);
                     }
+                    this.selArr=arr;
+                    if(localStorage.getItem('queKstime')){
+                        if(!localStorage.getItem('stopVisible')||localStorage.getItem('stopVisible')==0){
+                            this.changeTime(parseInt(localStorage.getItem('queKstime')));
+                        }else if(localStorage.getItem('stopVisible')==1){
+                            this.stopVisible=true;
+                            let time=parseInt(localStorage.getItem('queKstime'));
+                            let min,sec;
+                            min=Math.floor(time/60);
+                            sec=time%60>=10?time%60:`0${time%60}`;
+                            this.ksTime=`${min}:${sec}`;
+                        }
+                    }else{
+                        let time=res.data.data.paper.simulate_time;
+                        localStorage.setItem('queKstime',time);
+                        let min,sec;
+                        min=Math.floor(time/60);
+                        sec=time%60>=10?time%60:`0${time%60}`;
+                        this.ksTime=`${min}:${sec}`;
+                        if(time<3600){
+                            this.stopVisible=true;
+                            localStorage.setItem('stopVisible',1);
+                        }else{
+                            this.changeTime(time);
+                            localStorage.setItem('stopVisible',0);
+                        }
+                    }
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 获取错题详情
+        getPaperQuestion(data){
+            this.data=data;
+            getPaperQuestion().then((res)=>{
+                if(res.data.code==0){
+
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 答题
+        clickDt(data){
+            answer(data).then((res)=>{
+                if(res.data.code==0){
+                    this.getQuestions(this.data);
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     this.$router.push('/');
@@ -207,7 +460,8 @@ export default {
         },
         // 计算倒计时
         changeTime(num){
-            clearInterval(timeKs);
+            localStorage.removeItem('queKstime');
+            clearInterval(this.timeInterval);
            let min,sec;
            let timeKs=setInterval(()=>{
                if(num>0){
@@ -216,16 +470,53 @@ export default {
                    min=Math.floor(num/60);
                    sec=num%60>=10?num%60:`0${num%60}`;
                    this.ksTime=`${min}:${sec}`;
-                   this.$emit('changeSec',num);
                }else{
 
                }
            },1000)
            this.$emit('changetimeKs',timeKs);
+           this.timeInterval=timeKs;
         }
     }
 }
 </script>
+<style>
+    .stop .el-dialog__header{
+        border-bottom: none;
+    }
+    .stop.el-dialog{
+        width: 360px;
+        height: 206px;
+    }
+    .handed.stop.el-dialog{
+        width: 400px !important;
+        height: 256px !important;
+    }
+    .handed.stop.el-dialog h4{
+        color: #6495ED;
+    }
+    .handed.stop.el-dialog h2{
+        font-size: 36px;
+        color: #6495ED;
+    }
+    .stop.el-dialog button{
+        width: 140px;
+        height: 44px;
+    }
+    .stop.el-dialog .textCount{
+        text-align: center;
+    }
+    .stop.el-dialog .textCount div{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .stop.el-dialog .textCount div img{
+        width: 25px;
+        height: 25px;
+        margin-right: 5px;
+    }
+</style>
 <style scoped>
     .quBottom .left img{
         width: 30px;
@@ -237,5 +528,13 @@ export default {
     .quBottom .right p:last-child{
         margin-left: 50px;
         background-color: #EB4847  !important;
+    }
+    .quSolt .itemQu.ishere{
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+    }
+    .quSolt .itemQu.isAnswer{
+        background-color: #6495ED;
+        border: 1px solid #6495ED;
+        color: #fff !important;
     }
 </style>

@@ -20,6 +20,18 @@ export function favorite(params){
 export function paperReset(params){
     return http.get(`v1/answer/paperReset`,params)
 }
+// 交卷
+export function paperSubmit(params){
+    return http.get(`/v1/answer/paperSubmit`,params)
+}
+// 查看错题详情
+export function getPaperQuestion(params){
+    return http.get(`v1/answer/getPaperQuestion`,params)
+}
+// 离开考试
+export function paperLeave(params){
+    return http.get(`/v1/answer/paperLeave`,params)
+}
 // 答题签到
 export function signIn(params){
     return http.get(`v1/answer/signIn`,params)
