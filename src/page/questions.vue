@@ -13,7 +13,7 @@
             <div class="questionsBox">
                 <questionslx v-if="arrTxt[arrTxt.length-1]=='顺序练习'" :idObj="idObj"></questionslx>
                 <questionsSjlx v-else-if="arrTxt[arrTxt.length-1]=='随机练习'" :idObj="idObj"></questionsSjlx>
-                <questionsks v-else-if="arrTxt[arrTxt.length-1]=='模拟考试'" :idObj="idObj" @changetimeKs="changetimeKs" @baocunId="baocunId"></questionsks>
+                <questionsks v-else-if="arrTxt[arrTxt.length-1]=='模拟考试'||arrTxt[arrTxt.length-1]=='模拟考试(错题)'||arrTxt[arrTxt.length-1]=='提交考试'" :idObj="idObj" @changetimeKs="changetimeKs" @baocunId="baocunId" @changeArrTxt="changeArrTxt"></questionsks>
                 <questionssc v-else-if="arrTxt[arrTxt.length-1]=='我的收藏'"></questionssc>
                 <questionsct v-else-if="arrTxt[arrTxt.length-1]=='我的错题'"></questionsct>
             </div>
@@ -64,6 +64,10 @@ export default {
         // 保存考试卷id
         baocunId(id){
             this.paperId=id;
+        },
+        // 改变标题
+        changeArrTxt(arr){
+            this.arrTxt=arr;
         }
     },
     components:{
@@ -95,6 +99,7 @@ export default {
                                 localStorage.removeItem('idObj');
                                 localStorage.removeItem('queKstime');
                                 localStorage.removeItem('stopVisible');
+                                localStorage.removeItem('questionType');
                                 if(to.name!="Exercise"){
                                     localStorage.removeItem('exetwoIndex');
                                     localStorage.removeItem('exeleftIndex');
@@ -118,6 +123,8 @@ export default {
             localStorage.removeItem('queKstime');
             localStorage.removeItem('stopVisible');
             localStorage.removeItem(`queindexks${this.idObj.id}`);
+            localStorage.removeItem('questionType');
+            localStorage.removeItem('errorPaperId');
             if(to.name!="Exercise"){
                 localStorage.removeItem('exetwoIndex');
                 localStorage.removeItem('exeleftIndex');

@@ -18,7 +18,7 @@
                 <img src="../../static/image/question/0b9d68bbb683fa45920f795485e4524a.png" alt="">
             </div> -->
             <div class="quBottom">
-                <div class="left">
+                <div class="left" v-show="questionType==0">
                     <img :src="stopVisible?'../../static/image/question/icon_djs2.png':'../../static/image/question/icon_djs.png'" alt="" @click="pauseTime">
                     <p>倒计时：{{ksTime}}</p>
                     <p>提示：{{queArr[indexd].question.type==1?'提示：判断题，请判断对错':'单选题，请选择你认为正确的答案'}}</p>
@@ -26,7 +26,7 @@
                 <div class="right">
                     <p @click="upQuestion">上一题</p>
                     <p @click="downQuestion">下一题</p>
-                    <p @click="handedIn">交卷</p>
+                    <p @click="handedIn" v-show="questionType==0">交卷</p>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
                         <img src="../../static/image/question/icon_error.png" alt="">错误：1题
                     </div>
                 </div> -->
-                <div class="left">
+                <div class="left" v-show="questionType==0">
                     <div>
                         <img src="../../static/image/question/icon_xz.png" alt="">已答：{{yesAnswer}}题
                     </div>
@@ -51,17 +51,45 @@
                         <img src="../../static/image/question/round.png" alt="">未答：{{noAnswer}}题
                     </div>
                 </div>
+                <div class="left" v-show="questionType==1">
+                    <div>
+                        <img src="../../static/image/question/icon_yes.png" alt="">正确：{{yesCount}}题
+                    </div>
+                    <div>
+                        <img src="../../static/image/question/icon_error.png" alt="">错误：{{errorCount+noAnswer}}题
+                    </div>
+                </div>
                 <!-- <div class="right">
                     清除当前做题记录
                 </div> -->
             </div>
-            <div class="quSolt">
+            <div class="quSolt" v-show="questionType==0">
                 <div :class="indexd==index?'itemQu ishere':item.is_answer==0?'itemQu':'itemQu isAnswer'" v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{index+1}}</div>
+            </div>
+            <div class="quSolt" v-show="questionType==1">
+                <div :class="item.answer_status==0?indexd==index?'itemQu isNo ishere':'itemQu isNo':indexd==index?'itemQu isYes ishere':'itemQu isYes'" v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{index+1}}</div>
             </div>
             <!-- <div class="pageBox">
                 <p>上一页</p>
                 <p>下一页</p>
             </div> -->
+        </div>
+        <!-- 题目讲解 -->
+        <div class="quAnalysis" v-show="questionType==1">
+            <div class="answer">
+                <p>答案 <span>{{zmArr[parseInt(queArr[indexd].question.true_option)-1]}}</span></p>
+                <p>您选择 <span>{{queArr[indexd].answer?zmArr[parseInt(queArr[indexd].answer-1)]:'未答'}}</span></p>
+            </div>
+            <!-- <div class="videoBox analysisBox">
+                <div class="title">视频讲解</div>
+                <video src="" controls poster="../../static/image/question/13b6efacd7ad6b0760a172cb77ba927e.png"></video>
+            </div> -->
+            <div class="txtBox analysisBox">
+                <div class="title">题目讲解</div>
+                <div class="text">
+                    {{queArr[indexd].question.analysis}}
+                </div>
+            </div>
         </div>
         <!-- 打卡 -->
         <img src="../../static/image/question/icon_dk.png" alt="" class="dkShow" @click="trueDk">
@@ -79,8 +107,8 @@
                         <p>已经坚持自测</p>
                     </div>
                     <div>
-                        <div><h2>100</h2>天</div>
-                        <p>2021年5月7日</p>
+                        <div><h2>{{signCount}}</h2>天</div>
+                        <p>{{signDate}}</p>
                     </div>
                 </div>
             </div>
@@ -128,7 +156,9 @@
         <!-- 交卷完成提示 -->
         <el-dialog title="" :visible.sync="handedVisible" :append-to-body="true" :close-on-click-modal="false" :show-close="false" center custom-class="stop handed" top="30vh">
 			<div class="textCount">
-                <h4>成绩优秀</h4>
+                <h4 v-show="score>=80">成绩优秀</h4>
+                <h4 v-show="score>=60&&score<=70">成绩合格</h4>
+                <h4 v-show="score<60">成绩不合格</h4>
                 <h2>{{score}}分</h2>
                 <p> 错题：{{errorCount}} | 答题数：{{yesAnswer}} | 未答题数：{{noAnswer}}</p>
             </div>
@@ -164,6 +194,10 @@ export default {
             paperId:0,
             score:0,
             errorCount:0,
+            yesCount:0,
+            questionType:0,
+            signDate:'',
+            signCount:''
         }
     },
     store,
@@ -173,18 +207,26 @@ export default {
         }
 	},
     created(){
-        let data={};
-        data['category_id']=this.idObj.id;
-        data['level']=this.idObj.lev;
-        data['type']=this.idObj.type;
-        data['page']=this.page;
-        data['limit']=100;
-        this.getQuestions(data);
-        // if(localStorage.getItem('queKstime')){
-        //     this.changeTime(parseInt(localStorage.getItem('queKstime')))
-        // }else{
-        //     this.changeTime(3600);
-        // }
+        let arrTxt=JSON.parse(localStorage.getItem('arrTxt'));
+        if(arrTxt[arrTxt.length-1]=='提交考试'){
+            this.$router.go(-1);
+        }else{
+            if(!localStorage.getItem('questionType') || localStorage.getItem('questionType')==0){
+                let data={};
+                data['category_id']=this.idObj.id;
+                data['level']=this.idObj.lev;
+                data['type']=this.idObj.type;
+                data['page']=this.page;
+                data['limit']=100;
+                this.getQuestions(data);
+            }else if(localStorage.getItem('questionType')==1){
+                let data={};
+                data['paper_id']=localStorage.getItem('errorPaperId');
+                data['page']=this.page;
+                data['limit']=100;
+                this.getPaperQuestion(data);
+            }
+        }
     },
     methods:{
         ...mapMutations(["alertTxt"]),
@@ -226,7 +268,20 @@ export default {
         },
         // 确定打卡
         trueDk(){
-            this.isDk=true;
+             signIn().then((res)=>{
+                if(res.data.code==0){
+                    this.alertTxt({msg:res.data.msg,type:'success'});
+                    this.isDk=true;
+                    let obj=res.data.data;
+                    this.signCount=obj.signCount;
+                    this.signDate=obj.signDay.split('-')[0]+'年'+obj.signDay.split('-')[1]+'月'+obj.signDay.split('-')[2]+'日';
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
         },
         // 上一题
         upQuestion(){
@@ -340,6 +395,7 @@ export default {
         // 交卷
         yesHande(){
             let data={};
+            this.ishandeVisible=false;
             data['paper_id']=this.paperId;
             paperSubmit(data).then((res)=>{
                 if(res.data.code==0){
@@ -352,6 +408,10 @@ export default {
                     let arrTxt=JSON.parse(localStorage.getItem('arrTxt'));
                     arrTxt[arrTxt.length-1]='提交考试';
                     localStorage.setItem('arrTxt',JSON.stringify(arrTxt));
+                    localStorage.removeItem('queKstime');
+                    localStorage.removeItem('stopVisible');
+                    localStorage.removeItem(`queindexks${this.idObj.id}`);
+                    localStorage.removeItem('questionType');
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     this.$router.push('/');
@@ -366,17 +426,24 @@ export default {
         },
         // 查看错题
         seeErrorque(){
-            
+            let data={};
+            data['paper_id']=this.paperId;
+            data['page']=this.page;
+            data['limit']=100;
+            this.getPaperQuestion(data);
         },
         // 获取考试题库
         getQuestions(data){
             this.data=data;
+            this.questionType=0;
+            localStorage.setItem('questionType',0);
             question(data).then((res)=>{
                 if(res.data.code==0){
                     this.queArr=res.data.data.questions.data;
                     this.yesAnswer=res.data.data.paper.paper_answered_count;
                     this.noAnswer=parseInt(res.data.data.paper.paper_answer_count)-parseInt(res.data.data.paper.paper_answered_count);
                     this.paperId=res.data.data.questions.data[0].paper_id;
+                    this.errorCount=res.data.data.paper.paper_error_count+this.noAnswer;
                     this.$emit('baocunId',this.paperId);
                     if(localStorage.getItem(`queindexks${this.idObj.id}`)){
                         this.indexd=parseInt(localStorage.getItem(`queindexks${this.idObj.id}`));
@@ -434,9 +501,36 @@ export default {
         // 获取错题详情
         getPaperQuestion(data){
             this.data=data;
-            getPaperQuestion().then((res)=>{
+            this.questionType=1;
+            this.handedVisible=false;
+            localStorage.setItem('questionType',1);
+            getPaperQuestion(data).then((res)=>{
                 if(res.data.code==0){
-
+                    this.queArr=res.data.data.questions.data;
+                    this.indexd=0;
+                    this.paperId=res.data.data.questions.data[0].paper_id;
+                    localStorage.setItem('errorPaperId',res.data.data.questions.data[0].paper_id);
+                    localStorage.setItem(`queindexks${this.idObj.id}`,0);
+                    this.yesCount=res.data.data.paper.paper_right_count;
+                    this.errorCount=res.data.data.paper.paper_error_count;
+                    let obj=this.queArr[this.indexd].question.option;
+                    let arr=[];
+                    for(let i in obj){
+                        let newObj={};
+                        newObj['id']=i;
+                        newObj['txt']=obj[i];
+                        if(this.queArr[this.indexd].answer==i){
+                            newObj['isSel']=1;
+                        }else{
+                            newObj['isSel']=0;
+                        }
+                        arr.push(newObj);
+                    }
+                    this.selArr=arr;
+                    let arrTxt=JSON.parse(localStorage.getItem('arrTxt'));
+                    arrTxt[arrTxt.length-1]='模拟考试(错题)';
+                    this.$emit('changeArrTxt',arrTxt);
+                    localStorage.setItem('arrTxt',JSON.stringify(arrTxt));
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     this.$router.push('/');
@@ -535,6 +629,16 @@ export default {
     .quSolt .itemQu.isAnswer{
         background-color: #6495ED;
         border: 1px solid #6495ED;
+        color: #fff !important;
+    }
+    .quSolt .itemQu.isYes{
+        background-color: #34C758;
+        border: 1px solid #34C758;
+        color: #fff !important;
+    }
+    .quSolt .itemQu.isNo{
+        background-color: #EB4847;
+        border: 1px solid #EB4847;
         color: #fff !important;
     }
 </style>

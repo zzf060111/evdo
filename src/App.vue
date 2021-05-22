@@ -29,7 +29,7 @@ export default {
     },
     unloadHandler(e){
         this._gap_time=new Date().getTime()-this._beforeUnload_time;
-        console.log(this._gap_time)
+        // console.log(this._gap_time)
         // debugger
         //判断是窗口关闭还是刷新
         if(this._gap_time<=3){
