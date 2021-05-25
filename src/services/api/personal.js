@@ -67,3 +67,7 @@ export function favorites(params){
 export function delfavorites(params){
     return http.delete(`v1/account/favorites/del`,params)
 }
+// 获取官方问答列表
+export function askList(params){
+    return http.get(`v1/account/ask`,params)
+}

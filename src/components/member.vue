@@ -1,6 +1,7 @@
 <template>
     <div class="member" :style="`height:${screenHeight-60}px`" v-if="vipList.length>0">
-        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <div v-if="html" v-html="html" style="opacity:0"></div>
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;" v-else>
         <p class="title">会员套餐</p>
         <div class="pubBox">
             <div class="pubitem" v-for="(item,index) of vipList" :key="index">
@@ -21,7 +22,7 @@
             </p>
         </div>
         <div class="recordBox">
-            <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="showTable==1&&tableData1.length>0" @handle-scroll="handleScroll">
+            <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="valueShow&&showTable==1&&tableData1.length>0" @handle-scroll="handleScroll">
                 <el-table :data="tableData1" stripe style="width: 100%" :show-header=false  v-loading="loading" element-loading-text="加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.2)">
                     <el-table-column prop="name" label="名称" width="200" align='center' class-name="one"></el-table-column>
                     <el-table-column prop="date" label="日期" width="300" align='center'></el-table-column>
@@ -30,10 +31,10 @@
                     <el-table-column prop="type" label="订单状态" width="200" align='center' class-name="last"></el-table-column>
                 </el-table>
             </vue-scroll>
-            <div class="noHave" v-show="showTable==1&&tableData1.length==0">
+            <div class="noHave" v-show="valueShow&&showTable==1&&tableData1.length==0">
                 暂无购买记录，您可以点击上方会员套餐购买VIP
             </div>
-            <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="showTable==2&&tableData2.length>0">
+            <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="valueShow&&showTable==2&&tableData2.length>0">
                 <el-table :data="tableData2" stripe style="width: 100%" :show-header=false>
                     <el-table-column prop="name" label="名称" width="300" align='center' class-name="one"></el-table-column>
                     <el-table-column prop="date" label="日期" width="700" ></el-table-column>
@@ -41,7 +42,7 @@
                     <el-table-column prop="type" label="领取状态" width="200" align='center' class-name="last"></el-table-column>
                 </el-table>
             </vue-scroll>
-            <div class="noHave" v-show="showTable==2&&tableData2.length==0">
+            <div class="noHave" v-show="valueShow&&showTable==2&&tableData2.length==0">
                 暂无赠送记录
             </div>
         </div>
@@ -83,7 +84,7 @@
             </div>
 		</el-dialog>
         <!-- 微信支付二维码 -->
-        <el-dialog :visible.sync="wxerweima" :append-to-body="true" :close-on-click-modal="false" center custom-class="erweima" top="20vh">
+        <el-dialog :visible.sync="wxerweima" :append-to-body="true" :close-on-click-modal="false" center custom-class="erweima" top="20vh" width="300px">
             <div id="qrcode" ref="qrCodeUrl"></div>
         </el-dialog>
     </div>
@@ -113,7 +114,9 @@ export default {
             payValue:1,
             wxerweima:false,
             ewmImg:'',
-            orderTime:''
+            orderTime:'',
+            html:'',
+            valueShow:false
         }
     },
     store,
@@ -184,14 +187,26 @@ export default {
         },
         // 获取购买记录
         getVipOrderThis(){
+            this.valueShow=false;
             getVipOrder().then((res)=>{
                 if(res.data.code==0){
                     let arr=res.data.data.list;
                     if(arr.length>0){
-
+                        let newArr=[];
+                        for(let i=0;i<arr.length;i++){
+                            let obj={};
+                            obj['name']=arr[i].subject;
+                            obj['date']=this.getDate(arr[i].create_time);
+                            obj['payType']=arr[i].payment=='alipay'?'支付宝':'微信';
+                            obj['price']=arr[i].amount;
+                            obj['type']=arr[i].status==1?'购买成功':'购买失败';
+                            newArr.push(obj);
+                        }
+                        this.tableData1=newArr;
                     }else{
                         this.tableData1=arr;
                     }
+                    this.valueShow=true;
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     localStorage.removeItem('token');
@@ -204,6 +219,7 @@ export default {
         },
         // 获取赠送记录
         getVipGiveThis(){
+            this.valueShow=false;
             getVipGive().then((res)=>{
                 if(res.data.code==0){
                     let arr=res.data.data.list;
@@ -219,8 +235,9 @@ export default {
                         }
                         this.tableData2=newArr;
                     }else{
-                        this.tableData1=arr;
+                        this.tableData2=arr;
                     }
+                    this.valueShow=true;
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     localStorage.removeItem('token');
@@ -283,8 +300,22 @@ export default {
                     }else{
                         this.alertTxt({msg:res.data.msg,type:'error'});
                     }
-                }else{
-
+                }else if(data.payType=='alipay'){
+                    console.log(res);
+                    if(res.data){
+                        this.html=res.data;
+                        this.vipTost=false;
+                        this.$nextTick(() => {
+                            document.forms[0].submit()
+                        })
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        localStorage.removeItem('token');
+                        this.changeUser('');
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }
                 }
             })
         },
@@ -315,28 +346,38 @@ export default {
             data['order_sn']=id;
             this.orderTime=setInterval(()=>{
                 getPayorder(data).then((res)=>{
-
+                    if(res.data.code==0){
+                        if(res.data.data.status==1){
+                            this.alertTxt({msg:'支付成功',type:'success'});
+                            this.wxerweima=false;
+                            this.getVipOrderThis();
+                            clearInterval(this.orderTime);
+                        }else if(res.data.data.status!=0){
+                            this.wxerweima=false;
+                            clearInterval(this.orderTime);
+                        }
+                    }
                 })
             },1000)
         }  
     },
     destroyed(){
         localStorage.removeItem('showTable');
+        clearInterval(this.orderTime);
     },
     computed:mapState(["ops","opsx","screenHeight","arrUser"])
 }
 </script>
 <style>
     .erweima.el-dialog{
-        width: 300px;
-        height: 300px;
+        height: 30vh;
     }
     .erweima .el-dialog__body{
         padding: 0 !important;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 30px;
+        margin-top: 3vh;
     }
     .erweima .el-dialog__header{
         border-bottom: none;
@@ -500,7 +541,7 @@ export default {
     }
     .member .pubBox .pubitem .oldprice{
         color: #aaa;
-        font-size: 22px;
+        font-size: 20px;
         margin: 30px auto;
         width: 50px;
         position: relative;
@@ -510,7 +551,7 @@ export default {
         height: 2px;
         background-color: #aaa;
         position: absolute;
-        top:16px;
+        top:12px;
         left: 0;
         z-index: 1;
     }

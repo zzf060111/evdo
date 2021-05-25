@@ -32,7 +32,7 @@
                         <div class="imgTop">
                             <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
-                                <!-- <p>{{item.price}}</p> -->
+                                <p>{{(currentPage-1)*15+(index+1)}}</p>
                                 <img v-show="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                             </div>
                             <div class="iconDown">
@@ -55,7 +55,7 @@
                         <div class="imgTop">
                             <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
-                                <!-- <p>100</p> -->
+                                <p>{{(currentPage-1)*15+(index+1)}}</p>
                                 <img v-show="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                             </div>
                             <div class="iconDown">

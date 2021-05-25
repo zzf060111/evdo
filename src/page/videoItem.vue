@@ -36,7 +36,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
-import {videoDetail,addfavorites} from '../services/api/modelVideo'
+import {videoDetail,addfavorites,delfavorites} from '../services/api/modelVideo'
 export default {
     data(){
         return{
@@ -100,17 +100,37 @@ export default {
         },
         // 收藏
         addSc(){
-            let data={};
-            data['id']=this.videoObj.id;
-            data['table']='video';
-            addfavorites(data).then((res)=>{
-                if(res.data.code==0){
-                    this.alertTxt({msg:res.data.msg,type:'success'});
-                    this.videoObj.is_favorite=true;
-                }else{
-                    this.alertTxt({msg:res.data.msg,type:'warning'});
-                }
-            })
+            if(this.videoObj.is_favorite){
+                let data={};
+                data['ids']=this.videoObj.id;
+                data['type']='video';
+                delfavorites(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.alertTxt({msg:res.data.msg,type:'success'});
+                        this.videoObj.is_favorite=false;
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'warning'});
+                    }
+                })
+            }else{
+                let data={};
+                data['id']=this.videoObj.id;
+                data['table']='video';
+                addfavorites(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.alertTxt({msg:res.data.msg,type:'success'});
+                        this.videoObj.is_favorite=true;
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'warning'});
+                    }
+                })
+            }
         }
     },
     components:{

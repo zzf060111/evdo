@@ -24,3 +24,7 @@ export function videoDetail(params){
 export function addfavorites(params){
     return http.post('v1/account/favorites',params)
 }
+// 取消收藏
+export function delfavorites(params){
+    return http.delete('v1/account/favorites/del',params)
+}

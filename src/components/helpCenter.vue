@@ -62,27 +62,42 @@
                             <div class="time">
                                 <span>2021-04-27 14:32</span>
                                 <div>
-                                    <!-- <span>追问</span>
-                                    <span>已解决</span> -->
+                                    <span @click="isShowAsk">追问</span>
+                                    <span>结单</span>
                                 </div>
+                            </div>
+                            <transition name="fade">
+                                <div class="askBox" v-show="isAginAsk">
+                                    <textarea cols="30" rows="10" v-model="aginAskVal" placeholder="请输入追问内容"></textarea>
+                                    <p>确定</p>
+                                </div>
+                            </transition>
+                            <div class="aginAskBox">
+                                <span style="color:#EB4847">追问：</span>医维度主要有哪些内容？
+                                <p>2021-04-27 14:32</p>
+                            </div>
+                            <div class="aginAskBox">
+                                <span style="color:#34C758">回答：</span>医维度主要有哪些内容？
+                                <p>2021-04-27 14:32</p>
                             </div>
                         </el-collapse-item>
                     </el-collapse>
                     </vue-scroll>
                 </div>
             </div>
-            <div class="right">
+            <div class="right" v-if="gfList.length>0">
                 <p>常见问题解答</p>
                 <div class="questionsBox">
                     <vue-scroll :ops="ops" style="width:100%;height:100%;">
                     <el-collapse accordion>
-                        <el-collapse-item title="医维度主要有哪些内容？">
+                        <el-collapse-item :title="item.title" v-for="(item,index) of gfList" :key="index">
                             <img src="../../static/image/personal/touxiang1@2x.png" alt="">
                             <div>
-                                与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；
+                                {{item.reply[0].content}}
+                                <p style="text-align:right">{{item.reply[0].created_at}}</p>
                             </div>
                         </el-collapse-item>
-                        <el-collapse-item title="如何操作使用医维度？">
+                        <!-- <el-collapse-item title="如何操作使用医维度？">
                             <img src="../../static/image/personal/touxiang1@2x.png" alt="">
                             <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
                         </el-collapse-item>
@@ -97,7 +112,7 @@
                         <el-collapse-item title="医维度主要有哪些内容？">
                             <img src="../../static/image/personal/touxiang1@2x.png" alt="">
                             <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                        </el-collapse-item>
+                        </el-collapse-item> -->
                     </el-collapse>
                     </vue-scroll>
                 </div>
@@ -108,19 +123,48 @@
 </template>
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
+import {mapState,mapMutations} from 'vuex'
+import {askList} from '../services/api/personal'
 export default {
     data(){
         return{
-            myquestionsVal:''
+            myquestionsVal:'',
+            aginAskVal:'',
+            isAginAsk:false,
+            page:1,
+            gfList:[]
         }
     },
     store,
+    created(){
+        let data={};
+        data['page']=this.page;
+        this.getList(data);
+    },
     mounted(){
         this.windowChange();
     },
     methods:{
         ...mapMutations(["windowChange"]),
+        // 显示或隐藏追问
+        isShowAsk(){
+            this.isAginAsk=!this.isAginAsk;
+        },
+        // 获取问答列表
+        getList(data){
+            askList(data).then((res)=>{
+                if(res.data.code==0){
+                    this.gfList=res.data.data.official;
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    localStorage.removeItem('token');
+                    this.changeUser('');
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        }
     },
     computed:mapState(["ops","opsx","screenHeight"])
 }
@@ -131,6 +175,11 @@ export default {
         border:none;
         font-size: 16px;
         color: #666;
+        /* overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap; */
+        line-height: normal;
+        text-align: left;
     }
     .helpCenter .el-collapse-item__header .el-button{
         width: 50px;
@@ -187,8 +236,36 @@ export default {
         display: inline-block;
         color: #FFAA00;
     }
+    .helpCenter .el-collapse-item__content div.time>div span:hover{
+        cursor: pointer;
+    }
     .helpCenter .el-collapse-item__content div.time>div span:nth-child(1){
         margin-right: 30px;
+    }
+    .helpCenter .el-collapse-item__content div.askBox{
+        margin:10px 0 0 40px;
+        display: flex;
+        align-items: center;
+    }
+    .helpCenter .el-collapse-item__content div.askBox p{
+        width: 15%;
+        height: 50px;
+        background-color: #5CD7AD;
+        color: #fff !important;
+        text-align: center !important;
+        line-height: 50px;
+        border-radius: 5px;
+        margin-left: 10px;
+    }
+    .helpCenter .el-collapse-item__content div.askBox textarea{
+        width: 70% !important;
+        height: 100px !important;
+        padding: 10px !important;
+    }
+    .helpCenter .el-collapse-item__content div.aginAskBox{
+        margin:10px 0 0 40px;
+        line-height: 20px;
+        height: 45px;
     }
 </style>
 <style scoped>
