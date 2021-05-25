@@ -42,7 +42,7 @@
                     <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                         <img v-lazy="item.thumbnail">
                         <div class="iconTop">
-                            <!-- <p>100</p> -->
+                            <p>{{(currentPage-1)*15+(index+1)}}</p>
                             <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                         </div>
                         <div class="iconDown">
@@ -64,7 +64,7 @@
                     <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                         <img v-lazy="item.thumbnail">
                         <div class="iconTop">
-                            <!-- <p>100</p> -->
+                            <p>{{(currentPage-1)*15+(index+1)}}</p>
                             <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
                         </div>
                         <div class="iconDown">

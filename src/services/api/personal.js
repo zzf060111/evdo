@@ -51,6 +51,14 @@ export function getVipOrder(params){
 export function getVipGive(params){
     return http.get(`v1/vip/getVipGive`,params)
 }
+// 支付
+export function rechargeVip(params){
+    return http.post(`v1/pay/web/rechargeVip`,params)
+}
+// 监听订单状态
+export function getPayorder(params){
+    return http.get(`v1/pay/order`,params)
+}
 // 获取收藏列表
 export function favorites(params){
     return http.get(`v1/account/favorites`,params)

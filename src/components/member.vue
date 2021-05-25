@@ -10,7 +10,7 @@
                     ¥{{item.original_price}}
                     <p></p>
                 </div>
-                <div class="btn" @click="openPay(item.price,item.day)">{{arrUser.member_in?'续费':'开通'}}</div>
+                <div class="btn" @click="openPay(item.price,item.day,item.id)">{{arrUser.member_in?'续费':'开通'}}</div>
             </div>
         </div>
         <div class="vipTip" v-if="arrUser.is_enterprise">您当前已经是企业版会员，包含全部专业版权限，请确认是否需要购买或续费之后再操作。</div>
@@ -82,12 +82,18 @@
                 </div>
             </div>
 		</el-dialog>
+        <!-- 微信支付二维码 -->
+        <el-dialog :visible.sync="wxerweima" :append-to-body="true" :close-on-click-modal="false" center custom-class="erweima" top="20vh">
+            <div id="qrcode" ref="qrCodeUrl"></div>
+        </el-dialog>
     </div>
 </template>
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
-import {info,getVipInfo,getVipOrder,getVipGive} from '../services/api/personal'
+import {info,getVipInfo,getVipOrder,getVipGive,rechargeVip,getPayorder} from '../services/api/personal'
+import QRCode from 'qrcodejs2'
+import {Base64} from 'js-base64'
 export default {
     data(){
         return{
@@ -96,31 +102,18 @@ export default {
                 {id:2,txt:'赠送记录',isSel:false},
             ],
             showTable:0,
-            tableData1:[
-                // {
-                //     name:'学霸必选年卡',
-                //     date:'2021-03-24  10:12:56',
-                //     payType:'支付宝支付',
-                //     price:'18元',
-                //     type:'购买成功'
-                // },
-                // {
-                //     name:'学霸必选年卡',
-                //     date:'2021-03-24  10:12:56',
-                //     payType:'支付宝支付',
-                //     price:'18元',
-                //     type:'购买成功'
-                // }
-            ],
-            tableData2:[
-                
-            ],
+            tableData1:[],
+            tableData2:[],
             vipList:[],
             loading:false,
             vipTost:false,
             payPrice:'',
             payDay:'',
-            payValue:1
+            vipId:'',
+            payValue:1,
+            wxerweima:false,
+            ewmImg:'',
+            orderTime:''
         }
     },
     store,
@@ -257,10 +250,11 @@ export default {
             })
         },
         // 购买套餐
-        openPay(price,day){
+        openPay(price,day,id){
             this.vipTost=true;
             this.payPrice=price;
             this.payDay=day;
+            this.vipId=id;
         },
             // 选择支付方式
         selPayType(num){
@@ -269,8 +263,30 @@ export default {
             // 支付
         truePay(){
             let data={};
-            data['type']=this.payValue==1?'wxpay':'alipay';
-            data['price']=this.payPrice;
+            data['payType']=this.payValue==1?'wxpay':'alipay';
+            data['vipId']=this.vipId;
+            rechargeVip(data).then((res)=>{
+                if(data.payType=='wxpay'){
+                    if(res.data.code==0){
+                        this.vipTost=false;
+                        this.wxerweima=true;
+                        this.ewmImg=Base64.decode(res.data.data.qrcode_text);
+                        setTimeout(()=>{
+                            this.qrcode();
+                            this.getPayorder(res.data.data.order.order_sn);
+                        },500)
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        localStorage.removeItem('token');
+                        this.changeUser('');
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }
+                }else{
+
+                }
+            })
         },
         // 整理日期
         getDate(time){
@@ -282,7 +298,27 @@ export default {
             var minutes=date.getMinutes()>=10?date.getMinutes():`0${date.getMinutes()}`;
             var seconds=date.getSeconds()>=10?date.getSeconds():`0${date.getSeconds()}`;
             return year+'-'+month+'-'+day+' '+hours+':'+minutes+':'+seconds
-        }
+        },
+        // 生成二维码
+        qrcode () {
+            document.getElementById("qrcode").innerHTML = "";  
+            let qrcode = new QRCode(this.$refs.qrCodeUrl, {  
+                width: 180,  
+                height: 180, // 高度  
+                text: this.ewmImg // 二维码内容  
+            })  
+        },
+        // 监听订单状态
+        getPayorder(id){
+            clearInterval(this.orderTime);
+            let data={};
+            data['order_sn']=id;
+            this.orderTime=setInterval(()=>{
+                getPayorder(data).then((res)=>{
+
+                })
+            },1000)
+        }  
     },
     destroyed(){
         localStorage.removeItem('showTable');
@@ -291,6 +327,20 @@ export default {
 }
 </script>
 <style>
+    .erweima.el-dialog{
+        width: 300px;
+        height: 300px;
+    }
+    .erweima .el-dialog__body{
+        padding: 0 !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 30px;
+    }
+    .erweima .el-dialog__header{
+        border-bottom: none;
+    }
     .member .el-table td{
         border-bottom: none;
         font-size: 16px;
