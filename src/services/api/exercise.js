@@ -36,3 +36,11 @@ export function paperLeave(params){
 export function signIn(params){
     return http.get(`v1/answer/signIn`,params)
 }
+// 错题列表
+export function wrongQuestion(params){
+    return http.get(`v1/answer/wrongQuestion`,params)
+}
+// 收藏列表
+export function favoriteQuestion(params){
+    return http.get(`v1/answer/favoriteQuestion`,params)
+}

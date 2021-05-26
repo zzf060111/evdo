@@ -82,6 +82,7 @@
             </div>
         </div>
         <img src="../../static/image/question/icon_dk.png" alt="" class="dkShow" @click="trueDk">
+        <transition name="slideRight">
         <div class="dkBox" v-show="isDk">
             <div class="title">
                 <img src="../../static/image/question/icon_back.png" alt="" @click="isDk=false">
@@ -114,9 +115,13 @@
                 </div>
             </div>
         </div>
+        </transition>
     </div>
 </template>
 <script>
+import store from '../vuex/store'
+import {mapMutations} from 'vuex'
+import {wrongQuestion} from '../services/api/exercise'
 export default {
     data(){
         return{
@@ -129,10 +134,36 @@ export default {
             zmArr:['A','B','C','D','E','F','G','H','I','J','K'],
             isDown:false,
             isDk:false,
-            isAnalysis:false
+            isAnalysis:false,
+            data:{},
+            page:1
         }
     },
+    store,
+    props: {
+		idObj:{
+            type:Object
+        }
+	},
+    created(){
+        console.log(this.idObj);
+        // 判断错题题库初始加载
+        let data={};
+        if(localStorage.getItem(`quesDatact${this.idObj.id}`)){
+            data=JSON.parse(localStorage.getItem(`quesDatact${this.idObj.id}`));
+            this.page=data.page;
+        }else{
+            data['parent_id']=this.idObj.pid;
+            if(this.idObj.lev==2){
+                data['category_id']=this.idObj.id;
+            }
+            data['page']=this.page;
+            data['limit']=100;
+        }
+        this.geterrorQueList(data);
+    },
     methods:{
+        ...mapMutations(["alertTxt"]),
         // 选择答案
         selAnswer(index){
             let str="判断";
@@ -167,6 +198,14 @@ export default {
         // 确定打卡
         trueDk(){
             this.isDk=true;
+        },
+        // 获取错题列表
+        geterrorQueList(data){
+            this.data=data;
+            localStorage.setItem(`quesDatact${this.idObj.id}`,JSON.stringify(data));
+            wrongQuestion(data).then((res)=>{
+
+            })
         }
     }
 }

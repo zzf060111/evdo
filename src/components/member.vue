@@ -4,7 +4,7 @@
         <vue-scroll :ops="opsx" style="width:100%;height:100%;" v-else>
         <p class="title">会员套餐</p>
         <div class="pubBox">
-            <div class="pubitem" v-for="(item,index) of vipList" :key="index">
+            <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index" @click="selVip(index)">
                 <h2>{{item.day==365?'学霸必选':item.day==90?'学期搭配':'尝鲜套餐'}}</h2>
                 <h3>{{`¥${item.price}/`}}{{item.day==365?'年':item.day==90?'季':'月'}}</h3>
                 <div class="oldprice">
@@ -106,6 +106,7 @@ export default {
             tableData1:[],
             tableData2:[],
             vipList:[],
+            selIndex:0,
             loading:false,
             vipTost:false,
             payPrice:'',
@@ -184,6 +185,10 @@ export default {
                     this.alertTxt({msg:res.data.msg,type:'error'});
                 }
             })
+        },
+        // 选择会员套餐
+        selVip(index){
+            this.selIndex=index;
         },
         // 获取购买记录
         getVipOrderThis(){
@@ -351,6 +356,7 @@ export default {
                             this.alertTxt({msg:'支付成功',type:'success'});
                             this.wxerweima=false;
                             this.getVipOrderThis();
+                            this.isLogin();
                             clearInterval(this.orderTime);
                         }else if(res.data.data.status!=0){
                             this.wxerweima=false;
@@ -566,14 +572,14 @@ export default {
         color: #fff;
         margin:0 auto;
     }
-    .member .pubBox .pubitem:first-child{
+    .member .pubBox .pubitem.selected{
         border: 1px solid #DEBEA5;
         background-color: #F5DABF;
     }
-    .member .pubBox .pubitem:first-child .btn{
+    .member .pubBox .pubitem.selected .btn{
         background-color: #DEAE81;
     }
-    .member .pubBox .pubitem:not(:first-child){
+    .member .pubBox .pubitem:not(.selected){
         border: 1px solid #DEDEDE;
     }
     .member .pubBox .pubitem:nth-child(2){

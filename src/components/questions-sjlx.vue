@@ -52,7 +52,7 @@
             <div class="quSolt">
                 <div :class="indexd==index?`itemQu ishere`:item.is_answer==0?'itemQu':item.answer_status==0?'itemQu isNo':'itemQu isYes'" v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{(page-1)*100+index+1}}</div>
             </div>
-            <div class="pageBox">
+            <div class="pageBox" v-if="queArr.length>0">
                 <p @click="upPage">上一页</p>
                 <p @click="downPage">下一页</p>
             </div>

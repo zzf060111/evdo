@@ -71,3 +71,15 @@ export function delfavorites(params){
 export function askList(params){
     return http.get(`v1/account/ask`,params)
 }
+// 提问
+export function playAsk(params){
+    return http.post(`v1/account/ask`,params)
+}
+// 追问
+export function Askreply(params){
+    return http.post(`v1/account/ask/reply`,params)
+}
+// 结单
+export function Askend(params){
+    return http.post(`v1/account/ask/end`,params)
+}

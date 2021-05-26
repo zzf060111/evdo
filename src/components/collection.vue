@@ -20,8 +20,8 @@
             </el-menu>
             <div class="right">
                 <p>{{selNum}}/{{arr.length}}</p>
-                <p @click="selAll(setStr)">{{setStr}}</p>
-                <p @click="deleteSc">删除</p>
+                <p @click="selAll(setStr)" v-if="arr.length>0">{{setStr}}</p>
+                <p @click="deleteSc" v-if="arr.length>0">删除</p>
             </div>
         </div>
         <div class="pubBox"  :style="`height:${screenHeight-180}px`">

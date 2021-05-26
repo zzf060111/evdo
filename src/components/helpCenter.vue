@@ -5,83 +5,46 @@
             <div class="left">
                 <p>我的提问</p>
                 <textarea v-model="myquestionsVal" placeholder="请在此处输入您的问题详情"></textarea>
-                <div class="questionsBtn">
+                <div class="questionsBtn" @click="playAsk">
                     提问
                 </div>
                 <div class="questionsBox">
                     <vue-scroll :ops="ops" style="width:100%;height:100%;">
-                    <el-collapse accordion>
-                        <el-collapse-item>
-                            <template slot="title">
-                             <el-button type="danger">待回复</el-button>  医维度主要有哪些内容？
-                            </template>
-                            <div>
-                                暂未回复
-                            </div>
-                        </el-collapse-item>
-                        <el-collapse-item>
-                            <template slot="title">
-                                <el-button type="danger">待回复</el-button>  如何操作使用医维度？
-                            </template>
-                            <div>暂未回复</div>
-                        </el-collapse-item>
-                        <el-collapse-item>
-                            <template slot="title">
-                                <el-button type="success">已回复</el-button>  企业用户该如何购买医维度？
-                            </template>
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
-                            <div>简化流程：设计简洁直观的操作流程；</div>
-                            <div class="time">
-                                <span>2021-04-27 14:32</span>
-                                <div>
-                                    <!-- <span>追问</span>
-                                    <span>已解决</span> -->
+                        <el-collapse accordion v-if="showValue&&myList.length>0">
+                            <el-collapse-item v-for="(item,index) of myList" :key="index">
+                                <template slot="title">
+                                    <el-button :type="item.is_ask?'danger':'success'">{{item.is_ask?'已回复':'待回复'}}</el-button>  {{item.title}}
+                                </template>
+                                <div v-show="item.is_ask">
+                                    <div v-for="(item1,index1) of item.reply" :key="index1">
+                                        <div class="topImg">
+                                            <img :src="item1.ask?arrUser.avatar:'../../static/image/personal/touxiang1@2x.png'" alt="">
+                                            <div><span :style="item1.ask?'color:#EB4847':'color:#34C758'">{{item1.ask?'追问：':'回答：'}}</span>{{item1.content}}</div>
+                                        </div>
+                                        <div class="time">
+                                            <span>{{item1.created_at}}</span>
+                                            <div v-if="index1==0&&item.status!=3">
+                                                <span @click="isShowAsk">追问</span>
+                                                <span @click="askendQue(item.id)">结单</span>
+                                            </div>
+                                            <div v-else-if="index1==0&&item.status==3">
+                                                <span style="color:#EB4847;text-align:right">已解决</span>
+                                            </div>
+                                        </div>
+                                        <transition name="zoom">
+                                            <div class="askBox" v-show="isAginAsk&&index1==0">
+                                                <textarea cols="30" rows="10" v-model="aginAskVal" placeholder="请输入追问内容"></textarea>
+                                                <p @click="playAskreply(item.id,item.reply[0].user_id)">确定</p>
+                                            </div>
+                                        </transition>
+                                    </div>
                                 </div>
-                            </div>
-                        </el-collapse-item>
-                        <el-collapse-item>
-                            <template slot="title">
-                                <el-button type="success">已回复</el-button>  个人用户该如何购买医维度里的标本？
-                            </template>
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
-                            <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                            <div class="time">
-                                <span>2021-04-27 14:32</span>
-                                <div>
-                                    <!-- <span>追问</span>
-                                    <span>已解决</span> -->
+                                <div v-show="!item.is_ask">
+                                    暂未回复
                                 </div>
-                            </div>
-                        </el-collapse-item>
-                        <el-collapse-item>
-                            <template slot="title">
-                                <el-button type="success">已回复</el-button>  医维度主要有哪些内容？
-                            </template>
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
-                            <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                            <div class="time">
-                                <span>2021-04-27 14:32</span>
-                                <div>
-                                    <span @click="isShowAsk">追问</span>
-                                    <span>结单</span>
-                                </div>
-                            </div>
-                            <transition name="fade">
-                                <div class="askBox" v-show="isAginAsk">
-                                    <textarea cols="30" rows="10" v-model="aginAskVal" placeholder="请输入追问内容"></textarea>
-                                    <p>确定</p>
-                                </div>
-                            </transition>
-                            <div class="aginAskBox">
-                                <span style="color:#EB4847">追问：</span>医维度主要有哪些内容？
-                                <p>2021-04-27 14:32</p>
-                            </div>
-                            <div class="aginAskBox">
-                                <span style="color:#34C758">回答：</span>医维度主要有哪些内容？
-                                <p>2021-04-27 14:32</p>
-                            </div>
-                        </el-collapse-item>
-                    </el-collapse>
+                            </el-collapse-item>
+                        </el-collapse>
+                        <div v-else class="noList">暂无问题</div>
                     </vue-scroll>
                 </div>
             </div>
@@ -97,22 +60,6 @@
                                 <p style="text-align:right">{{item.reply[0].created_at}}</p>
                             </div>
                         </el-collapse-item>
-                        <!-- <el-collapse-item title="如何操作使用医维度？">
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
-                            <div>控制反馈：通过界面样式和交互动效让用户可以清晰的感知自己的操作；</div>
-                        </el-collapse-item>
-                        <el-collapse-item title="企业用户该如何购买医维度？">
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
-                            <div>简化流程：设计简洁直观的操作流程；</div>
-                        </el-collapse-item>
-                        <el-collapse-item title="个人用户该如何购买医维度里的标本？">
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
-                            <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                        </el-collapse-item>
-                        <el-collapse-item title="医维度主要有哪些内容？">
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
-                            <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-                        </el-collapse-item> -->
                     </el-collapse>
                     </vue-scroll>
                 </div>
@@ -124,37 +71,39 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
-import {askList} from '../services/api/personal'
+import {askList,playAsk,Askreply,Askend} from '../services/api/personal'
 export default {
     data(){
         return{
             myquestionsVal:'',
             aginAskVal:'',
             isAginAsk:false,
-            page:1,
-            gfList:[]
+            // page:1,
+            gfList:[],
+            myList:[],
+            showValue:false
         }
     },
     store,
     created(){
-        let data={};
-        data['page']=this.page;
-        this.getList(data);
+        this.getList();
     },
     mounted(){
         this.windowChange();
     },
     methods:{
-        ...mapMutations(["windowChange"]),
+        ...mapMutations(["windowChange","alertTxt"]),
         // 显示或隐藏追问
         isShowAsk(){
             this.isAginAsk=!this.isAginAsk;
         },
         // 获取问答列表
-        getList(data){
-            askList(data).then((res)=>{
+        getList(){
+            askList().then((res)=>{
                 if(res.data.code==0){
                     this.gfList=res.data.data.official;
+                    this.myList=res.data.data.ask;
+                    this.showValue=true;
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     localStorage.removeItem('token');
@@ -164,9 +113,83 @@ export default {
                     this.alertTxt({msg:res.data.msg,type:'error'});
                 }
             })
+        },
+        // 提问
+        playAsk(){
+            if(!this.myquestionsVal){
+                this.alertTxt({msg:'请输入您的问题',type:'warning'});
+            }else{
+                let data={};
+                data['title']=this.myquestionsVal;
+                playAsk(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.alertTxt({msg:res.data.msg,type:'success'});
+                        this.myquestionsVal="";
+                        this.getList();
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        localStorage.removeItem('token');
+                        this.changeUser('');
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }
+                })
+            }
+        },
+        //追问
+        playAskreply(oid,uid){
+            if(!this.aginAskVal){
+                this.alertTxt({msg:'请输入您追问的内容',type:'warning'});
+            }else{
+                let data={};
+                data['object_id']=oid;
+                data['to_user_id']=uid;
+                data['content']=this.aginAskVal;
+                Askreply(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.alertTxt({msg:res.data.msg,type:'success'});
+                        this.aginAskVal="";
+                        this.getList();
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                        localStorage.removeItem('token');
+                        this.changeUser('');
+                        this.$router.push('/');
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }
+                })
+            }
+        },
+        // 结单
+        askendQue(oid){
+            this.$alert('确定问题已解决？','提示',{
+                    confirmButtonText:'确 定',
+                    center:true,
+                    callback:(action)=>{
+                        if(action=='confirm'){
+                            let data={};
+                            data['object_id']=oid;
+                            Askend(data).then((res)=>{
+                                if(res.data.code==0){
+                                    this.alertTxt({msg:res.data.msg,type:'success'});
+                                    this.getList();
+                                }else if(res.data.code==-200){
+                                    this.alertTxt({msg:res.data.msg,type:'error'});
+                                    localStorage.removeItem('token');
+                                    this.changeUser('');
+                                    this.$router.push('/');
+                                }else{
+                                    this.alertTxt({msg:res.data.msg,type:'error'});
+                                }
+                            })
+                        }
+                    }
+            })
         }
     },
-    computed:mapState(["ops","opsx","screenHeight"])
+    computed:mapState(["ops","opsx","screenHeight","arrUser"])
 }
 </script>
 <style>
@@ -175,9 +198,6 @@ export default {
         border:none;
         font-size: 16px;
         color: #666;
-        /* overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap; */
         line-height: normal;
         text-align: left;
     }
@@ -201,21 +221,28 @@ export default {
         display: none;
     }
     .helpCenter .el-collapse-item__content{
+        width: 100%;
         padding: 10px;
         box-sizing: border-box;
+    }
+    .helpCenter .box .right .questionsBox .el-collapse-item__content{
         display: flex;
-        flex-wrap: wrap;
+    }
+    .helpCenter .el-collapse-item__content>div{
+        text-align: left;
+    }
+    .helpCenter .el-collapse-item__content>div>p{
+        font-size: 12px !important;
+        color: #666;
     }
     .helpCenter .el-collapse-item__content img{
         width: 30px;
         height: 30px;
         margin-right: 10px;
     }
-    .helpCenter .el-collapse-item__content>div{
-        text-align: left;
-        width: 90%;
+    .helpCenter .el-collapse-item__content div.topImg{
+        display: flex;
         font-size: 16px;
-        color: #666;
     }
     .helpCenter .el-collapse-item__content div.time{
         width: 100%;
@@ -230,7 +257,8 @@ export default {
     }
     .helpCenter .el-collapse-item__content div.time>div{
         display: flex;
-        padding-right: 100px;
+        padding-right: 50px;
+        box-sizing: border-box;
     }
     .helpCenter .el-collapse-item__content div.time>div span{
         display: inline-block;
@@ -267,6 +295,11 @@ export default {
         line-height: 20px;
         height: 45px;
     }
+    .helpCenter .el-collapse-item__content div.aginAskBox p{
+        font-size: 16px !important;
+        color: #666 !important;
+        margin-top:5px;
+    }
 </style>
 <style scoped>
     .helpCenter .box{
@@ -281,13 +314,18 @@ export default {
         width: 800px;
         margin-right: 80px;
     }
+    .helpCenter .box .left .noList{
+        padding-top: 20px;
+        box-sizing: border-box;
+        font-size: 18px;
+    }
     .helpCenter .box .right{
         width: 500px;
     }
     .helpCenter .box .left p,.helpCenter .box .right p{
         text-align: left;
         font-size: 18px;
-        color: #333;
+        color: #666;
         margin-bottom: 20px;
     }
     .helpCenter .box .left textarea{

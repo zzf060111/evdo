@@ -157,7 +157,8 @@ export default {
             if(qunum==0){
                 this.$alert('此类题型暂无题','提示',{
                     confirmButtonText:'确定',
-                    center:true
+                    center:true,
+                    showClose:false
                 })
             }else{
                 this.$router.push({
