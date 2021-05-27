@@ -52,7 +52,7 @@
             <div class="quSolt">
                 <div :class="indexd==index?`itemQu ishere`:item.is_answer==0?'itemQu':item.answer_status==0?'itemQu isNo':'itemQu isYes'" v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{(page-1)*100+index+1}}</div>
             </div>
-            <div class="pageBox" v-if="queArr.length>0">
+            <div class="pageBox" v-if="queArr.length>0&&lastPage>1">
                 <p @click="upPage">上一页</p>
                 <p @click="downPage">下一页</p>
             </div>
@@ -175,7 +175,7 @@ export default {
                         arr[i].isSel=0
                     }
                 }
-                console.log(id,this.queArr[this.indexd].paper_id,this.queArr[this.indexd].question_id);
+                // console.log(id,this.queArr[this.indexd].paper_id,this.queArr[this.indexd].question_id);
                 let data={};
                 data['question_id']=this.queArr[this.indexd].question_id;
                 data['answer']=id;

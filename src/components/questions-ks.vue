@@ -565,7 +565,7 @@ export default {
                    sec=num%60>=10?num%60:`0${num%60}`;
                    this.ksTime=`${min}:${sec}`;
                }else{
-
+                   this.yesHande();
                }
            },1000)
            this.$emit('changetimeKs',timeKs);

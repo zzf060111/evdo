@@ -110,7 +110,6 @@ export default {
                         this.videoObj.is_favorite=false;
                     }else if(res.data.code==-200){
                         this.alertTxt({msg:res.data.msg,type:'error'});
-                        this.$router.push('/');
                     }else{
                         this.alertTxt({msg:res.data.msg,type:'warning'});
                     }
@@ -125,7 +124,6 @@ export default {
                         this.videoObj.is_favorite=true;
                     }else if(res.data.code==-200){
                         this.alertTxt({msg:res.data.msg,type:'error'});
-                        this.$router.push('/');
                     }else{
                         this.alertTxt({msg:res.data.msg,type:'warning'});
                     }

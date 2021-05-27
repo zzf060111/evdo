@@ -40,6 +40,14 @@ export function signIn(params){
 export function wrongQuestion(params){
     return http.get(`v1/answer/wrongQuestion`,params)
 }
+// 错题答题
+export function wrongQuestionAnswer(params){
+    return http.get(`/v1/answer/wrongQuestionAnswer`,params)
+}
+// 清除错题答题记录
+export function cleanWrongQuestionAnswer(params){
+    return http.get(`v1/answer/cleanWrongQuestionAnswer`,params)
+}
 // 收藏列表
 export function favoriteQuestion(params){
     return http.get(`v1/answer/favoriteQuestion`,params)

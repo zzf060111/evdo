@@ -357,13 +357,13 @@ export default {
         justify-content: center;
     }
      .questionsItem >>> .bottomBox .pageBox p{
-         width: 60px;
-         height: 30px;
+         width: 90px;
+         height: 40px;
          border: 1px solid #C4CACE;
          font-size: 12px;
          color: #666;
          text-align: center;
-         line-height: 30px;
+         line-height: 40px;
      }
      .questionsItem >>> .bottomBox .pageBox p:hover{
          cursor: pointer;

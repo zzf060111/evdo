@@ -1,5 +1,5 @@
 <template>
-    <div class="questions-lx questionsItem">
+    <div class="questions-lx questionsItem" v-if="queArr.length>0">
         <div class="clearAll">
             <div>
                 <img src="../../static/image/question/icon_delete.png" alt="">
@@ -9,33 +9,33 @@
         <div class="topBox">
             <div class="quTitle">
                 <div class="left">
-                    <p>单选</p>
-                    <span>1. 可屈髋关节和膝关节的肌是？</span>
+                    <p>{{queArr[indexd].question.type==1?'判断':'单选'}}</p>
+                    <span>{{`${(page-1)*100+(indexd+1)}. ${queArr[indexd].question.title}`}}</span>
                 </div>
-                <div class="right">
-                    <img src="../../static/image/question/icon_collection2.png" alt="">
-                    <span>收藏</span>
+                <div :class="queArr[indexd].question.favorite_count==0?'right':'right isSc'" @click="clickSc">
+                    <img :src="queArr[indexd].question.favorite_count==0?'../../static/image/question/icon_collection2.png':'../../static/image/question/icon_collection3.png'" alt="">
+                    <span>{{queArr[indexd].question.favorite_count==0?'收藏':'已收藏'}}</span>
                 </div>
             </div>
-            <div class="quSelBox">
+            <div class="quSelBox" v-if="selArr.length>0">
                 <div class="quSelItem" v-for="(item,index) of selArr" :key="index">
-                    <div class="icon" v-show="item.isSel==0" @click="selAnswer(index)"></div>
-                    <img src="../../static/image/question/icon_xz.png" alt=""  v-show="item.isSel==1" @click="clearAnswer(index)">
-                    <p>{{zmArr[index]+'.'+item.txt}}</p>
+                    <div class="icon" v-show="item.isSel==0&&item.txt" @click="selAnswer(index,item.id)"></div>
+                    <img src="../../static/image/question/icon_xz.png" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
+                    <p v-show="item.txt">{{zmArr[index]+'.'+item.txt}}</p>
                 </div>
             </div>
-            <div class="quImg">
+            <!-- <div class="quImg">
                 <img src="../../static/image/question/0b9d68bbb683fa45920f795485e4524a.png" alt="">
-            </div>
+            </div> -->
             <div class="quBottom">
                 <div class="left">
-                    <el-switch v-model="isDown"></el-switch>
+                    <el-switch v-model="isDown" @change="changeIsdowm"></el-switch>
                     <p>答对自动移除错题</p>
                 </div>
                 <div class="right">
                     <p class="delete">删除</p>
-                    <p>上一题</p>
-                    <p>下一题</p>
+                    <p @click="upQuestion">上一题</p>
+                    <p @click="downQuestion">下一题</p>
                 </div>
             </div>
         </div>
@@ -46,10 +46,10 @@
                         <img src="../../static/image/question/icon_xz.png" alt="">当前选择
                     </div>
                     <div>
-                        <img src="../../static/image/question/icon_yes.png" alt="">正确：3题
+                        <img src="../../static/image/question/icon_yes.png" alt="">正确：{{yesCount}}题
                     </div>
                     <div>
-                        <img src="../../static/image/question/icon_error.png" alt="">错误：1题
+                        <img src="../../static/image/question/icon_error.png" alt="">错误：{{errorCount}}题
                     </div>
                 </div>
                 <div class="right">
@@ -57,11 +57,11 @@
                 </div>
             </div>
             <div class="quSolt">
-                <div class="itemQu" v-for="(item,index) of 100" :key="index">{{index+1}}</div>
+                <div :class="indexd==index?`itemQu ishere`:item.is_answer==0?'itemQu':item.answer_status==0?'itemQu isNo':'itemQu isYes'"  v-for="(item,index) of queArr" :key="index" @click="jumpQuestion(index)">{{(page-1)*100+(index+1)}}</div>
             </div>
-            <div class="pageBox">
-                <p>上一页</p>
-                <p>下一页</p>
+            <div class="pageBox" v-if="queArr.length>0&&lastPage>1">
+                <p @click="upPage">上一页</p>
+                <p @click="downPage">下一页</p>
             </div>
         </div>
         <!-- 题目讲解 -->
@@ -121,22 +121,22 @@
 <script>
 import store from '../vuex/store'
 import {mapMutations} from 'vuex'
-import {wrongQuestion} from '../services/api/exercise'
+import {wrongQuestion,cleanWrongQuestionAnswer,wrongQuestionAnswer} from '../services/api/exercise'
 export default {
     data(){
         return{
-            selArr:[
-                {id:"1",txt:'髂腰肌',isSel:0},
-                {id:"2",txt:'髂腰肌',isSel:0},
-                {id:"3",txt:'髂腰肌',isSel:0},
-                {id:"4",txt:'髂腰肌',isSel:0}
-            ],
+            selArr:[],
             zmArr:['A','B','C','D','E','F','G','H','I','J','K'],
             isDown:false,
             isDk:false,
             isAnalysis:false,
             data:{},
-            page:1
+            page:1,
+            indexd:0,
+            queArr:[],
+            lastPage:0,
+            errorCount:0,
+            yesCount:0,
         }
     },
     store,
@@ -146,7 +146,6 @@ export default {
         }
 	},
     created(){
-        console.log(this.idObj);
         // 判断错题题库初始加载
         let data={};
         if(localStorage.getItem(`quesDatact${this.idObj.id}`)){
@@ -185,26 +184,179 @@ export default {
             }
             this.selArr=arr;
         },
+        changeIsdowm(){
+            if(this.isDown){
+                localStorage.setItem(`queIsdownCt${this.idObj.id}`,'1')
+            }else{
+                localStorage.setItem(`queIsdownCt${this.idObj.id}`,'0')
+            }
+        },
         // 取消答案
         clearAnswer(index){
-            let arr=this.selArr;
-            for(let i=0;i<arr.length;i++){
-                if(index==i){
-                    arr[i].isSel=0
-                }
-            }
-            this.selArr=arr;
+            // let arr=this.selArr;
+            // for(let i=0;i<arr.length;i++){
+            //     if(index==i){
+            //         arr[i].isSel=0
+            //     }
+            // }
+            // this.selArr=arr;
+        },
+        // 收藏取消收藏题目
+        clickSc(){
+            // let data={};
+            // data['question_id']=this.queArr[this.indexd].question_id;
+            // favorite(data).then((res)=>{
+            //     if(res.data.code==0){
+            //         this.alertTxt({msg:res.data.msg,type:'success'});
+            //         this.getQuestions(this.data);
+            //     }else if(res.data.code==-200){
+            //         this.alertTxt({msg:res.data.msg,type:'error'});
+            //         this.$router.push('/');
+            //     }else{
+            //         this.alertTxt({msg:res.data.msg,type:'error'});
+            //     }
+            // })
         },
         // 确定打卡
         trueDk(){
             this.isDk=true;
+        },
+        // 上一题
+        upQuestion(){
+            if(this.indexd==0){
+                this.alertTxt({msg:'已到第一题',type:'warning'});
+            }else{
+                this.indexd--;
+                let obj=this.queArr[this.indexd].question.option;
+                let arr=[];
+                for(let i in obj){
+                    let newObj={};
+                    newObj['id']=i;
+                    newObj['txt']=obj[i];
+                    if(this.queArr[this.indexd].answer==i){
+                        newObj['isSel']=1;
+                    }else{
+                        newObj['isSel']=0;
+                    }
+                    arr.push(newObj);
+                }
+                this.selArr=arr;
+                this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
+                localStorage.setItem(`queindexCt${this.idObj.id}`,this.indexd);
+            }
+        },
+        // 下一题
+        downQuestion(){
+            if(this.indexd==(this.queArr.length-1)){
+                this.alertTxt({msg:'已到当前页最后一题',type:'warning'});
+            }else{
+                this.indexd++;
+                let obj=this.queArr[this.indexd].question.option;
+                let arr=[];
+                for(let i in obj){
+                    let newObj={};
+                    newObj['id']=i;
+                    newObj['txt']=obj[i];
+                    if(this.queArr[this.indexd].answer==i){
+                        newObj['isSel']=1;
+                    }else{
+                        newObj['isSel']=0;
+                    }
+                    arr.push(newObj);
+                }
+                this.selArr=arr;
+                this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
+                localStorage.setItem(`queindexCt${this.idObj.id}`,this.indexd);
+            }
+        },
+        // 跳转题目
+        jumpQuestion(num){
+            this.indexd=num;
+            let obj=this.queArr[this.indexd].question.option;
+            let arr=[];
+            for(let i in obj){
+                let newObj={};
+                newObj['id']=i;
+                newObj['txt']=obj[i];
+                if(this.queArr[this.indexd].answer==i){
+                    newObj['isSel']=1;
+                }else{
+                    newObj['isSel']=0;
+                }
+                arr.push(newObj);
+            }
+            this.selArr=arr;
+            this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
+            localStorage.setItem(`queindexCt${this.idObj.id}`,this.indexd);
+        },
+        // 上一页
+        upPage(){
+            if(this.page==1){
+                this.alertTxt({msg:'已到第一页',type:'warning'});
+            }else{
+                this.queArr=[];
+                localStorage.removeItem(`queindexCt${this.idObj.id}`);
+                this.page--;
+                let obj=this.data;
+                obj.page=this.page;
+                this.geterrorQueList(obj);
+            }
+        },
+        // 下一页
+        downPage(){
+            if(this.page==this.lastPage){
+                this.alertTxt({msg:'已到最后页',type:'warning'});
+            }else{
+                this.queArr=[];
+                localStorage.removeItem(`queindexCt${this.idObj.id}`);
+                this.page++;
+                let obj=this.data;
+                obj.page=this.page;
+                this.geterrorQueList(obj);
+            }
         },
         // 获取错题列表
         geterrorQueList(data){
             this.data=data;
             localStorage.setItem(`quesDatact${this.idObj.id}`,JSON.stringify(data));
             wrongQuestion(data).then((res)=>{
-
+                if(res.data.code==0){
+                    this.queArr=res.data.data.wrong.data;
+                    if(localStorage.getItem(`queindexCt${this.idObj.id}`)){
+                        this.indexd=parseInt(localStorage.getItem(`queindexCt${this.idObj.id}`));
+                    }else{
+                        this.indexd=0;
+                    }
+                    let obj=this.queArr[this.indexd].question.option;
+                    let arr=[];
+                    for(let i in obj){
+                        let newObj={};
+                        newObj['id']=i;
+                        newObj['txt']=obj[i];
+                        if(this.queArr[this.indexd].answer==i){
+                            newObj['isSel']=1;
+                        }else{
+                            newObj['isSel']=0;
+                        }
+                        arr.push(newObj);
+                    }
+                    this.selArr=arr;
+                    this.lastPage=res.data.data.wrong.last_page;
+                    this.yesCount=res.data.data.right_count;
+                    this.errorCount=res.data.data.error_count;
+                    this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 答题
+        clickDt(){
+            wrongQuestionAnswer().then((res)=>{
+                
             })
         }
     }
@@ -240,5 +392,24 @@ export default {
         width: 22px;
         height: 22px;
         margin-right: 5px;
+    }
+    .questionsItem .topBox .quTitle .right.isSc{
+        border: 1px solid #FFD302 !important;
+        color: #FFD302 !important;
+    }
+    .quSolt .itemQu.ishere{
+        background-color: #6495ED;
+        border: 1px solid #6495ED;
+        color: #fff !important;
+    }
+    .quSolt .itemQu.isYes{
+        background-color: #34C758;
+        border: 1px solid #34C758;
+        color: #fff !important;
+    }
+    .quSolt .itemQu.isNo{
+        background-color: #EB4847;
+        border: 1px solid #EB4847;
+        color: #fff !important;
     }
 </style>
