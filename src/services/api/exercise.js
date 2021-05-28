@@ -44,11 +44,31 @@ export function wrongQuestion(params){
 export function wrongQuestionAnswer(params){
     return http.get(`/v1/answer/wrongQuestionAnswer`,params)
 }
+// 单个移除错题
+export function wrongQuestionDel(params){
+    return http.get(`v1/answer/wrongQuestionDel`,params)
+}
 // 清除错题答题记录
 export function cleanWrongQuestionAnswer(params){
     return http.get(`v1/answer/cleanWrongQuestionAnswer`,params)
 }
+// 清空分类下错题
+export function cleanWrongQuestion(params){
+    return http.get(`v1/answer/cleanWrongQuestion`,params)
+}
 // 收藏列表
 export function favoriteQuestion(params){
     return http.get(`v1/answer/favoriteQuestion`,params)
+}
+// 收藏题答题
+export function favoriteQuestionAnswer(params){
+    return http.get(`/v1/answer/favoriteQuestionAnswer`,params)
+}
+// 清除收藏答题记录
+export function cleanFavoriteQuestionAnswer(params){
+    return http.get(`v1/answer/cleanFavoriteQuestionAnswer`,params)
+}
+// 清空分类下收藏题目
+export function cleanFavoriteQuestion(params){
+    return http.get(`v1/answer/cleanFavoriteQuestion`,params)
 }

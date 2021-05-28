@@ -409,23 +409,25 @@ export default {
                     this.getQuestions(this.data);
                     if(this.isDown){
                         if(id==this.queArr[this.indexd].question.true_option){
-                            this.indexd++;
-                            let obj=this.queArr[this.indexd].question.option;
-                            let arr=[];
-                            for(let i in obj){
-                                let newObj={};
-                                newObj['id']=i;
-                                newObj['txt']=obj[i];
-                                if(this.queArr[this.indexd].answer==i){
-                                    newObj['isSel']=1;
-                                }else{
-                                    newObj['isSel']=0;
+                            if(this.indexd<(this.queArr.length-1)){
+                                this.indexd++;
+                                let obj=this.queArr[this.indexd].question.option;
+                                let arr=[];
+                                for(let i in obj){
+                                    let newObj={};
+                                    newObj['id']=i;
+                                    newObj['txt']=obj[i];
+                                    if(this.queArr[this.indexd].answer==i){
+                                        newObj['isSel']=1;
+                                    }else{
+                                        newObj['isSel']=0;
+                                    }
+                                    arr.push(newObj);
                                 }
-                                arr.push(newObj);
+                                this.selArr=arr;
+                                this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
+                                localStorage.setItem(`queindexLx${this.idObj.id}`,this.indexd);
                             }
-                            this.selArr=arr;
-                            this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
-                            localStorage.setItem(`queindexLx${this.idObj.id}`,this.indexd);
                         }
                     }
                 }else if(res.data.code==-200){

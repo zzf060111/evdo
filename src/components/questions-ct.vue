@@ -1,7 +1,7 @@
 <template>
-    <div class="questions-lx questionsItem" v-if="queArr.length>0">
+    <div class="questions-lx questionsItem" v-if="showValue&&queArr.length>0">
         <div class="clearAll">
-            <div>
+            <div @click="clearCtque">
                 <img src="../../static/image/question/icon_delete.png" alt="">
                 清空
             </div>
@@ -33,7 +33,7 @@
                     <p>答对自动移除错题</p>
                 </div>
                 <div class="right">
-                    <p class="delete">删除</p>
+                    <p class="delete" @click="deleteOneque">删除</p>
                     <p @click="upQuestion">上一题</p>
                     <p @click="downQuestion">下一题</p>
                 </div>
@@ -52,7 +52,7 @@
                         <img src="../../static/image/question/icon_error.png" alt="">错误：{{errorCount}}题
                     </div>
                 </div>
-                <div class="right">
+                <div class="right"  @click="clearTjl">
                     清除当前做题记录
                 </div>
             </div>
@@ -67,17 +67,17 @@
         <!-- 题目讲解 -->
         <div class="quAnalysis" v-show="isAnalysis">
             <div class="answer">
-                <p>答案 <span>A</span></p>
-                <p>您选择 <span>A</span></p>
+                <p>答案 <span>{{zmArr[parseInt(queArr[indexd].question.true_option)-1]}}</span></p>
+                <p>您选择 <span>{{zmArr[parseInt(queArr[indexd].answer-1)]}}</span></p>
             </div>
-            <div class="videoBox analysisBox">
+            <!-- <div class="videoBox analysisBox">
                 <div class="title">视频讲解</div>
                 <video src="" controls poster="../../static/image/question/13b6efacd7ad6b0760a172cb77ba927e.png"></video>
-            </div>
+            </div> -->
             <div class="txtBox analysisBox">
                 <div class="title">题目讲解</div>
                 <div class="text">
-                    题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解题目讲解
+                    {{queArr[indexd].question.analysis}}
                 </div>
             </div>
         </div>
@@ -96,8 +96,8 @@
                         <p>已经坚持自测</p>
                     </div>
                     <div>
-                        <div><h2>100</h2>天</div>
-                        <p>2021年5月7日</p>
+                        <div><h2>{{signCount}}</h2>天</div>
+                        <p>{{signDate}}</p>
                     </div>
                 </div>
             </div>
@@ -117,11 +117,14 @@
         </div>
         </transition>
     </div>
+    <div v-else-if="showValue&&queArr.length==0" class="noQue">
+        暂无错题
+    </div>
 </template>
 <script>
 import store from '../vuex/store'
 import {mapMutations} from 'vuex'
-import {wrongQuestion,cleanWrongQuestionAnswer,wrongQuestionAnswer} from '../services/api/exercise'
+import {wrongQuestion,cleanWrongQuestionAnswer,wrongQuestionAnswer,wrongQuestionDel,favorite,signIn,cleanWrongQuestion} from '../services/api/exercise'
 export default {
     data(){
         return{
@@ -137,6 +140,9 @@ export default {
             lastPage:0,
             errorCount:0,
             yesCount:0,
+            signDate:'',
+            signCount:'',
+            showValue:false
         }
     },
     store,
@@ -146,6 +152,12 @@ export default {
         }
 	},
     created(){
+        // 判断是否选中答对移除错题
+        if(localStorage.getItem(`queIsdownCt${this.idObj.id}`)=='1'){
+            this.isDown=true;
+        }else{
+            this.isDown=false;
+        }
         // 判断错题题库初始加载
         let data={};
         if(localStorage.getItem(`quesDatact${this.idObj.id}`)){
@@ -164,8 +176,8 @@ export default {
     methods:{
         ...mapMutations(["alertTxt"]),
         // 选择答案
-        selAnswer(index){
-            let str="判断";
+        selAnswer(index,id){
+            let str=this.queArr[this.indexd].question.type==1?"判断":'单选';
             let arr=this.selArr;
             if(str=="单选"||str=="判断"){
                 for(let i=0;i<arr.length;i++){
@@ -175,6 +187,11 @@ export default {
                         arr[i].isSel=0
                     }
                 }
+                let data={};
+                data['question_id']=this.queArr[this.indexd].question_id;
+                data['answer']=id;
+                data['id']=this.queArr[this.indexd].id;
+                this.clickDt(data,id);
             }else if(str=="多选"){
                for(let i=0;i<arr.length;i++){
                     if(index==i){
@@ -183,13 +200,6 @@ export default {
                 }
             }
             this.selArr=arr;
-        },
-        changeIsdowm(){
-            if(this.isDown){
-                localStorage.setItem(`queIsdownCt${this.idObj.id}`,'1')
-            }else{
-                localStorage.setItem(`queIsdownCt${this.idObj.id}`,'0')
-            }
         },
         // 取消答案
         clearAnswer(index){
@@ -201,25 +211,112 @@ export default {
             // }
             // this.selArr=arr;
         },
+        // 选择是否答对清楚该错题
+        changeIsdowm(){
+            if(this.isDown){
+                localStorage.setItem(`queIsdownCt${this.idObj.id}`,'1')
+            }else{
+                localStorage.setItem(`queIsdownCt${this.idObj.id}`,'0')
+            }
+        },
         // 收藏取消收藏题目
         clickSc(){
-            // let data={};
-            // data['question_id']=this.queArr[this.indexd].question_id;
-            // favorite(data).then((res)=>{
-            //     if(res.data.code==0){
-            //         this.alertTxt({msg:res.data.msg,type:'success'});
-            //         this.getQuestions(this.data);
-            //     }else if(res.data.code==-200){
-            //         this.alertTxt({msg:res.data.msg,type:'error'});
-            //         this.$router.push('/');
-            //     }else{
-            //         this.alertTxt({msg:res.data.msg,type:'error'});
-            //     }
-            // })
+            let data={};
+            data['question_id']=this.queArr[this.indexd].question_id;
+            favorite(data).then((res)=>{
+                if(res.data.code==0){
+                    this.alertTxt({msg:res.data.msg,type:'success'});
+                    this.geterrorQueList(this.data);
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 清除错题答题记录
+        clearTjl(){
+            this.$alert('清除当前做题记录？','提示',{
+                confirmButtonText:'清除记录',
+                center:true,
+                customClass:'errorAlert',
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        let data={};
+                        data['parent_id']=this.idObj.pid;
+                        if(this.idObj.lev==2){
+                            data['category_id']=this.idObj.id;
+                        }
+                        cleanWrongQuestionAnswer(data).then((res)=>{
+                            if(res.data.code==0){
+                                this.alertTxt({msg:res.data.msg,type:'success'});
+                                let obj=this.data;
+                                obj.page=1;
+                                this.page=1;
+                                this.geterrorQueList(obj);
+                                localStorage.removeItem(`queindexCt${this.idObj.id}`);
+                                this.indexd=0;
+                            }else if(res.data.code==-200){
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                                this.$router.push('/');
+                            }else{
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                            }
+                        })
+                    }
+                }
+            })
+        },
+        // 清空错题
+        clearCtque(){
+            this.$alert('清空所有错题？','提示',{
+                confirmButtonText:'清除错题',
+                center:true,
+                customClass:'errorAlert',
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        let data={};
+                        data['parent_id']=this.idObj.pid;
+                        if(this.idObj.lev==2){
+                            data['category_id']=this.idObj.id;
+                        }
+                        cleanWrongQuestion(data).then((res)=>{
+                            if(res.data.code==0){
+                                this.alertTxt({msg:res.data.msg,type:'success'});
+                                let obj=this.data;
+                                obj.page=1;
+                                this.page=1;
+                                this.geterrorQueList(obj);
+                                localStorage.removeItem(`queindexCt${this.idObj.id}`);
+                                this.indexd=0;
+                            }else if(res.data.code==-200){
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                                this.$router.push('/');
+                            }else{
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                            }
+                        })
+                    }
+                }
+            })
         },
         // 确定打卡
         trueDk(){
-            this.isDk=true;
+            signIn().then((res)=>{
+                if(res.data.code==0){
+                    this.alertTxt({msg:res.data.msg,type:'success'});
+                    this.isDk=true;
+                    let obj=res.data.data;
+                    this.signCount=obj.signCount;
+                    this.signDate=obj.signDay.split('-')[0]+'年'+obj.signDay.split('-')[1]+'月'+obj.signDay.split('-')[2]+'日';
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
         },
         // 上一题
         upQuestion(){
@@ -268,6 +365,21 @@ export default {
                 this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
                 localStorage.setItem(`queindexCt${this.idObj.id}`,this.indexd);
             }
+        },
+        // 删除错题
+        deleteOneque(){
+            this.$alert('确定删除该题？','提示',{
+                confirmButtonText:'确定',
+                center:true,
+                customClass:'errorAlert',
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        let data={};
+                        data['question_id']=this.queArr[this.indexd].question_id;
+                        this.delQueone(data);
+                    }
+                }
+            })
         },
         // 跳转题目
         jumpQuestion(num){
@@ -321,30 +433,45 @@ export default {
             localStorage.setItem(`quesDatact${this.idObj.id}`,JSON.stringify(data));
             wrongQuestion(data).then((res)=>{
                 if(res.data.code==0){
+                    this.showValue=true;
                     this.queArr=res.data.data.wrong.data;
-                    if(localStorage.getItem(`queindexCt${this.idObj.id}`)){
-                        this.indexd=parseInt(localStorage.getItem(`queindexCt${this.idObj.id}`));
-                    }else{
-                        this.indexd=0;
-                    }
-                    let obj=this.queArr[this.indexd].question.option;
-                    let arr=[];
-                    for(let i in obj){
-                        let newObj={};
-                        newObj['id']=i;
-                        newObj['txt']=obj[i];
-                        if(this.queArr[this.indexd].answer==i){
-                            newObj['isSel']=1;
+                    if(this.queArr.length>0){
+                        if(this.queArr.length==1){
+                            this.indexd=0;
+                            localStorage.setItem(`queindexCt${this.idObj.id}`,0);
                         }else{
-                            newObj['isSel']=0;
+                            if(localStorage.getItem(`queindexCt${this.idObj.id}`)){
+                                this.indexd=parseInt(localStorage.getItem(`queindexCt${this.idObj.id}`));
+                            }else{
+                                this.indexd=0;
+                            }
                         }
-                        arr.push(newObj);
+                        let obj=this.queArr[this.indexd].question.option;
+                        let arr=[];
+                        for(let i in obj){
+                            let newObj={};
+                            newObj['id']=i;
+                            newObj['txt']=obj[i];
+                            if(this.queArr[this.indexd].answer==i){
+                                newObj['isSel']=1;
+                            }else{
+                                newObj['isSel']=0;
+                            }
+                            arr.push(newObj);
+                        }
+                        this.selArr=arr;
+                        this.lastPage=res.data.data.wrong.last_page;
+                        this.yesCount=res.data.data.right_count;
+                        this.errorCount=res.data.data.error_count;
+                        this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
+                    }else{
+                        let data=this.data;
+                        if(data.page>1){
+                            data.page=data.page-1;
+                            this.page=this.page-1;
+                            this.geterrorQueList(data);
+                        }
                     }
-                    this.selArr=arr;
-                    this.lastPage=res.data.data.wrong.last_page;
-                    this.yesCount=res.data.data.right_count;
-                    this.errorCount=res.data.data.error_count;
-                    this.isAnalysis=this.queArr[this.indexd].is_answer==1?true:false;
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     this.$router.push('/');
@@ -354,9 +481,36 @@ export default {
             })
         },
         // 答题
-        clickDt(){
-            wrongQuestionAnswer().then((res)=>{
-                
+        clickDt(data,id){
+            wrongQuestionAnswer(data).then((res)=>{
+                if(res.data.code==0){
+                    this.geterrorQueList(this.data);
+                    if(this.isDown){
+                        if(id==this.queArr[this.indexd].question.true_option){
+                            let datadel={};
+                            datadel['question_id']=data.question_id;
+                            this.delQueone(datadel);
+                        }
+                    }
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
+            })
+        },
+        // 单个移除错题
+        delQueone(data){
+            wrongQuestionDel(data).then((res)=>{
+                if(res.data.code==0){
+                    this.geterrorQueList(this.data);
+                }else if(res.data.code==-200){
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                    this.$router.push('/');
+                }else{
+                    this.alertTxt({msg:res.data.msg,type:'error'});
+                }
             })
         }
     }
@@ -411,5 +565,10 @@ export default {
         background-color: #EB4847;
         border: 1px solid #EB4847;
         color: #fff !important;
+    }
+    .noQue{
+        font-size: 30px;
+        font-weight: bold;
+        padding-top: 200px;
     }
 </style>
