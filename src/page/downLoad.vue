@@ -5,24 +5,24 @@
             <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
         </div>
         <div class="imgbox">
-            <img src="../../static/image/downLoad/pic_down_01@2x.png" alt="">
+            <img :src="require('../../static/image/downLoad/pic_down_01@2x.png')" alt="">
             <div class="positionBox">
-                <a href="../../static/image/downLoad/pic_web@2x.png" download="">
-                    <img src="../../static/image/downLoad/pic_web@2x.png" alt="">
+                <a :href="require('../../static/image/downLoad/pic_web@2x.png')" download="">
+                    <img :src="require('../../static/image/downLoad/pic_web@2x.png')" alt="">
                 </a>
-                <img src="../../static/image/downLoad/pic_app@2x.png" alt="">
-                <img src="../../static/image/downLoad/pic_google@2x.png" alt="">
-                <img src="../../static/image/downLoad/pic_gzh@2x.png" alt="">
+                <img :src="require('../../static/image/downLoad/pic_app@2x.png')" alt="">
+                <img :src="require('../../static/image/downLoad/pic_google@2x.png')" alt="">
+                <img :src="require('../../static/image/downLoad/pic_gzh@2x.png')" alt="">
             </div>
         </div>
         <div class="imgbox">
-            <img src="../../static/image/downLoad/pic_down_02@2x.png" alt="">
+            <img :src="require('../../static/image/downLoad/pic_down_02@2x.png')" alt="">
         </div>
         <div class="imgbox">
-            <img src="../../static/image/downLoad/pic_down_03@2x.png" alt="">
+            <img :src="require('../../static/image/downLoad/pic_down_03@2x.png')" alt="">
         </div>
         <div class="imgbox">
-            <img src="../../static/image/downLoad/pic_down_04@2x.png" alt="">
+            <img :src="require('../../static/image/downLoad/pic_down_04@2x.png')" alt="">
         </div>
         </vue-scroll>  
     </div>
@@ -34,7 +34,7 @@ import topnav from '../components/topnav'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'5'
         }
     },

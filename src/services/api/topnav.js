@@ -20,3 +20,11 @@ export function login(params){
 export function socials(params){
     return http.get(`/v1/socials`,params)
 }
+// 微信登陆
+export function wechatwebcallback(params){
+    return http.get(`v1/socials/wechatwebcallback`,params)
+}
+// 第三方登陆绑定手机号
+export function mobilebind(params){
+    return http.post(`/v1/mobile_bind`,params)
+}

@@ -25,7 +25,7 @@ import {getCategoryPostLists} from '../services/api/fsList'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'6',
             fsArr:[]
         }

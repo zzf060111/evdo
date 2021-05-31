@@ -2,7 +2,7 @@
     <div class="questions-lx questionsItem" v-if="showValue&&queArr.length>0">
         <div class="clearAll">
             <div @click="clearScque">
-                <img src="../../static/image/question/icon_delete.png" alt="">
+                <img :src="require('../../static/image/question/icon_delete.png')" alt="">
                 清空
             </div>
         </div>
@@ -13,14 +13,14 @@
                     <span>{{`${(page-1)*100+(indexd+1)}. ${queArr[indexd].question.title}`}}</span>
                 </div>
                 <div :class="queArr[indexd].question.favorite_count==0?'right':'right isSc'" @click="clickSc">
-                    <img :src="queArr[indexd].question.favorite_count==0?'../../static/image/question/icon_collection2.png':'../../static/image/question/icon_collection3.png'" alt="">
+                    <img :src="queArr[indexd].question.favorite_count==0?require('../../static/image/question/icon_collection2.png'):require('../../static/image/question/icon_collection3.png')" alt="">
                     <span>{{queArr[indexd].question.favorite_count==0?'收藏':'已收藏'}}</span>
                 </div>
             </div>
             <div class="quSelBox" v-if="selArr.length>0">
                 <div class="quSelItem" v-for="(item,index) of selArr" :key="index">
                     <div class="icon" v-show="item.isSel==0&&item.txt" @click="selAnswer(index,item.id)"></div>
-                    <img src="../../static/image/question/icon_xz.png" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
+                    <img :src="require('../../static/image/question/icon_xz.png')" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
                     <p v-show="item.txt">{{zmArr[index]+'.'+item.txt}}</p>
                 </div>
             </div>
@@ -42,13 +42,13 @@
             <div class="title">
                 <div class="left">
                     <div>
-                        <img src="../../static/image/question/icon_xz.png" alt="">当前选择
+                        <img :src="require('../../static/image/question/icon_xz.png')" alt="">当前选择
                     </div>
                     <div>
-                        <img src="../../static/image/question/icon_yes.png" alt="">正确：{{yesCount}}题
+                        <img :src="require('../../static/image/question/icon_yes.png')" alt="">正确：{{yesCount}}题
                     </div>
                     <div>
-                        <img src="../../static/image/question/icon_error.png" alt="">错误：{{errorCount}}题
+                        <img :src="require('../../static/image/question/icon_error.png')" alt="">错误：{{errorCount}}题
                     </div>
                 </div>
                 <div class="right" @click="clearTjl">
@@ -80,15 +80,15 @@
                 </div>
             </div>
         </div>
-        <img src="../../static/image/question/icon_dk.png" alt="" class="dkShow" @click="trueDk">
+        <img :src="require('../../static/image/question/icon_dk.png')" alt="" class="dkShow" @click="trueDk">
         <transition name="slideRight">
         <div class="dkBox" v-show="isDk">
             <div class="title">
-                <img src="../../static/image/question/icon_back.png" alt="" @click="isDk=false">
+                <img :src="require('../../static/image/question/icon_back.png')" alt="" @click="isDk=false">
                 自测日历
             </div>
             <div class="centerBox">
-                <img src="../../static/image/question/pic_zcrl.png" alt="" class="bj">
+                <img :src="require('../../static/image/question/pic_zcrl.png')" alt="" class="bj">
                 <div class="txtBox">
                     <div>
                         <h2>我</h2>
@@ -106,7 +106,7 @@
                 <p></p>
             </div>
             <div class="rewardTxt">
-                <img src="../../static/image/question/pic_zcrl2.png" alt="">
+                <img :src="require('../../static/image/question/pic_zcrl2.png')" alt="">
                 <div class="left">
                     <p>1. 每日坚持自测可获得医维度VIP限时体验福利</p>
                     <p>2. 连续自测打卡天数越多，获得的福利越大</p>

@@ -49,7 +49,7 @@ import {category} from '../services/api/exercise'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'4',
             twoNavIndex:'1',
             twoNav:[],
@@ -63,27 +63,27 @@ export default {
                 {
                     id:1,
                     txt:'顺序练习',
-                    icon:'../../static/image/exercise/icon_sxlx.png'
+                    icon:require('../../static/image/exercise/icon_sxlx.png')
                 },
                 {
                     id:2,
                     txt:'随机练习',
-                    icon:'../../static/image/exercise/icon_sjlx.png'
+                    icon:require('../../static/image/exercise/icon_sjlx.png')
                 },
                 {
                     id:3,
                     txt:'模拟考试',
-                    icon:'../../static/image/exercise/icon_mnks.png'
+                    icon:require('../../static/image/exercise/icon_mnks.png')
                 },
                 {
                     id:4,
                     txt:'我的错题',
-                    icon:'../../static/image/exercise/icon_wdct.png'
+                    icon:require('../../static/image/exercise/icon_wdct.png')
                 },
                 {
                     id:5,
                     txt:'我的收藏',
-                    icon:'../../static/image/exercise/icon_wdsc.png'
+                    icon:require('../../static/image/exercise/icon_wdsc.png')
                 }
             ],
             questionArr:[]

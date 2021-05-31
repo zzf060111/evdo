@@ -1,6 +1,6 @@
 <template>
     <div class="questions" :style="`height:${screenHeight-60}px`">
-        <img src="../../static/image/question/back.png" alt="" class="jumpBack" @click="jumpBack">
+        <img :src="require('../../static/image/question/back.png')" alt="" class="jumpBack" @click="jumpBack">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
@@ -28,7 +28,7 @@ import {paperLeave} from '../services/api/exercise'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'4',
             arrTxt:[],
             idObj:{},
@@ -55,7 +55,7 @@ export default {
         ...mapMutations(["windowChange"]),
         // 返回上一页
         jumpBack(){
-            this.$router.go(-1);
+            this.$router.push({path:'/exercise'});
         },
         // 改变
         changetimeKs(str){

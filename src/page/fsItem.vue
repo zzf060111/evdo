@@ -6,7 +6,7 @@
         </div>
         <div class="itemBox" v-if="objItem">
             <div class="title">
-                <img src="../../static/image/fslist/back.png" class="back" @click="back">
+                <img :src="require('../../static/image/fslist/back.png')" class="back" @click="back">
                 {{objItem.post_title}}
             </div>
             <p class="time">时间：{{objItem.published_time}}</p>
@@ -25,7 +25,7 @@ import {articles} from '../services/api/fsList'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'6',
             objItem:'',
         }

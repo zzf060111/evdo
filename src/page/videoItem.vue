@@ -4,10 +4,10 @@
             <div class="topNav">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
             </div>
-            <img src="../../static/image/fslist/backr.png" alt="" class="back" @click="backJump">
+            <img :src="require('../../static/image/fslist/backr.png')" alt="" class="back" @click="backJump">
             <div class="videoBox" :style="`height:${screenHeight-160}px`">
                 <div class="video" :style="`height:${screenHeight-210}px`">
-                    <img src="../../static/image/fslist/stop.png" alt="" class="stopIcon" v-if="isStop" @click="playVideoi">
+                    <img :src="require('../../static/image/fslist/stop.png')" alt="" class="stopIcon" v-if="isStop" @click="playVideoi">
                     <video ref="myVideo" :src="videoObj.video_url" controls :poster="videoObj.thumbnail"></video>
                     <div>
                         <transition name="fade">
@@ -16,10 +16,10 @@
                             </div>
                         </transition>
                         <p @click="fenxiang">
-                            <img src="../../static/image/fslist/fenxiang.png" alt="">分享
+                            <img :src="require('../../static/image/fslist/fenxiang.png')" alt="">分享
                         </p>
                         <p @click="addSc" :class="videoObj.is_favorite?'isSc':''">
-                            <img :src="videoObj.is_favorite?'../../static/image/fslist/star1.png':'../../static/image/fslist/star.png'" alt="">收藏
+                            <img :src="videoObj.is_favorite?require('../../static/image/fslist/star1.png'):require('../../static/image/fslist/star.png')" alt="">收藏
                         </p>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ import {videoDetail,addfavorites,delfavorites} from '../services/api/modelVideo'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'9',
             isStop:true,
             isfenx:false,

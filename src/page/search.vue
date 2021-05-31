@@ -16,15 +16,15 @@
         </div>
         <div class="publicBox" v-if="twoNavIndex==1&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
+                <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
                 <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                     <img v-lazy="item.thumbnail">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
+                        <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">{{item.view_count}}
+                        <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}
                     </div>
                 </div>
                 <div class="txtDown">
@@ -38,17 +38,17 @@
         </div>
         <div class="publicBox boxyxsp" v-if="twoNavIndex==2&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
+                <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
                 <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                     <img v-lazy="item.thumbnail">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
+                        <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">{{item.hits}}
+                        <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}
                     </div>
-                    <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
+                    <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
                 </div>
                 <div class="txtDown">
                     <h2>{{item.title}}</h2>
@@ -83,7 +83,7 @@ import {info} from '../services/api/personal'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'0',
             twoNavIndex:'1',
             currentPage:1,
@@ -105,6 +105,7 @@ export default {
             data1['type']='M';
             data1['page']=1,
             data1['keywords']=this.$route.query.val?this.$route.query.val:'';
+            data1['limit']=18;
         }
         this.islogin(data1);
     },

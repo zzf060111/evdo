@@ -72,6 +72,5 @@ export default new Router({
     } else { 
       return { x: 0, y: 0 } 
     } 
-  },
-  mode:'history'
+  }
 })

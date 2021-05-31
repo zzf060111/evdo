@@ -82,8 +82,8 @@ export default {
 .leftCount .el-message-box__content{
   text-align: left !important;
 }
-.errorAlert .el-button{
-  background-color: #FF5555;
-  border-color: #FF5555;
+.errorAlert.el-message-box .el-button{
+  background-color: #FF5555 !important;
+  border-color: #FF5555  !important;
 }
 </style>

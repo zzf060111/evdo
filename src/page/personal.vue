@@ -9,17 +9,17 @@
                 <img :src="arrUser.avatar" class="headImg" v-if="arrUser.avatar">
                 <h3 v-if="arrUser.nickname">{{arrUser.nickname}}</h3>
                 <div class="sign" v-if="!arrUser.is_enterprise" :style="arrUser.clock_in?'color:#ff5555':''" @click="setClockIn">
-                    <img :src="arrUser.clock_in?'../../static/image/personal/signin2.png':'../../static/image/personal/signin@2x.png'" class="bj">
+                    <img :src="arrUser.clock_in?require('../../static/image/personal/signin2.png'):require('../../static/image/personal/signin@2x.png')" class="bj">
                     {{arrUser.clock_in?'已签到':'签到'}}
                 </div>
             </div>
             <div class="cardBox card1">
-                <img src="../../static/image/personal/bg_members@2x.png" class="bj">
-                <p><img src="../../static/image/personal/icon_members3@2x.png" v-if="arrUser.is_enterprise"> <span :class="arrUser.is_enterprise?'':'changWidth'">{{arrUser.is_enterprise?arrUser.organization+'-'+arrUser.class:'加入企业用户组，共享全站权限'}}</span></p>
+                <img :src="require('../../static/image/personal/bg_members@2x.png')" class="bj">
+                <p><img :src="require('../../static/image/personal/icon_members3@2x.png')" v-if="arrUser.is_enterprise"> <span :class="arrUser.is_enterprise?'':'changWidth'">{{arrUser.is_enterprise?arrUser.organization+'-'+arrUser.class:'加入企业用户组，共享全站权限'}}</span></p>
                 <div class="btn" @click="jumpJoin">{{btnTxt1}}</div>
             </div>
             <div class="cardBox card2">
-                <img src="../../static/image/personal/bg_members@2x.png" class="bj">
+                <img :src="require('../../static/image/personal/bg_members@2x.png')" class="bj">
                 <p>{{arrUser.member_in?'专业版会员期限至'+`${new Date(arrUser.member_at*1000).getFullYear()}年${new Date(arrUser.member_at*1000).getMonth()+1}月${new Date(arrUser.member_at*1000).getDate()}日`:'开通专业版VIP'}}</p>
                 <div class="btn" @click="jumpMember">{{arrUser.member_in?'点击续费':'点击开通'}}</div>
             </div>
@@ -68,31 +68,31 @@ import {info,setClockIn,joinReq} from '../services/api/personal'
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'8',
             rightShow:'',
             navArr:[
                 {
                     id:'1',
-                    img:'../../static/image/personal/icon_collection@2x.png',
+                    img:require('../../static/image/personal/icon_collection@2x.png'),
                     str:'我的收藏',
                     isSel:false
                 },
                 {
                     id:'2',
-                    img:'../../static/image/personal/icon_help@2x.png',
+                    img:require('../../static/image/personal/icon_help@2x.png'),
                     str:'帮助中心',
                     isSel:false
                 },
                 {
                     id:'3',
-                    img:'../../static/image/personal/icon_information@2x.png',
+                    img:require('../../static/image/personal/icon_information@2x.png'),
                     str:'个人信息',
                     isSel:true
                 },
                 {
                     id:'4',
-                    img:'../../static/image/personal/icon_function@2x.png',
+                    img:require('../../static/image/personal/icon_function@2x.png'),
                     str:'功能介绍',
                     isSel:false
                 }
@@ -280,6 +280,13 @@ export default {
     }
 }
 </script>
+<style>
+    .joinIn.el-dialog{
+		width: 450px;
+		height: 420px;
+		border-radius: 10px;
+	}
+</style>
 <style scoped>
     .bj{
         width: 100%;

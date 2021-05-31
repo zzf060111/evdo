@@ -83,3 +83,7 @@ export function Askreply(params){
 export function Askend(params){
     return http.post(`v1/account/ask/end`,params)
 }
+// 解绑微信QQ
+export function oauth2unbind(params){
+    return http.post(`v1/user/oauth2unbind`,params)
+}

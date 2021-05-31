@@ -22,18 +22,18 @@
 			</el-menu-item>
 	  	</el-menu>
 		<div class="searchBox">
-			<img src="../../static/image/top/icon_search@2x.png" @click="searchAll">
+			<img :src="require('../../static/image/top/icon_search@2x.png')" @click="searchAll">
 			<input type="text" placeholder="搜索标本、视频以及更多内容"  @input="changVal($event)" :value="searchval">
 			<div class="btnBox">
 				<p @click="searchAll">搜全站</p>|<p @click="searchPage">搜本页</p>
 			</div>
 		</div>
 		<div class="userBox" @click="isLogin">
-			<img :src="arrUser?arrUser.avatar?arrUser.avatar:'../../static/image/top/icon_user@2x.png':'../../static/image/top/icon_user@2x.png'">
+			<img :src="arrUser?arrUser.avatar?arrUser.avatar:require('../../static/image/top/icon_user@2x.png'):require('../../static/image/top/icon_user@2x.png')">
 			<p>{{arrUser?arrUser.nickname?arrUser.nickname:'用户名':'用户名'}}</p>
 		</div>
 		<!-- 登陆、注册、忘记密码 -->
-		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center>
+		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="login">
 			<el-form :model="logoform" label-width="80px" :rules="logorules" ref="logoform">
 				<el-form-item label="账号" prop="name">
 					<el-input v-model="logoform.name" type="text" placeholder="请输入手机号或邮箱"></el-input>
@@ -48,8 +48,8 @@
 				<div class="fdiv1">还没有账号？<span @click="openReg">注册</span></div>
 				<div class="fdiv2">用第三方账号登录</div>
 				<div class="fdiv3">
-					<img src="../../static/image/top/icon_qq@2x.png" @click="thirdParty('qq')">
-					<img src="../../static/image/top/icon_wechat@2x.png" @click="thirdParty('wechat')">
+					<img :src="require('../../static/image/top/icon_qq@2x.png')" @click="thirdParty('qq')">
+					<img :src="require('../../static/image/top/icon_wechat@2x.png')" @click="thirdParty('wechat')">
 				</div>
 			</div>
 		</el-dialog>
@@ -107,17 +107,32 @@
 			<div class="txt">
 				 温馨提示您，版本更新后，取消会员积分充值规则，现可开通专业版会员享更多资源，或加入组织成为企业版用户，享全站查看权限。您之前的会员积分现已转换成超值会员时长，详情可至个人中心查看。如有疑问，请扫描下方二维码，关注“医维度”公众号，咨询客服人员。感谢您的配合！
 			</div>
-			<img src="../../static/image/top/pic_ewm@2x.png" alt="">
+			<img :src="require('../../static/image/top/pic_ewm@2x.png')" alt="">
 			<p>扫描二维码，关注医维度公众号</p>
+		</el-dialog>
+		<!-- 绑定手机 -->
+        <el-dialog title="绑定手机" :visible.sync="bindPhone" :append-to-body="true" :close-on-click-modal="false" center custom-class="bindPhone" top="13vh">
+			<el-form :model="phoneform" label-width="80px" :rules="phonerules" ref="phoneform">
+				<el-form-item label="手机号" prop="phone">
+					<el-input v-model="phoneform.phone" type="text" placeholder="请输入手机号"></el-input>
+				</el-form-item>
+                <el-form-item label="验证码" prop="regtxt">
+					<el-input v-model="phoneform.regtxt" type="text" placeholder="请输入验证码"></el-input>
+                    <p @click="getForgetRegb">{{forgetStr}}</p>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="phoneBind('phoneform')">确 定</el-button>
+			</div>
 		</el-dialog>
   </div>
 </template>
 
 <script>
 import store from '../vuex/store'
-import {mapState,mapMutations} from 'vuex';
-import {register,getUserCode,passwordReset,login,socials} from '../services/api/topnav';
-import {info} from '../services/api/personal'
+import {mapState,mapMutations} from 'vuex'
+import {register,getUserCode,passwordReset,login,socials,wechatwebcallback,mobilebind} from '../services/api/topnav'
+import {info,user_mobile_code} from '../services/api/personal'
 export default {
 	data () {
 		// 验证手机号
@@ -194,7 +209,22 @@ export default {
 				truePwd:'',
 				regStr:'',
 				inviteStr:''
-			}
+			},
+			bindPhone:false,
+			phoneform:{
+                phone:'',
+                regtxt:''
+            },
+            phonerules:{
+                phone:[
+                    { required: true, message: '请输入手机号', trigger: 'blur' },
+                    {validator: checkPhone, trigger: 'blur'}
+                ],
+                regtxt:[
+                    { required: true, message: '请输入验证码', trigger: 'blur' },
+                ]
+            },
+			bindData:{}
 		}
 	},
 	store,
@@ -203,6 +233,22 @@ export default {
 		this.searchstr=this.searchval;
 		// 判断确认弹窗
 		this.toastVisible=localStorage.getItem('toastVisible')?false:true;
+		// 判断登陆弹窗
+		console.log(this.getQueryString('code'))
+		if(this.getQueryString('code')){
+			let data={};
+			data['code']=this.getQueryString('code');
+			wechatwebcallback(data).then((res)=>{
+				if(res.data.code==422){
+					this.bindPhone=true;
+					this.bindData=res.data.data;
+				}else if(res.data.code==0){
+					this.alertTxt({'msg':res.data.msg,'type':'success'});
+					this.changeUser(JSON.stringify(res.data.data));
+					localStorage.setItem('token',res.data.data.token);
+				}
+			})
+		}
 		// 判断获取验证码倒计时
 		if(localStorage.getItem('endTime')&&localStorage.getItem('endTime')>new Date().getTime()){
 			this.forgetTime();
@@ -330,6 +376,34 @@ export default {
 				});
 			}
 		},
+		// 获取验证码绑定手机
+		getForgetRegb(){
+			const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
+			if(reg.test(this.phoneform.phone)){
+				if(this.forgetStr=='获取验证码'){
+                    user_mobile_code({mobile:this.phoneform.phone,type:'none'}).then((res)=>{
+                        if(res.data.code==0){
+							this.alertTxt({'msg':res.data.msg,'type':'success'});
+							localStorage.setItem('endTime',new Date().getTime()+60000);
+							this.forgetTime();
+						}else{
+							this.alertTxt({'msg':res.data.msg,'type':'error'});
+						}
+                    })
+				}else{
+					this.$message({
+						showClose: true,
+						message: '请在倒计时结束后获取验证码',
+					});
+				}
+			}else{
+				this.$message({
+					showClose: true,
+					message: '请输入有效的手机号',
+					type: 'error',
+				});
+			}
+		},
 		// 确定更改密码
 		changePwd(formName){
 			this.$refs[formName].validate((valid)=>{
@@ -441,7 +515,7 @@ export default {
 		thirdParty(str){
 			let data={};
 			data['type']=str;
-			data['path']='http://127.0.0.1:8080/';
+			data['path']='web'+this.$route.path;
 			socials(data).then((res)=>{
 				if(res.data.code==0){
 					window.location.href=res.data.data;
@@ -449,6 +523,36 @@ export default {
 					this.alertTxt({'msg':res.data.msg,'type':'error'});
 				}
 			})
+		},
+		// 绑定手机号
+		phoneBind(formName){
+			this.$refs[formName].validate((valid)=>{
+				if(valid){
+					let data=this.bindData;
+					data['mobile']=this.phoneform.phone;
+					data['mobile_code']=this.phoneform.regtxt;
+					mobilebind(data).then((res)=>{
+						if(res.data.code==0){
+							this.alertTxt({'msg':res.data.msg,'type':'success'});
+							this.changeUser(JSON.stringify(res.data.data));
+							localStorage.setItem('token',res.data.data.token);
+							this.bindPhone=false;
+						}else{
+							this.alertTxt({'msg':res.data.msg,'type':'error'});
+						}
+					})
+				}
+			})
+		},
+		// 获取路径参数
+		getQueryString(name) {
+			let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			if(window.location.hash.indexOf("?") < 0){
+					return null;
+			}
+			let r = window.location.hash.split("?")[1].match(reg); 　　
+			if (r != null) return decodeURIComponent(r[2]); 
+		　　    return null; 
 		}
 	},
 	computed:mapState(["forgetReg","forgetStr","searchval","arrUser"]),
@@ -458,10 +562,13 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 	/* 登录、注册、忘记密码 */
-	.el-dialog{
+	.el-dialog,.login.el-dialog,.bindPhone.el-dialog{
 		width: 450px;
 		height: 420px;
 		border-radius: 10px;
+	}
+	.bindPhone.el-dialog{
+		height: 300px;
 	}
 	.forget.el-dialog{
 		width: 400px;

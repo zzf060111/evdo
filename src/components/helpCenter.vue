@@ -18,7 +18,7 @@
                                 <div v-show="item.is_ask">
                                     <div v-for="(item1,index1) of item.reply" :key="index1">
                                         <div class="topImg">
-                                            <img :src="item1.ask?arrUser.avatar:'../../static/image/personal/touxiang1@2x.png'" alt="">
+                                            <img :src="item1.ask?arrUser.avatar:require('../../static/image/personal/touxiang1@2x.png')" alt="">
                                             <div><span :style="item1.ask?'color:#EB4847':'color:#34C758'">{{item1.ask?'追问：':'回答：'}}</span>{{item1.content}}</div>
                                         </div>
                                         <div class="time">
@@ -54,7 +54,7 @@
                     <vue-scroll :ops="ops" style="width:100%;height:100%;">
                     <el-collapse accordion>
                         <el-collapse-item :title="item.title" v-for="(item,index) of gfList" :key="index">
-                            <img src="../../static/image/personal/touxiang1@2x.png" alt="">
+                            <img :src="require('../../static/image/personal/touxiang1@2x.png')" alt="">
                             <div>
                                 {{item.reply[0].content}}
                                 <p style="text-align:right">{{item.reply[0].created_at}}</p>

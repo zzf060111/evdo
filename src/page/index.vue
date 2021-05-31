@@ -7,7 +7,7 @@
         <div class="carouse">
             <el-carousel>
                 <el-carousel-item>
-                    <img v-lazy="'../../static/image/index/banner@2x.png'">
+                    <img v-lazy="require('../../static/image/index/banner@2x.png')">
                 </el-carousel-item>
             </el-carousel>
         </div>
@@ -17,50 +17,50 @@
         </div>
         <div class="productBox">
             <div class="boxleft" @mouseenter="mEnter($event,'left1')" @mouseleave="mLeave($event,'left1')" @click="jumpfslist()">
-                <img v-lazy="'../../static/image/index/pic1@2x.png'" class="bj">
+                <img v-lazy="require('../../static/image/index/pic1@2x.png')" class="bj">
                 <h2>医维度在线版</h2>
                 <p>
                     医维度虚拟仿真教学软件系统是一款在线多终端数字化虚拟仿真医学平台，包含Web端、PC客户端、手机APP，所有终端数据同步，系统内容实时更新。卓越的跨平台3D渲染引擎可以在任意终端流畅运行，准确还原组织、器官的材质纹理与形态。
                 </p>
-                <img src="../../static/image/index/right.png" class="rd left1">
+                <img :src="require('../../static/image/index/right.png')" class="rd left1">
             </div>
             <div class="boxright">
                 <div class="top">
                     <div @mouseenter="mEnter($event,'right1')" @mouseleave="mLeave($event,'right1')" @click="jumpfslist()">
-                        <img v-lazy="'../../static/image/index/pic2@2x.png'" class="bj">
+                        <img v-lazy="require('../../static/image/index/pic2@2x.png')" class="bj">
                         <h2>医维度在线版</h2>
                         <h2>企业定制独立部署版</h2>
                         <p>重建人体精细模型达一万多件，结构位置准确，形态纹理逼真</p>
-                        <img src="../../static/image/index/right.png" class="rd right1">
+                        <img :src="require('../../static/image/index/right.png')" class="rd right1">
                     </div>
                     <div @mouseenter="mEnter($event,'right2')" @mouseleave="mLeave($event,'right2')" @click="jumpfslist()">
-                        <img v-lazy="'../../static/image/index/pic4@2x.png'" class="bj">
+                        <img v-lazy="require('../../static/image/index/pic4@2x.png')" class="bj">
                         <h2>医维度单机版系列软件</h2>
                         <p>一点触控旋转，两点触控缩放与平移，鼠标左键旋转，滚轮</p>
                         <p>缩放，右键平移</p>
-                        <img src="../../static/image/index/right.png" class="rd right2">
+                        <img :src="require('../../static/image/index/right.png')" class="rd right2">
                     </div>
                 </div>
                 <div class="down">
                     <div @mouseenter="mEnter($event,'right3')" @mouseleave="mLeave($event,'right3')" @click="jumpfslist()">
-                        <img v-lazy="'../../static/image/index/pic3@2x.png'" class="bj">
+                        <img v-lazy="require('../../static/image/index/pic3@2x.png')" class="bj">
                         <h2>医维度XR系列</h2>
                         <p>配合VR眼镜在VR模式下浏览标本，可对标本进行贴图切换</p>
-                        <img src="../../static/image/index/right.png" class="rd right3">
+                        <img :src="require('../../static/image/index/right.png')" class="rd right3">
                     </div>
                     <div @mouseenter="mEnter($event,'right4')" @mouseleave="mLeave($event,'right4')" @click="jumpfslist()">
-                        <img v-lazy="'../../static/image/index/pic5@2x.png'" class="bj">
+                        <img v-lazy="require('../../static/image/index/pic5@2x.png')" class="bj">
                         <h2>九大系统</h2>
                         <h2>三维科普动画</h2>
                         <p>反色显示切片用以观察</p>
-                        <img src="../../static/image/index/right.png" class="rd right4">
+                        <img :src="require('../../static/image/index/right.png')" class="rd right4">
                     </div>
                     <div @mouseenter="mEnter($event,'right5')" @mouseleave="mLeave($event,'right5')" @click="jumpfslist()">
-                        <img v-lazy="'../../static/image/index/pic6@2x.png'" class="bj">
+                        <img v-lazy="require('../../static/image/index/pic6@2x.png')" class="bj">
                         <h2>在线三维</h2>
                         <h2>全景展馆</h2>
                         <p>全屏观看、收藏、分享</p>
-                        <img src="../../static/image/index/right.png" class="rd right5">
+                        <img :src="require('../../static/image/index/right.png')" class="rd right5">
                     </div>
                 </div>
             </div>
@@ -95,7 +95,7 @@
     export default {
         data(){
             return{
-                topIcon:'../../static/image/top/logo@2x.png',
+                topIcon:require('../../static/image/top/logo@2x.png'),
                 activeIndex:'1'
             }
         },

@@ -28,17 +28,17 @@
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <div class="box boxJcyx" v-if="showValue&&twoNavIndex==1&&arr.length>0">
                     <div class="pubItem" v-for="(item,index) of arr" :key="index">
-                        <img src="../../static/image/professional/bg_changyong@2x.png" class="bj">
+                        <img :src="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
                         <div class="imgTop">
                             <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
                                 <p>{{(currentPage-1)*15+(index+1)}}</p>
-                                <img v-show="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
+                                <img v-show="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
                             </div>
                             <div class="iconDown">
-                                <img src="../../static/image/professional/icon_view@2x.png">{{item.price}}
+                                <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.price}}
                             </div>
-                            <img :src="item.isSel==0?'../../static/image/personal/icon_wgx@2x.png':'../../static/image/personal/icon_selected@2x.png'" class="selBtn" @click="clickSel(index,item.isSel,item.object_id)">
+                            <img :src="item.isSel==0?require('../../static/image/personal/icon_wgx@2x.png'):require('../../static/image/personal/icon_selected@2x.png')" class="selBtn" @click="clickSel(index,item.isSel,item.object_id)">
                         </div>
                         <div class="txtDown">
                             <h2>{{item.title}}</h2>
@@ -51,18 +51,18 @@
                 </div>
                 <div class="box boxyxsp" v-if="showValue&&twoNavIndex==2&&arr.length>0">
                     <div class="pubItem" v-for="(item,index) of arr" :key="index">
-                        <img src="../../static/image/enterprise/bg_yxsp@2x.png" class="bj">
+                        <img :src="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
                         <div class="imgTop">
                             <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
                                 <p>{{(currentPage-1)*15+(index+1)}}</p>
-                                <img v-show="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
+                                <img v-show="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
                             </div>
                             <div class="iconDown">
-                                <img src="../../static/image/professional/icon_view@2x.png">{{item.price}}
+                                <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.price}}
                             </div>
-                            <img src="../../static/image/enterprise/icon_bf@2x.png" class="module"  @click="lookItem(item.object_id,item.need_vip)">
-                            <img :src="item.isSel==0?'../../static/image/personal/icon_wgx@2x.png':'../../static/image/personal/icon_selected@2x.png'" class="selBtn" @click="clickSel(index,item.isSel,item.object_id)">
+                            <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module"  @click="lookItem(item.object_id,item.need_vip)">
+                            <img :src="item.isSel==0?require('../../static/image/personal/icon_wgx@2x.png'):require('../../static/image/personal/icon_selected@2x.png')" class="selBtn" @click="clickSel(index,item.isSel,item.object_id)">
                         </div>
                         <div class="txtDown">
                             <h2>{{item.title}}</h2>

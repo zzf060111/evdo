@@ -9,10 +9,10 @@
             :http-request="uploadFile"
             :show-file-list="false"
             :before-upload="beforeAvatarUpload">
-            <img src="../../static/image/personal/icon_xiangji@2x.png">
+            <img :src="require('../../static/image/personal/icon_xiangji@2x.png')">
             </el-upload>
             <img v-if="arrUser.avatar" :src="arrUser.avatar" class="avatar">
-            <img v-else src="../../static/image/personal/touxiang1@2x.png" class="avatar">
+            <img v-else :src="require('../../static/image/personal/touxiang1@2x.png')" class="avatar">
         </div>
         <div class="formBox">
             <el-form  label-width="100px" >
@@ -33,7 +33,7 @@
             <div class="item">
                 <div class="left">
                     <div>
-                        <img :src="arrUser.mobile?'../../static/image/personal/icon_phone2@2x.png':'../../static/image/personal/icon_phone@2x.png'">
+                        <img :src="arrUser.mobile?require('../../static/image/personal/icon_phone2@2x.png'):require('../../static/image/personal/icon_phone@2x.png')">
                         手机
                     </div>
                     <p>{{arrUser.mobile?arrUser.mobile:'未绑定'}}</p>
@@ -43,7 +43,7 @@
             <div class="item">
                 <div class="left">
                     <div>
-                        <img :src="arrUser.weixin?'../../static/image/personal/icon_wechat2@2x.png':'../../static/image/personal/icon_wechat@2x.png'">
+                        <img :src="arrUser.weixin?require('../../static/image/personal/icon_wechat2@2x.png'):require('../../static/image/personal/icon_wechat@2x.png')">
                         微信
                     </div>
                     <p>{{arrUser.weixin?'已绑定':'未绑定'}}</p>
@@ -53,7 +53,7 @@
             <div class="item">
                 <div class="left">
                     <div>
-                        <img :src="arrUser.qq?'../../static/image/personal/icon_qq2@2x.png':'../../static/image/personal/icon_qq@2x.png'">
+                        <img :src="arrUser.qq?require('../../static/image/personal/icon_qq2@2x.png'):require('../../static/image/personal/icon_qq@2x.png')">
                         QQ
                     </div>
                     <p>{{arrUser.qq?'已绑定':'未绑定'}}</p>
@@ -110,7 +110,8 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
-import {logout,info,profile,password,user_mobile_code,mobileReg} from '../services/api/personal'
+import {logout,info,profile,password,user_mobile_code,mobileReg,oauth2unbind} from '../services/api/personal'
+import {socials} from '../services/api/topnav'
 import axios from 'axios'
 export default {
     data(){
@@ -142,9 +143,9 @@ export default {
         return{
             imageUrl:'',
             bindArr:[
-                {txt:'手机',isbind:1,bindtxt:'18790692643',btntxt:'修改手机',img1:'../../static/image/personal/icon_phone@2x.png',img2:'../../static/image/personal/icon_phone2@2x.png'},
-                {txt:'微信',isbind:1,bindtxt:'已绑定',btntxt:'解绑',img1:'../../static/image/personal/icon_wechat@2x.png',img2:'../../static/image/personal/icon_wechat2@2x.png'},
-                {txt:'QQ',isbind:1,bindtxt:'已绑定',btntxt:'解绑',img1:'../../static/image/personal/icon_qq@2x.png',img2:'../../static/image/personal/icon_qq2@2x.png'}
+                {txt:'手机',isbind:1,bindtxt:'18790692643',btntxt:'修改手机',img1:require('../../static/image/personal/icon_phone@2x.png'),img2:require('../../static/image/personal/icon_phone2@2x.png')},
+                {txt:'微信',isbind:1,bindtxt:'已绑定',btntxt:'解绑',img1:require('../../static/image/personal/icon_wechat@2x.png'),img2:require('../../static/image/personal/icon_wechat2@2x.png')},
+                {txt:'QQ',isbind:1,bindtxt:'已绑定',btntxt:'解绑',img1:require('../../static/image/personal/icon_qq@2x.png'),img2:require('../../static/image/personal/icon_qq2@2x.png')}
             ],
             changeName:false,
             nameform:{
@@ -323,12 +324,32 @@ export default {
                     confirmButtonText:'解 绑',
                     center:true,
                     customClass:'errorAlert',
-                    callback:()=>{
-                        console.log('确定')
+                    callback:(action)=>{
+                        if(action=='confirm'){
+                            let data={};
+                            data['type']='wechat';
+                            oauth2unbind(data).then((res)=>{
+                                if(res.data.code==0){
+                                    this.alertTxt({msg:res.data.msg,type:'success'});
+                                    this.isLogin();
+                                }else{
+                                    this.alertTxt({msg:res.data.msg,type:'error'});
+                                }
+                            })
+                        }
                     }
                 })
             }else{
-
+                let data={};
+                data['type']='wechat';
+                data['path']='web/#'+this.$route.path;
+                socials(data).then((res)=>{
+                    if(res.data.code==0){
+                        window.location.href=res.data.data;
+                    }else{
+                        this.alertTxt({'msg':res.data.msg,'type':'error'});
+                    }
+                })
             }
         },
         // 解绑/绑定QQ
@@ -338,8 +359,10 @@ export default {
                     confirmButtonText:'解 绑',
                     center:true,
                     customClass:'errorAlert',
-                    callback:()=>{
-                        console.log('确定')
+                    callback:(action)=>{
+                        if(action=='confirm'){
+                            console.log('确定')
+                        }
                     }
                 })
             }else{
@@ -431,6 +454,10 @@ export default {
     .el-dialog.changePhone{
         height: 300px;
     }
+    .el-dialog.changeName,.el-dialog.changePhone,.el-dialog.changePwd{
+        width: 450px;
+        border-radius: 10px;
+    }
 </style>
 <style scoped>
     .personalItem{
@@ -514,6 +541,9 @@ export default {
         text-align: center;
         line-height: 40px;
     }
+    .personalItem .bindBox .item .btn:hover{
+        cursor: pointer;
+    }
     .personalItem .bindBox .item .btn.isbind{
         background-color: transparent;
         border: 1px solid #6495ED;
@@ -527,5 +557,8 @@ export default {
         line-height: 40px;
         color: #FF5555;
         margin-top: 20px;
+    }
+    .personalItem .loginOut:hover{
+        cursor: pointer;
     }
 </style>

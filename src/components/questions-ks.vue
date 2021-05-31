@@ -10,7 +10,7 @@
             <div class="quSelBox" v-if="selArr.length>0">
                 <div class="quSelItem" v-for="(item,index) of selArr" :key="index">
                     <div class="icon" v-show="item.isSel==0&&item.txt" @click="selAnswer(index,item.id)"></div>
-                    <img src="../../static/image/question/icon_xz.png" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
+                    <img :src="require('../../static/image/question/icon_xz.png')" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
                     <p v-show="item.txt">{{zmArr[index]}}.{{item.txt}}</p>
                 </div>
             </div>
@@ -19,7 +19,7 @@
             </div> -->
             <div class="quBottom">
                 <div class="left" v-show="questionType==0">
-                    <img :src="stopVisible?'../../static/image/question/icon_djs2.png':'../../static/image/question/icon_djs.png'" alt="" @click="pauseTime">
+                    <img :src="stopVisible?require('../../static/image/question/icon_djs2.png'):require('../../static/image/question/icon_djs.png')" alt="" @click="pauseTime">
                     <p>倒计时：{{ksTime}}</p>
                     <p>提示：{{queArr[indexd].question.type==1?'提示：判断题，请判断对错':'单选题，请选择你认为正确的答案'}}</p>
                 </div>
@@ -45,18 +45,18 @@
                 </div> -->
                 <div class="left" v-show="questionType==0">
                     <div>
-                        <img src="../../static/image/question/icon_xz.png" alt="">已答：{{yesAnswer}}题
+                        <img :src="require('../../static/image/question/icon_xz.png')" alt="">已答：{{yesAnswer}}题
                     </div>
                     <div>
-                        <img src="../../static/image/question/round.png" alt="">未答：{{noAnswer}}题
+                        <img :src="require('../../static/image/question/round.png')" alt="">未答：{{noAnswer}}题
                     </div>
                 </div>
                 <div class="left" v-show="questionType==1">
                     <div>
-                        <img src="../../static/image/question/icon_yes.png" alt="">正确：{{yesCount}}题
+                        <img :src="require('../../static/image/question/icon_yes.png')" alt="">正确：{{yesCount}}题
                     </div>
                     <div>
-                        <img src="../../static/image/question/icon_error.png" alt="">错误：{{errorCount+noAnswer}}题
+                        <img :src="require('../../static/image/question/icon_error.png')" alt="">错误：{{errorCount+noAnswer}}题
                     </div>
                 </div>
                 <!-- <div class="right">
@@ -92,15 +92,15 @@
             </div>
         </div>
         <!-- 打卡 -->
-        <img src="../../static/image/question/icon_dk.png" alt="" class="dkShow" @click="trueDk">
+        <img :src="require('../../static/image/question/icon_dk.png')" alt="" class="dkShow" @click="trueDk">
         <transition name="slideRight">
         <div class="dkBox" v-show="isDk">
             <div class="title">
-                <img src="../../static/image/question/icon_back.png" alt="" @click="isDk=false">
+                <img :src="require('../../static/image/question/icon_back.png')" alt="" @click="isDk=false">
                 自测日历
             </div>
             <div class="centerBox">
-                <img src="../../static/image/question/pic_zcrl.png" alt="" class="bj">
+                <img :src="require('../../static/image/question/pic_zcrl.png')" alt="" class="bj">
                 <div class="txtBox">
                     <div>
                         <h2>我</h2>
@@ -118,7 +118,7 @@
                 <p></p>
             </div>
             <div class="rewardTxt">
-                <img src="../../static/image/question/pic_zcrl2.png" alt="">
+                <img :src="require('../../static/image/question/pic_zcrl2.png')" alt="">
                 <div class="left">
                     <p>1. 每日坚持自测可获得医维度VIP限时体验福利</p>
                     <p>2. 连续自测打卡天数越多，获得的福利越大</p>
@@ -132,7 +132,7 @@
 			<div class="textCount">
                 <p>当前做题进度{{yesAnswer}}/{{yesAnswer+noAnswer}}题</p>
                 <div>
-                    <img src="../../static/image/question/icon_djstime.png" alt="">倒计时{{ksTime}}
+                    <img :src="require('../../static/image/question/icon_djstime.png')" alt="">倒计时{{ksTime}}
                 </div>
             </div>
 			<div slot="footer" class="dialog-footer">
@@ -144,7 +144,7 @@
         <el-dialog title="" :visible.sync="ishandeVisible" :append-to-body="true" :close-on-click-modal="false" :show-close="false" center custom-class="stop" top="30vh">
 			<div class="textCount">
                 <div>
-                    <img src="../../static/image/question/icon_djstime.png" alt="">剩余时间{{ksTime}}
+                    <img :src="require('../../static/image/question/icon_djstime.png')" alt="">剩余时间{{ksTime}}
                 </div>
                 <p> 已答题数：{{yesAnswer}} | 未答题数{{noAnswer}}</p>
             </div>

@@ -59,21 +59,21 @@
                 <div class="payTypebox">
                     <div class="payTypeItem">
                         <div class="left">
-                            <img src="../../static/image/personal/weixinpay.png" alt="">
+                            <img :src="require('../../static/image/personal/weixinpay.png')" alt="">
                             <p>微信支付</p>
                         </div>
                         <div class="right" @click="selPayType(1)">
-                            <img src="../../static/image/personal/paySel.png" alt="" v-if="payValue==1">
+                            <img :src="require('../../static/image/personal/paySel.png')" alt="" v-if="payValue==1">
                             <p v-else></p>
                         </div>
                     </div>
                     <div class="payTypeItem">
                         <div class="left">
-                            <img src="../../static/image/personal/zfbpay.png" alt="">
+                            <img :src="require('../../static/image/personal/zfbpay.png')" alt="">
                             <p>支付宝支付</p>
                         </div>
                         <div class="right" @click="selPayType(2)">
-                            <img src="../../static/image/personal/paySel.png" alt="" v-if="payValue==2">
+                            <img :src="require('../../static/image/personal/paySel.png')" alt="" v-if="payValue==2">
                             <p v-else></p>
                         </div>
                     </div>
@@ -414,10 +414,11 @@ export default {
     .vipTost.el-dialog{
         width: 350px;
         height: 450px;
+        border-radius: 10px 10px 0 0;
     }
     .vipTost .el-dialog__header{
         background-color: #6495ed;
-        border-radius: 8px 8px 0 0;
+        border-radius: 10px 10px 0 0;
         border-bottom: none;
     }
     .vipTost .el-dialog__title{
@@ -425,6 +426,9 @@ export default {
     }
     .vipTost .el-dialog__headerbtn .el-dialog__close{
         color: #fff;
+    }
+    .vipTost .el-dialog__headerbtn .el-dialog__close:hover{
+        color: #fff !important;
     }
     .vipTost .el-dialog__body{
         width:100%;

@@ -11,17 +11,17 @@
                 </el-menu-item>
             </el-menu>
         </div>
-        <div class="publicBox" v-if="twoNavIndex!=5&&itemArr.length>0">
+        <div class="publicBox" v-if="twoNavIndex!=twoNavList.length&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                <img v-lazy="'../../static/image/professional/bg_changyong@2x.png'" class="bj">
+                <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
                 <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                     <img v-lazy="item.thumbnail">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
+                        <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">{{item.view_count}}
+                        <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}
                     </div>
                 </div>
                 <div class="txtDown">
@@ -30,22 +30,22 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="twoNavIndex!=5&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
+        <div v-else-if="twoNavIndex!=twoNavList.length&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
             暂无数据
         </div>
-        <div class="publicBox boxyxsp"  v-if="twoNavIndex==5&&itemArr.length>0">
+        <div class="publicBox boxyxsp"  v-if="twoNavIndex==twoNavList.length&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                <img v-lazy="'../../static/image/enterprise/bg_yxsp@2x.png'" class="bj">
+                <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
                 <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
                     <img v-lazy="item.thumbnail">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.need_vip" src="../../static/image/professional/icon_members@2x.png">
+                        <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
                     </div>
                     <div class="iconDown">
-                        <img src="../../static/image/professional/icon_view@2x.png">{{item.hits}}
+                        <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}
                     </div>
-                    <img src="../../static/image/enterprise/icon_bf@2x.png" class="module">
+                    <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
                 </div>
                 <div class="txtDown">
                     <h2>{{item.title}}</h2>
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="twoNavIndex==5&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
+        <div v-else-if="twoNavIndex==twoNavList.length&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
             暂无数据
         </div>
         <div class="pageBox" v-if="itemArr.length>0">
@@ -79,7 +79,7 @@ import {professionalCategory,professionalModel} from '../services/api/modelVideo
 export default {
     data(){
         return{
-            topIcon:'../../static/image/top/logo2@2x.png',
+            topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'2',
             twoNavIndex:'',
             twoNavList:[],
@@ -125,13 +125,16 @@ export default {
                 data['type']='M';
                 data['page']=this.currentPage;
                 data['isRecommaned']=1;
+                data['limit']=18;
             }else if(id==-1){
                 data['type']='V';
                 data['page']=this.currentPage;
+                data['limit']=18;
             }else{
                 data['type']='M';
                 data['page']=this.currentPage;
                 data['parent_id']=id;
+                data['limit']=18;
             }
             this.getList(data);
         },
@@ -162,9 +165,9 @@ export default {
                     center:true
                 })
             }else{
-                if(this.twoNavIndex!='5'){
+                if(this.twoNavIndex!=this.twoNavList.length){
                     window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
-                }else if(this.twoNavIndex=='5'){
+                }else if(this.twoNavIndex==this.twoNavList.length){
                     this.$router.push({
                         path:'/videoItem',
                         query:{
@@ -203,6 +206,7 @@ export default {
                         data1['type']='M';
                         data1['page']=this.currentPage;
                         data1['isRecommaned']=1;
+                        data1['limit']=18;
                     }
                     this.getList(data1);
                 }else{
