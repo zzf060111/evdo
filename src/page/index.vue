@@ -11,6 +11,46 @@
                 </el-carousel-item>
             </el-carousel>
         </div>
+        <div class="fenleiBox" v-if="flTopList.length>0">
+            <div class="flItem" v-for="(item,index) of flTopList" :key="index" @click="jumpMove(item.id)">
+                <img :src="item.more?item.more.mobile_thumbnail:item.img" alt="">
+                <p>{{item.name}}</p>
+            </div>
+        </div>
+        <div class="otherflBox">
+            <h4>更多分类</h4>
+            <div class="itemBox">
+                <div class="items" v-for="(item,index) of flDownList" :key="index" @click="jumpMove(item.id)">
+                    <p>{{item.name}}</p>
+                    <img :src="require('../../static/image/index/icon_go.png')" alt="">
+                </div>
+            </div>
+        </div>
+        <div class="moveList">
+            <div class="moveNav">
+                <p :class="moveVal==0?'selected':''" @click="clickMove(0)">推荐</p>
+                <p :class="moveVal==1?'selected':''" @click="clickMove(1)">人气</p>
+            </div>
+            <div class="moveBox" v-if="itemArr.length>0">
+                <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
+                    <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
+                    <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
+                        <img v-lazy="item.thumbnail">
+                        <div class="iconTop">
+                            <p>{{(index+1)}}</p>
+                            <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                        </div>
+                        <div class="iconDown">
+                            <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}
+                        </div>
+                    </div>
+                    <div class="txtDown">
+                        <h2>{{item.title}}</h2>
+                        <p>{{item.subtitle}}  {{item.sub_title2}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="tab">
             医维度系列产品与功能介绍
             <p></p>
@@ -90,16 +130,55 @@
 </template>
 <script>
     import store from '../vuex/store'
-    import {mapState,mapMutations} from 'vuex';
-    import topnav from '../components/topnav' 
+    import {mapState,mapMutations} from 'vuex'
+    import topnav from '../components/topnav'
+    import {indexCategory,professionalModel} from '../services/api/modelVideo' 
     export default {
         data(){
             return{
                 topIcon:require('../../static/image/top/logo@2x.png'),
-                activeIndex:'1'
+                activeIndex:'1',
+                flTopList:[],
+                flDownList:[],
+                moveVal:0,
+                itemArr:[]
             }
         },
         store,
+        created(){
+            indexCategory().then((res)=>{
+                if(res.data.code==0){
+                    let arr=res.data.data.hotCategory;
+                    let data={};
+                    data['name']='医学动画';
+                    data['id']=-1;
+                    data['img']=require('../../static/image/index/icon_shouye_yxdh.png');
+                    arr.push(data);
+                    this.flTopList=arr;
+                    this.flDownList=res.data.data.category;
+                }
+            });
+            let data={};
+            data['type']='M';
+            data['page']=1;
+            if(localStorage.getItem('indexMoveValue')){
+                if(localStorage.getItem('indexMoveValue')==0){
+                    this.moveVal=0;
+                    data['isRecommaned']=1;
+                }else if(localStorage.getItem('indexMoveValue')==1){
+                    this.moveVal=1;
+                    data['isHot']=1;
+                }
+            }else{
+                 data['isRecommaned']=1;
+            }
+            data['limit']=18;
+            professionalModel(data).then((res)=>{
+                if(res.data.code==0){
+                    this.itemArr=res.data.data.data;
+                }
+            })
+        },
         mounted(){
             this.windowChange()
         },
@@ -135,6 +214,56 @@
              // 跳转功能列表
             jumpfslist(){
                 this.$router.push('/fsList');
+            },
+            // 跳转企业、专业详情
+            jumpMove(id){
+                if(this.arrUser.is_enterprise){
+                    this.$router.push({
+                        path:'/enterprise',
+                        query:{
+                            id:id,
+                            type:id==-1?2:1
+                        }
+                    })
+                }else{
+                    this.$router.push({
+                        path:'/professional',
+                        query:{
+                            id:id
+                        }
+                    })
+                }
+            },
+            // 切换模型
+            clickMove(key){
+                localStorage.setItem('indexMoveValue',key);
+                this.moveVal=key;
+                this.itemArr=[];
+                let data={};
+                data['type']='M';
+                data['page']=1;
+                data['limit']=18;
+                if(key==0){
+                    data['isRecommaned']=1;
+                }else if(key==1){
+                    data['isHot']=1;
+                }
+                professionalModel(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.itemArr=res.data.data.data;
+                    }
+                })
+            },
+            // 查看详情
+            lookItem(id,isVip){
+                if(isVip){
+                    this.$alert('此模型需开通会员','提示',{
+                        confirmButtonText:'立即开通',
+                        center:true
+                    })
+                }else{
+                    window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                }
             },   
         },
         components:{
@@ -175,6 +304,179 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+    .fenleiBox{
+        width: 1600px;
+        height: 466px;
+        display: flex;
+        flex-wrap: wrap;
+        margin:0 auto;
+    }
+    .fenleiBox .flItem{
+        width: 200px;
+        height: 200px;
+        position: relative;
+        margin:10px 33px;
+    }
+    .fenleiBox .flItem:hover{
+        cursor: pointer;
+    }
+    .fenleiBox .flItem img{
+        width: 100%;
+        height: 100%;
+    }
+    .fenleiBox p{
+        font-size: 16px;
+        width: 200px;
+        text-align: center;
+        position: absolute;
+        bottom: 5px;
+        z-index: 1;
+        color: #fff;
+    }
+    .otherflBox{
+        width: 1600px;
+        min-height: 200px;
+        margin: 0 auto;
+        padding-top: 20px;
+        box-sizing: border-box;
+    }
+    .otherflBox h4{
+        font-size: 24px;
+    }
+    .otherflBox .itemBox{
+        width: 100%;
+        min-height: 50px;
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    .otherflBox .itemBox .items{
+        min-width: 200px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;      
+        border: 1px solid #C4CACE;       
+        border-radius: 6px;
+        margin:10px 10px;
+    }
+    .otherflBox .itemBox .items:hover{
+        cursor: pointer;
+    }
+    .otherflBox .itemBox .items p{
+        margin-right: 5px;
+        color: #333;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .moveList{
+        width: 1650px;
+        min-height: 300px;
+        margin: 0 auto;
+    }
+    .moveList .moveNav{
+        display: flex;
+        justify-content: center;
+    }
+    .moveList .moveNav p{
+        font-size: 30px;
+        margin: 0 30px;
+        padding-bottom: 5px;
+        box-sizing: border-box;
+    }
+    .moveList .moveNav p:hover{
+        cursor: pointer;
+    }
+    .moveList .moveNav p.selected{
+        border-bottom: 3px solid #6495ED;
+    }
+    .moveList .moveBox{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .moveList .moveBox .pubItem{
+        width: 262px;
+        height: 328px;
+        margin:0 12px 12px 0;
+        box-sizing: border-box;
+        position: relative;
+        padding: 21px;
+    }
+    .moveList .moveBox .pubItem .bj{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+    .moveList .moveBox .pubItem .imgTop{
+        width: 220px;
+        height: 220px;
+        position: relative;
+    }
+    .moveList .moveBox .pubItem .imgTop>img{
+        width: 100%;
+        height: 100%;
+    }
+    .moveList .moveBox .pubItem .imgTop>img:hover{
+        cursor: pointer;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconTop,.moveList .moveBox .pubItem .imgTop .iconDown{
+        width: 200px;
+        display: flex;
+        align-items: center;
+        position: absolute;
+        left: 20px;
+        z-index: 1;
+        color: #fff;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconTop{
+        justify-content: space-between;
+        top:20px;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconDown{
+        bottom: 20px;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconTop p{
+        width: 32px;
+        height: 20px;
+        border-radius: 10px;
+        background-color: rgba(0,0,0,0.2);
+        text-align: center;
+        line-height: 20px;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconTop img{
+        width: 20px;
+        height: 16.27px;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconDown img{
+        width: 13.81px;
+        height: 9.98px;
+        margin-right: 5px;
+    }
+    .moveList .moveBox .pubItem .txtDown{
+        width: 100%;
+        line-height: 25px;
+        color: #333;
+        text-align: left;
+        margin-top: 10px;
+        padding-left: 20px;
+        box-sizing: border-box;
+    }
+    .moveList .moveBox .pubItem .txtDown h2{
+        font-size: 16px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+    .moveList .moveBox .pubItem .txtDown p{
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     .tab{
         width: 100%;

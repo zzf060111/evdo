@@ -28,3 +28,7 @@ export function addfavorites(params){
 export function delfavorites(params){
     return http.delete('v1/account/favorites/del',params)
 }
+// 获取首页分类
+export function indexCategory(params){
+    return http.get(`v1/home/category`,params)
+}

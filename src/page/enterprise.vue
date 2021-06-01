@@ -120,8 +120,18 @@
         },
         store,
         created(){
-            this.twoNavIndex=localStorage.getItem('entindex')?localStorage.getItem('entindex'):'1';
-            this.getFenlei(this.twoNavIndex);
+            let id=this.$route.query.id?this.$route.query.id:'noid';
+            let type=this.$route.query.type?this.$route.query.type:'';
+            if(type){
+                if(localStorage.getItem('entindex')){
+                    this.twoNavIndex=localStorage.getItem('entindex');
+                }else{
+                    this.twoNavIndex=type;
+                }
+            }else{
+                this.twoNavIndex=localStorage.getItem('entindex')?localStorage.getItem('entindex'):'1';
+            }
+            this.getFenlei(this.twoNavIndex,id);
         },
         methods:{
             ...mapMutations(["windowChange","alertTxt","changeSearch"]),
@@ -144,7 +154,7 @@
                 localStorage.setItem('entindex',key);
                 localStorage.removeItem('entLeftnav');
                 localStorage.removeItem('entdata');
-                this.getFenlei(key);
+                this.getFenlei(key,'noid');
                 this.toTop(50)
             },
             // 切换左侧导航
@@ -203,7 +213,7 @@
                 this.toTop(50);
             },
             // 获取企业版分类
-            getFenlei(index){
+            getFenlei(index,jumpId){
                 let data={};
                 if(index==1){
                     data['type']='M';
@@ -220,20 +230,54 @@
                             }
                         }
                         this.leftNav=arr;
-                        this.leftIndex=localStorage.getItem('entLeftnav')?localStorage.getItem('entLeftnav'):arr[0].child[0].num;
+                        if(jumpId!='noid'){
+                            if(localStorage.getItem('entLeftnav')){
+                                this.leftIndex=localStorage.getItem('entLeftnav');
+                            }else{
+                                if(jumpId==-1){
+                                    this.leftIndex=localStorage.getItem('entLeftnav')?localStorage.getItem('entLeftnav'):arr[0].child[0].num;
+                                }else{
+                                    for(let i=0;i<arr.length;i++){
+                                        if(jumpId==arr[i].id){
+                                            this.leftIndex=arr[i].child[0].num;
+                                        }
+                                    }
+                                }
+                            }
+                        }else{
+                            this.leftIndex=localStorage.getItem('entLeftnav')?localStorage.getItem('entLeftnav'):arr[0].child[0].num;
+                        }
                         this.currentPage=localStorage.getItem('entdata')?JSON.parse(localStorage.getItem('entdata')).page:1;
                         let data1={};
                         if(localStorage.getItem('entdata')){
                             data1=JSON.parse(localStorage.getItem('entdata'));
                         }else{
-                            if(index==1){
-                                data1['type']='M';
-                            }else if(index==2){
-                                data1['type']='V';
+                            if(jumpId!='noid'){
+                                if(jumpId==-1){
+                                    data1['type']='V';
+                                    data1['page']=this.currentPage;
+                                    data1['parent_id']=arr[0].id;
+                                    data1['category_id']=arr[0].child[0].id;
+                                }else{
+                                    data1['type']='M';
+                                    data1['page']=this.currentPage;
+                                    data1['parent_id']=jumpId;
+                                    for(let i=0;i<arr.length;i++){
+                                        if(jumpId==arr[i].id){
+                                            data1['category_id']=arr[i].child[0].id;
+                                        }
+                                    }
+                                }
+                            }else{
+                                if(index==1){
+                                    data1['type']='M';
+                                }else if(index==2){
+                                    data1['type']='V';
+                                }
+                                data1['page']=this.currentPage;
+                                data1['parent_id']=arr[0].id;
+                                data1['category_id']=arr[0].child[0].id;
                             }
-                            data1['page']=this.currentPage;
-                            data1['parent_id']=arr[0].id;
-                            data1['category_id']=arr[0].child[0].id;
                         }
                         this.getList(data1);
                     }else if(res.data.code==-200){
@@ -282,7 +326,7 @@
 </script>
 <style>
     .enterprise .twoNav .el-menu-demo{
-        height: 100%;
+        height: 50px;
     }
     .enterprise .twoNav .el-menu-item{
         height: 50px !important;

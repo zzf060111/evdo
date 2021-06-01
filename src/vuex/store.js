@@ -38,7 +38,7 @@ const state={
             hoverStyle: true,
             onlyShowBarOnScroll: false, //是否只有滚动的时候才显示滚动条
             background: '#aaa',
-            size:'12px'
+            size:'6px'
         }
     },
     screenHeight:document.documentElement.clientHeight,

@@ -234,7 +234,6 @@ export default {
 		// 判断确认弹窗
 		this.toastVisible=localStorage.getItem('toastVisible')?false:true;
 		// 判断登陆弹窗
-		console.log(this.getQueryString('code'))
 		if(this.getQueryString('code')){
 			let data={};
 			data['code']=this.getQueryString('code');
@@ -515,7 +514,7 @@ export default {
 		thirdParty(str){
 			let data={};
 			data['type']=str;
-			data['path']='web'+this.$route.path;
+			data['path']='web/#'+this.$route.path;
 			socials(data).then((res)=>{
 				if(res.data.code==0){
 					window.location.href=res.data.data;

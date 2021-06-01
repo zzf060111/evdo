@@ -5,11 +5,13 @@
              <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
         </div>
         <div class="twoNav" v-if="twoNavList.length>0">
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
                 <el-menu-item :index="item.num" v-for="(item,index) of twoNavList" :key="index"> 
                     {{item.name}}
                 </el-menu-item>
             </el-menu>
+            </vue-scroll>
         </div>
         <div class="publicBox" v-if="twoNavIndex!=twoNavList.length&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
@@ -93,8 +95,9 @@ export default {
     },
     store,
     created(){
+        let id=this.$route.query.id?this.$route.query.id:'noid';
         // 获取列表
-        this.getFenlei()
+        this.getFenlei(id);
     },
     mounted(){
         this.windowChange()
@@ -178,7 +181,7 @@ export default {
             }
         },
         // 获取分类
-        getFenlei(){
+        getFenlei(jumpId){
             let data={};
             data['type']='M';
             professionalCategory(data).then((res)=>{
@@ -192,21 +195,46 @@ export default {
                         newArr.push(obj);
                     }
                     newArr.unshift({id:0,name:'常用'});
-                    newArr.push({id:-1,name:'视频'});
+                    newArr.push({id:-1,name:'医学动画'});
                     for(let i=0;i<newArr.length;i++){
                         newArr[i]['num']=(i+1).toString();
                     }
-                    this.twoNavIndex=localStorage.getItem('proindex')?localStorage.getItem('proindex'):newArr[0].num;
+                    if(jumpId!='noid'){
+                        if(localStorage.getItem('proindex')){
+                            this.twoNavIndex=localStorage.getItem('proindex')
+                        }else{
+                            for(let i=0;i<newArr.length;i++){
+                                if(jumpId==newArr[i].id){
+                                    this.twoNavIndex=newArr[i].num;
+                                }
+                            }
+                        }
+                    }else{
+                        this.twoNavIndex=localStorage.getItem('proindex')?localStorage.getItem('proindex'):newArr[0].num;
+                    }
                     this.currentPage=localStorage.getItem('prodata')?JSON.parse(localStorage.getItem('prodata')).page:1;
                     this.twoNavList=newArr;
                     let data1={};
                     if(localStorage.getItem('prodata')){
                         data1=JSON.parse(localStorage.getItem('prodata'));
                     }else{
-                        data1['type']='M';
-                        data1['page']=this.currentPage;
-                        data1['isRecommaned']=1;
-                        data1['limit']=18;
+                        if(jumpId!='noid'){
+                            if(jumpId==-1){
+                                data1['type']='V';
+                                data1['page']=this.currentPage;
+                                data1['limit']=18;
+                            }else{
+                                data1['type']='M';
+                                data1['page']=this.currentPage;
+                                data1['parent_id']=jumpId;
+                                data1['limit']=18;
+                            }
+                        }else{
+                            data1['type']='M';
+                            data1['page']=this.currentPage;
+                            data1['isRecommaned']=1;
+                            data1['limit']=18;
+                        }
                     }
                     this.getList(data1);
                 }else{
@@ -246,6 +274,7 @@ export default {
 <style>
     .professional .twoNav .el-menu-demo{
         height: 100%;
+        display: flex;
     }
     .professional .twoNav .el-menu-item{
         height: 50px !important;
