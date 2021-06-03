@@ -361,12 +361,22 @@ export default {
                     customClass:'errorAlert',
                     callback:(action)=>{
                         if(action=='confirm'){
-                            console.log('确定')
+                            let data={};
+                            data['type']='qq';
+                            oauth2unbind(data).then((res)=>{
+                                if(res.data.code==0){
+                                    this.alertTxt({msg:res.data.msg,type:'success'});
+                                    this.isLogin();
+                                }else{
+                                    this.alertTxt({msg:res.data.msg,type:'error'});
+                                }
+                            })
                         }
                     }
                 })
             }else{
-
+                let url=encodeURIComponent('https://www.evdo.vip/web/#');
+				window.location.href=`https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101952659&redirect_uri=${url}&scope=scope`;
             }
         },
         // 获取验证码

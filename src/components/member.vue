@@ -84,7 +84,7 @@
             </div>
 		</el-dialog>
         <!-- 微信支付二维码 -->
-        <el-dialog :visible.sync="wxerweima" :append-to-body="true" :close-on-click-modal="false" center custom-class="erweima" top="20vh" width="300px">
+        <el-dialog title="扫码支付" :visible.sync="wxerweima" :append-to-body="true" :close-on-click-modal="false" center custom-class="erweima" top="20vh" width="300px">
             <div id="qrcode" ref="qrCodeUrl"></div>
         </el-dialog>
     </div>
@@ -166,7 +166,7 @@ export default {
             }
         },
         handleScroll(vertical, horizontal, nativeEvent){
-            console.log(nativeEvent.target.scrollTop,nativeEvent.target.clientHeight,nativeEvent.target.scrollHeight)
+            // console.log(nativeEvent.target.scrollTop,nativeEvent.target.clientHeight,nativeEvent.target.scrollHeight)
             if(nativeEvent.target.scrollTop+nativeEvent.target.clientHeight==nativeEvent.target.scrollHeight){
                 this.loading=true;
             }
@@ -376,7 +376,8 @@ export default {
 </script>
 <style>
     .erweima.el-dialog{
-        height: 30vh;
+        height: 35vh;
+        border-radius: 5px;
     }
     .erweima .el-dialog__body{
         padding: 0 !important;

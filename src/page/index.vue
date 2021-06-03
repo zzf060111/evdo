@@ -322,17 +322,16 @@
         cursor: pointer;
     }
     .fenleiBox .flItem img{
-        width: 100%;
-        height: 100%;
+        width: 150px;
+        height: 150px;
     }
     .fenleiBox p{
         font-size: 16px;
         width: 200px;
         text-align: center;
-        position: absolute;
-        bottom: 5px;
-        z-index: 1;
-        color: #fff;
+        color: #333;
+        height: 50px;
+        line-height: 50px;
     }
     .otherflBox{
         width: 1600px;

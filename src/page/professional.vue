@@ -154,9 +154,9 @@ export default {
         toTop(i){
             //参数i表示间隔的幅度大小，以此来控制速度，例如50
             document.documentElement.scrollTop-=i;
-            if (document.documentElement.scrollTop>0) {
+            if(document.documentElement.scrollTop>0) {
                 var c=setTimeout(()=>this.toTop(i),16);
-            }else {
+            }else{
                 clearTimeout(c);
             }
         },
@@ -326,7 +326,7 @@ export default {
         z-index: -1;
     }
     .publicBox .pubItem .imgTop{
-        width: 240px;
+        width:240px;                                                                                                           
         height: 240px;
         position: relative;
     }

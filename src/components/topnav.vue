@@ -131,7 +131,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
-import {register,getUserCode,passwordReset,login,socials,wechatwebcallback,mobilebind} from '../services/api/topnav'
+import {register,getUserCode,passwordReset,login,socials,wechatwebcallback,mobilebind,qqcallback,wechatBind,QQBind} from '../services/api/topnav'
 import {info,user_mobile_code} from '../services/api/personal'
 export default {
 	data () {
@@ -233,14 +233,75 @@ export default {
 		this.searchstr=this.searchval;
 		// 判断确认弹窗
 		this.toastVisible=localStorage.getItem('toastVisible')?false:true;
-		// 判断登陆弹窗
-		if(this.getQueryString('code')){
+		// 判断微信、QQ登陆弹窗;微信、QQ绑定
+		if(this.getQueryString('code')&&this.getQueryString('state')){
+			if(this.arrUser&&!this.arrUser.weixin){
+				let data={};
+				data['token']=this.arrUser.token;
+				data['code']=this.getQueryString('code');
+				data['type']='web';
+				wechatBind(data).then((res)=>{
+					if(res.data.code==0){
+						this.alertTxt({'msg':res.data.msg,'type':'success'});
+						info().then((res)=>{
+							if(res.data.code==-200){
+								localStorage.removeItem('token');
+								this.changeUser('');
+								this.$router.push('/');
+							}else{
+								this.changeUser(JSON.stringify(res.data.data));
+							}
+						})
+					}else{
+						this.alertTxt({'msg':res.data.msg,'type':'error'});
+					}
+				})
+			}else{
+				let data={};
+				data['code']=this.getQueryString('code');
+				wechatwebcallback(data).then((res)=>{
+					if(res.data.code==422){
+						this.bindPhone=true;
+						this.bindData=res.data.data;
+					}else if(res.data.code==0){
+						this.alertTxt({'msg':res.data.msg,'type':'success'});
+						this.changeUser(JSON.stringify(res.data.data));
+						localStorage.setItem('token',res.data.data.token);
+					}
+				})
+			}
+		}else if(this.getQueryString('code')&&!this.getQueryString('state')){
 			let data={};
 			data['code']=this.getQueryString('code');
-			wechatwebcallback(data).then((res)=>{
+			data['path']='https://www.evdo.vip/web/#'+this.$route.path;
+			qqcallback(data).then((res)=>{
 				if(res.data.code==422){
-					this.bindPhone=true;
-					this.bindData=res.data.data;
+					if(this.arrUser&&!this.arrUser.qq){
+						let data={};
+						data['token']=this.arrUser.token;
+						data['nickname']=res.data.data.qq_nickname;
+						data['unionid']=res.data.data.qq_unionid;
+						data['openid']=res.data.data.qq_openid;
+						QQBind(data).then((res)=>{
+							if(res.data.code==0){
+								this.alertTxt({'msg':res.data.msg,'type':'success'});
+								info().then((res)=>{
+									if(res.data.code==-200){
+										localStorage.removeItem('token');
+										this.changeUser('');
+										this.$router.push('/');
+									}else{
+										this.changeUser(JSON.stringify(res.data.data));
+									}
+								})
+							}else{
+								this.alertTxt({'msg':res.data.msg,'type':'error'});
+							}
+						})
+					}else{
+						this.bindPhone=true;
+						this.bindData=res.data.data;
+					}
 				}else if(res.data.code==0){
 					this.alertTxt({'msg':res.data.msg,'type':'success'});
 					this.changeUser(JSON.stringify(res.data.data));
@@ -262,7 +323,6 @@ export default {
 				}
 			}
 		})
-
 	},
 	props: {
 		topIcon: {
@@ -512,16 +572,21 @@ export default {
 		},
 		// 第三方登录
 		thirdParty(str){
-			let data={};
-			data['type']=str;
-			data['path']='web/#'+this.$route.path;
-			socials(data).then((res)=>{
-				if(res.data.code==0){
-					window.location.href=res.data.data;
-				}else{
-					this.alertTxt({'msg':res.data.msg,'type':'error'});
-				}
-			})
+			if(str=='wechat'){
+				let data={};
+				data['type']=str;
+				data['path']='web/#'+this.$route.path;
+				socials(data).then((res)=>{
+					if(res.data.code==0){
+						window.location.href=res.data.data;
+					}else{
+						this.alertTxt({'msg':res.data.msg,'type':'error'});
+					}
+				})
+			}else{
+				let url=encodeURIComponent('https://www.evdo.vip/web/#');
+				window.location.href=`https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101952659&redirect_uri=${url}&scope=scope`;
+			}
 		},
 		// 绑定手机号
 		phoneBind(formName){
@@ -554,7 +619,7 @@ export default {
 		　　    return null; 
 		}
 	},
-	computed:mapState(["forgetReg","forgetStr","searchval","arrUser"]),
+	computed:mapState(["forgetReg","forgetStr","searchval","arrUser"])
 }
 </script>
 
@@ -579,6 +644,7 @@ export default {
 	.toast.el-dialog{
 		width: 400px;
 		height: 600px;
+		border-radius: 10px;
 	}
 	.toast.el-dialog div{
 		font-size: 16px;

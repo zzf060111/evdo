@@ -7,12 +7,18 @@
         <div class="imgbox">
             <img :src="require('../../static/image/downLoad/pic_down_01@2x.png')" alt="">
             <div class="positionBox">
-                <a :href="require('../../static/image/downLoad/pic_web@2x.png')" download="">
+                <a href="https://evdo.vip/upload/default/20201104/dce4163af3d07a4d6e79f79ce0c12af0.zip" download="">
                     <img :src="require('../../static/image/downLoad/pic_web@2x.png')" alt="">
                 </a>
-                <img :src="require('../../static/image/downLoad/pic_app@2x.png')" alt="">
-                <img :src="require('../../static/image/downLoad/pic_google@2x.png')" alt="">
-                <img :src="require('../../static/image/downLoad/pic_gzh@2x.png')" alt="">
+                <a href="https://evdo.vip/upload/default/20201104/dce4163af3d07a4d6e79f79ce0c12af0.zip" download="">
+                    <img :src="require('../../static/image/downLoad/pic_app@2x.png')" alt="">
+                </a>
+                <a href="https://evdo.vip/upload/default/20201104/dce4163af3d07a4d6e79f79ce0c12af0.zip" download="">
+                    <img :src="require('../../static/image/downLoad/pic_google@2x.png')" alt="">
+                </a>
+                <a href="https://evdo.vip/upload/default/20201104/dce4163af3d07a4d6e79f79ce0c12af0.zip" download="">
+                    <img :src="require('../../static/image/downLoad/pic_gzh@2x.png')" alt="">
+                </a>
             </div>
         </div>
         <div class="imgbox">
