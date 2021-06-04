@@ -131,7 +131,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
-import {register,getUserCode,passwordReset,login,socials,wechatwebcallback,mobilebind,qqcallback,wechatBind,QQBind} from '../services/api/topnav'
+import {register,getUserCode,passwordReset,login,socials,wechatwebcallback,mobilebind,qqcallback,wechatBind,QQBind,qqcode2user} from '../services/api/topnav'
 import {info,user_mobile_code} from '../services/api/personal'
 export default {
 	data () {
@@ -271,12 +271,12 @@ export default {
 				})
 			}
 		}else if(this.getQueryString('code')&&!this.getQueryString('state')){
-			let data={};
-			data['code']=this.getQueryString('code');
-			data['path']='https://www.evdo.vip/web/#'+this.$route.path;
-			qqcallback(data).then((res)=>{
-				if(res.data.code==422){
-					if(this.arrUser&&!this.arrUser.qq){
+			if(this.arrUser&&!this.arrUser.qq){
+				let data={};
+				data['code']=this.getQueryString('code');
+				data['path']='https://www.evdo.vip/web/#'+this.$route.path;
+				qqcode2user(data).then((res)=>{
+					if(res.data.code==0){
 						let data={};
 						data['token']=this.arrUser.token;
 						data['nickname']=res.data.data.qq_nickname;
@@ -299,15 +299,24 @@ export default {
 							}
 						})
 					}else{
+						// this.alertTxt({'msg':res.data.msg,'type':'error'});
+					}
+				})
+			}else{
+				let data={};
+				data['code']=this.getQueryString('code');
+				data['path']='https://www.evdo.vip/web/#'+this.$route.path;
+				qqcallback(data).then((res)=>{
+					if(res.data.code==422){
 						this.bindPhone=true;
 						this.bindData=res.data.data;
+					}else if(res.data.code==0){
+						this.alertTxt({'msg':res.data.msg,'type':'success'});
+						this.changeUser(JSON.stringify(res.data.data));
+						localStorage.setItem('token',res.data.data.token);
 					}
-				}else if(res.data.code==0){
-					this.alertTxt({'msg':res.data.msg,'type':'success'});
-					this.changeUser(JSON.stringify(res.data.data));
-					localStorage.setItem('token',res.data.data.token);
-				}
-			})
+				})
+			}
 		}
 		// 判断获取验证码倒计时
 		if(localStorage.getItem('endTime')&&localStorage.getItem('endTime')>new Date().getTime()){

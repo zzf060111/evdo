@@ -40,6 +40,10 @@ export function qqcallback(params){
 export function wechatBind(params){
     return http.post(`v1/user/oauth2/wechat`,params)
 }
+// qq授权信息
+export function qqcode2user(params){
+    return http.get(`v1/socials/qqcode2user`,params)
+}
 // qq绑定
 export function QQBind(params){
     return http.post(`v1/user/oauth2/qq`,params)

@@ -298,7 +298,6 @@ export default {
         },
         phoneChange(formName){
             this.$refs[formName].validate((valid)=>{
-				console.log(valid,this.phoneform);
                 if(valid){
                     mobileReg({mobile:this.phoneform.phone,mobile_code:this.phoneform.regtxt}).then((res)=>{
                         if(res.data.code==0){
@@ -375,7 +374,7 @@ export default {
                     }
                 })
             }else{
-                let url=encodeURIComponent('https://www.evdo.vip/web/#');
+                let url=encodeURIComponent('https://www.evdo.vip/web/#/personal');
 				window.location.href=`https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101952659&redirect_uri=${url}&scope=scope`;
             }
         },
