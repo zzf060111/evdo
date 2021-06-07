@@ -2,7 +2,9 @@
     <div class="fsList" :style="`height:${screenHeight-60}px`">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            </vue-scroll>
         </div>
         <div class="listBox" v-if="fsArr.length>0">
             <div class="itemLi" v-for="(item,index) of fsArr" :key="index" @click="lookItem(item.id)">
@@ -74,7 +76,7 @@ export default {
         box-sizing: border-box;
     }
     .listBox .itemLi{
-        width: 1720px;
+        width: 96%;
         height: 200px;
         border-bottom: 1px solid #C4CACE;
         margin: 0 auto;

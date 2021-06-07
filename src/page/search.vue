@@ -1,8 +1,10 @@
 <template>
     <div class="search" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <vue-scroll :ops="ops" style="width:100%;height:100%;">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchFu="searchFu" @searchPage="searchPage"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchFu="searchFu" @searchPage="searchPage"></topnav>
+            </vue-scroll>
         </div>
         <div class="twoNav">
             <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#fff" active-text-color="#FFD302" @select="changeNav">
@@ -279,7 +281,7 @@ export default {
         background-color:#616576;
     }
     .publicBox{
-        width: 1765px;
+        width: 91%;
         min-height: 200px;
         margin:0 auto;
         padding:10px 0 0 10px;

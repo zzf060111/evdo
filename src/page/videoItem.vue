@@ -2,7 +2,9 @@
     <div class="videoItem" :style="`height:${screenHeight-60}px`" v-show="valueShow">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
+                <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+                </vue-scroll>
             </div>
             <img :src="require('../../static/image/fslist/backr.png')" alt="" class="back" @click="backJump">
             <div class="videoBox" :style="`height:${screenHeight-160}px`">

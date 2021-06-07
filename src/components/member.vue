@@ -5,7 +5,7 @@
         <p class="title">会员套餐</p>
         <div class="pubBox">
             <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index" @click="selVip(index)">
-                <h2>{{item.day==365?'学霸必选':item.day==90?'学期搭配':'尝鲜套餐'}}</h2>
+                <h2>{{item.description}}</h2>
                 <h3>{{`¥${item.price}/`}}{{item.day==365?'年':item.day==90?'季':'月'}}</h3>
                 <div class="oldprice">
                     ¥{{item.original_price}}

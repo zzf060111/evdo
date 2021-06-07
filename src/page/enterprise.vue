@@ -1,8 +1,10 @@
 <template>
     <div class="enterprise" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <vue-scroll :ops="ops" style="width:100%;height:100%;">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
+            </vue-scroll>
         </div>
         <div class="twoNav">
             <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
@@ -43,7 +45,8 @@
                         <img v-lazy="item.thumbnail">
                         <div class="iconTop">
                             <p>{{(currentPage-1)*15+(index+1)}}</p>
-                            <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <p v-else-if="item.is_auth==0">免费</p>
                         </div>
                         <div class="iconDown">
                             <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}
@@ -65,7 +68,8 @@
                         <img v-lazy="item.thumbnail">
                         <div class="iconTop">
                             <p>{{(currentPage-1)*15+(index+1)}}</p>
-                            <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <p v-else-if="item.is_auth==0">免费</p>
                         </div>
                         <div class="iconDown">
                             <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}
@@ -404,7 +408,7 @@
         box-sizing: border-box;
     }
     .pubBox .box{
-        width: 1473px;
+        width: 100%;
         min-height: 200px;
         margin:0 auto;
         padding:10px 0 0 10px;
@@ -508,7 +512,7 @@
     }
     /* 分页 */
     .pubBox .pageBox{
-        width: 1473px;
+        width: 100%;
         margin: 20px auto;
     }
 </style>

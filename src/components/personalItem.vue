@@ -255,7 +255,7 @@ export default {
                         if(res.data.code==0){
                             this.alertTxt({msg:res.data.msg,type:'success'});
                             this.changeName=false;
-                            this.changeUser(JSON.stringify(res.data.data))
+                            this.changeUser(JSON.stringify(res.data.data));
                         }else if(res.data.code==-200){
                             this.alertTxt({msg:res.data.msg,type:'error'});
                             this.$router.push('/');

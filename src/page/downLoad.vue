@@ -2,7 +2,9 @@
     <div class="downLoad" :style="`height:${screenHeight-60}px`">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
-            <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            </vue-scroll>
         </div>
         <div class="imgbox">
             <img :src="require('../../static/image/downLoad/pic_down_01@2x.png')" alt="">

@@ -1,7 +1,9 @@
 <template>
     <div class="personal">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            </vue-scroll>
         </div>
         <div class="leftNav" :style="`height:${screenHeight-60}px`">
             <vue-scroll :ops="ops" style="width:100%;height:100%;">

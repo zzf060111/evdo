@@ -2,7 +2,9 @@
     <div class="fsitem" :style="`height:${screenHeight-60}px`">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            </vue-scroll>
         </div>
         <div class="itemBox" v-if="objItem">
             <div class="title">
@@ -65,7 +67,7 @@ export default {
         box-sizing: border-box;
     }
     .itemBox{
-        width: 1720px;
+        width: 96%;
         margin: 0 auto;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     }
@@ -87,7 +89,7 @@ export default {
         z-index: 1;
     }
     .itemBox .time{
-        width: 1600px;
+        width: 100%;
         height: 50px;
         font-size: 14px;
         line-height: 50px;

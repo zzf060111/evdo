@@ -1,8 +1,10 @@
 <template>
     <div class="exercise" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <vue-scroll :ops="ops" style="width:100%;height:100%;">
             <div class="topNav">
-                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+                <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                    <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+                </vue-scroll>
             </div>
             <div class="twoNav" v-if="twoNav.length>0">
                 <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
@@ -350,7 +352,7 @@ export default {
         box-sizing: border-box;
     }
     .centerBox .box{
-        width: 1450px;
+        width: 100%;
         padding:50px 0 0 50px;
         box-sizing: border-box;
         display: flex;

@@ -3,7 +3,9 @@
         <img :src="require('../../static/image/question/back.png')" alt="" class="jumpBack" @click="jumpBack">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
-                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+                <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                    <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+                </vue-scroll>
             </div>
             <div class="twoNav">
                 <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -176,7 +178,7 @@ export default {
         position: relative;
     }
     .questionsItem >>> .topBox{
-        width: 1430px;
+        width: 85%;
         background-color: #f5f5f5;
         margin: 0 auto;
         padding: 20px 50px;
@@ -295,7 +297,7 @@ export default {
          margin-right: 50px;
      }
     .questionsItem >>> .bottomBox{
-        width: 1430px;
+        width: 85%;
         margin: 0 auto;
     }
     .questionsItem >>> .bottomBox .title{

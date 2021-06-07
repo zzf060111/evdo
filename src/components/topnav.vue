@@ -21,16 +21,18 @@
 				功能介绍
 			</el-menu-item>
 	  	</el-menu>
-		<div class="searchBox">
-			<img :src="require('../../static/image/top/icon_search@2x.png')" @click="searchAll">
-			<input type="text" placeholder="搜索标本、视频以及更多内容"  @input="changVal($event)" :value="searchval">
-			<div class="btnBox">
-				<p @click="searchAll">搜全站</p>|<p @click="searchPage">搜本页</p>
+		<div>
+			<div class="searchBox">
+				<img :src="require('../../static/image/top/icon_search@2x.png')" @click="searchAll">
+				<input type="text" placeholder="搜索标本、视频以及更多内容"  @input="changVal($event)" :value="searchval">
+				<div class="btnBox">
+					<p @click="searchAll">搜全站</p>|<p @click="searchPage">搜本页</p>
+				</div>
 			</div>
-		</div>
-		<div class="userBox" @click="isLogin">
-			<img :src="arrUser?arrUser.avatar?arrUser.avatar:require('../../static/image/top/icon_user@2x.png'):require('../../static/image/top/icon_user@2x.png')">
-			<p>{{arrUser?arrUser.nickname?arrUser.nickname:'用户名':'用户名'}}</p>
+			<div class="userBox" @click="isLogin">
+				<img :src="arrUser?arrUser.avatar?arrUser.avatar:require('../../static/image/top/icon_user@2x.png'):require('../../static/image/top/icon_user@2x.png')">
+				<p>{{arrUser?arrUser.nickname?arrUser.nickname:'用户名':'用户名'}}</p>
+			</div>
 		</div>
 		<!-- 登陆、注册、忘记密码 -->
 		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="login">
@@ -719,6 +721,9 @@ export default {
 		border-bottom: none;
 		background-color: rgb(97, 101, 118)  !important;
 	}
+	.topnav .el-menu{
+		width: 600px;
+	}
 </style>
 <style scoped>
 	a{
@@ -735,8 +740,12 @@ export default {
         box-sizing: border-box;
 		background-color: #252B43;
 		display: flex;
+		justify-content: space-between;
 		align-items: center;
 		position: relative;
+	}
+	.topnav>div{
+		display: flex;
 	}
 	.icon{
 		width: 28px;
@@ -752,9 +761,9 @@ export default {
 		align-items: center;
 		padding-left: 10px;
 		box-sizing: border-box;
-		position: absolute;
+		/* position: absolute;
 		top:12.5px;
-		right: 230px;
+		right: 230px; */
 		z-index: 1;
 	}
 	.searchBox img{
@@ -799,11 +808,12 @@ export default {
 		display: flex;
 		align-items: center;
 		color: #fff;
-		position: absolute;
+		/* position: absolute;
 		top:0;
 		right: 50px;
-		z-index: 1;
+		z-index: 1; */
 		font-size: 16px;
+		margin-left: 50px;
 	}
 	.userBox:hover{
 		cursor: pointer;
@@ -816,6 +826,9 @@ export default {
 	.userBox p{
 		height: 36.19px;
 		line-height: 36.19px;
+		overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
 	}
 	.fdiv1{
 		height: 50px;

@@ -33,7 +33,8 @@
                             <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
                                 <p>{{(currentPage-1)*15+(index+1)}}</p>
-                                <img v-show="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                                <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                                <p v-else-if="item.is_auth==0">免费</p>
                             </div>
                             <div class="iconDown">
                                 <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.price}}
@@ -56,7 +57,8 @@
                             <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
                                 <p>{{(currentPage-1)*15+(index+1)}}</p>
-                                <img v-show="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                                <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                                <p v-else-if="item.is_auth==0">免费</p>
                             </div>
                             <div class="iconDown">
                                 <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.price}}
@@ -347,7 +349,7 @@ export default {
         box-sizing: border-box;
     }
      .pubBox .box{
-        width: 1473px;
+        width: 100%;
         min-height: 200px;
         margin:0 auto;
         padding:10px 0 0 10px;

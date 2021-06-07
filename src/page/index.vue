@@ -1,13 +1,15 @@
 <template>
     <div class="index" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <vue-scroll :ops="ops" style="width:100%;height:100%;">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+            </vue-scroll>
         </div>
         <div class="carouse">
-            <el-carousel>
-                <el-carousel-item>
-                    <img v-lazy="require('../../static/image/index/banner@2x.png')">
+            <el-carousel ref="carousel" @click.native="jumpBanner">
+                <el-carousel-item v-for="(item,index) of bannerArr" :key="index">
+                    <img v-lazy="item.image">
                 </el-carousel-item>
             </el-carousel>
         </div>
@@ -34,14 +36,18 @@
             <div class="moveBox" v-if="itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
-                    <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
-                        <img v-lazy="item.thumbnail">
+                    <div class="imgTop">
+                        <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
                         <div class="iconTop">
                             <p>{{(index+1)}}</p>
-                            <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <p v-else-if="item.is_auth==0">免费</p>
                         </div>
                         <div class="iconDown">
-                            <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}
+                            <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}</p>
+                            <div @click="addSc(item.id,item.is_favorite,index)">
+                                <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+                            </div>
                         </div>
                     </div>
                     <div class="txtDown">
@@ -132,7 +138,7 @@
     import store from '../vuex/store'
     import {mapState,mapMutations} from 'vuex'
     import topnav from '../components/topnav'
-    import {indexCategory,professionalModel} from '../services/api/modelVideo' 
+    import {indexCategory,professionalModel,banner,addfavorites,delfavorites} from '../services/api/modelVideo' 
     export default {
         data(){
             return{
@@ -141,11 +147,13 @@
                 flTopList:[],
                 flDownList:[],
                 moveVal:0,
-                itemArr:[]
+                itemArr:[],
+                bannerArr:[]
             }
         },
         store,
         created(){
+            // 分类选项
             indexCategory().then((res)=>{
                 if(res.data.code==0){
                     let arr=res.data.data.hotCategory;
@@ -158,6 +166,7 @@
                     this.flDownList=res.data.data.category;
                 }
             });
+            // 首页模型
             let data={};
             data['type']='M';
             data['page']=1;
@@ -178,12 +187,20 @@
                     this.itemArr=res.data.data.data;
                 }
             })
+            // 首页轮播
+            let datab={};
+            datab['id']=6;
+            banner(datab).then((res)=>{
+                if(res.data.code==0){
+                    this.bannerArr=res.data.data.list;
+                }
+            })
         },
         mounted(){
             this.windowChange()
         },
         methods:{
-            ...mapMutations(["windowChange"]),
+            ...mapMutations(["windowChange","alertTxt"]),
             // 导航箭头显示隐藏
            mEnter(event,num){
                event.target.parentElement.querySelector(`.${num}`).style.cssText += "opacity:1;";
@@ -254,6 +271,42 @@
                     }
                 })
             },
+            // 收藏取消收藏模型
+            addSc(id,isSc,index){
+                if(isSc){
+                    let data={};
+                    data['ids']=id;
+                    data['type']='model';
+                    delfavorites(data).then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.itemArr[index].is_favorite=false;
+                        }else if(res.data.code==-200){
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'warning'});
+                        }
+                    })
+                }else{
+                    let data={};
+                    data['id']=id;
+                    data['table']='model';
+                    addfavorites(data).then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.itemArr[index].is_favorite=true;
+                        }else if(res.data.code==-200){
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'warning'});
+                        }
+                    })
+                }
+            },
+            // 跳转轮播图
+            jumpBanner(){
+                window.location.href=this.bannerArr[this.$refs.carousel.activeIndex].url
+            },
             // 查看详情
             lookItem(id,isVip){
                 if(isVip){
@@ -269,24 +322,24 @@
         components:{
             topnav
         },
-        computed:mapState(["opsx","screenHeight","arrUser"])
+        computed:mapState(["ops","opsx","screenHeight","arrUser"])
     }
 </script>
 <style>
     .index .el-carousel{
-        width: 1690px;
-        height: 774px;
+        width: 100%;
+        height: 3rem;
     }
     .index .el-carousel__item{
-        width: 1690px;
-        height: 774px;
+        width: 100%;
+        height: 3rem;
     }
     .index .el-carousel__item img{
         width: 100%;
         height: 100%;
     }
     .index .el-carousel__arrow{
-        top:120% !important;
+        top:100% !important;
     }
     .index .el-carousel__button{
         width: 40px;
@@ -299,15 +352,16 @@
 </style>
 <style scoped>
     .carouse{
-        width: 100%;
-        height: 774px;
-        display: flex;
+        width: 82%;
+        height: 3rem;
+        /* display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: center; */
+        margin: 20px auto;
     }
     .fenleiBox{
-        width: 1600px;
-        height: 466px;
+        width: 83%;
+        min-height: 466px;
         display: flex;
         flex-wrap: wrap;
         margin:0 auto;
@@ -334,7 +388,7 @@
         line-height: 50px;
     }
     .otherflBox{
-        width: 1600px;
+        width: 83%;
         min-height: 200px;
         margin: 0 auto;
         padding-top: 20px;
@@ -370,7 +424,7 @@
         font-weight: bold;
     }
     .moveList{
-        width: 1650px;
+        width: 85%;
         min-height: 300px;
         margin: 0 auto;
     }
@@ -394,6 +448,7 @@
         width: 100%;
         display: flex;
         flex-wrap: wrap;
+        margin: 0 auto;
     }
     .moveList .moveBox .pubItem{
         width: 262px;
@@ -435,9 +490,19 @@
     .moveList .moveBox .pubItem .imgTop .iconTop{
         justify-content: space-between;
         top:20px;
+        padding-right: 10px;
+        box-sizing: border-box;
     }
     .moveList .moveBox .pubItem .imgTop .iconDown{
-        bottom: 20px;
+        justify-content: space-between;
+        bottom: 10px;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconDown>div img{
+        width: 30px;
+        height: 30px;
+    }
+    .moveList .moveBox .pubItem .imgTop .iconDown>div img:hover{
+        cursor: pointer;
     }
     .moveList .moveBox .pubItem .imgTop .iconTop p{
         width: 32px;
@@ -496,10 +561,11 @@
     }
     .productBox{
         width: 100%;
-        height: 700px;
+        min-height: 700px;
         display: flex;
         justify-content: center;
         align-content: center;
+        flex-wrap: wrap;
     }
     .productBox div{
         position: relative;

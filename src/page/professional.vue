@@ -1,8 +1,10 @@
 <template>
     <div class="professional" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <vue-scroll :ops="ops" style="width:100%;height:100%;">
         <div class="topNav">
-             <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
+            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
+            </vue-scroll>
         </div>
         <div class="twoNav" v-if="twoNavList.length>0">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
@@ -20,10 +22,14 @@
                     <img v-lazy="item.thumbnail">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                        <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                        <p v-else-if="item.is_auth==0">免费</p>
                     </div>
                     <div class="iconDown">
-                        <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}
+                        <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}</p>
+                        <div @click="addSc(item.id,item.is_favorite,index)">
+                            <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+                        </div>
                     </div>
                 </div>
                 <div class="txtDown">
@@ -42,10 +48,14 @@
                     <img v-lazy="item.thumbnail">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.need_vip" :src="require('../../static/image/professional/icon_members@2x.png')">
+                        <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                        <p v-else-if="item.is_auth==0">免费</p>
                     </div>
                     <div class="iconDown">
-                        <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}
+                        <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}</p>
+                        <div @click="addSc(item.id,item.is_favorite,index)">
+                            <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+                        </div>
                     </div>
                     <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
                 </div>
@@ -268,7 +278,7 @@ export default {
     components:{
         topnav
     },
-    computed:mapState(["opsx","screenHeight"])
+    computed:mapState(["opsx","screenHeight","ops"])
 }
 </script>
 <style>
@@ -301,7 +311,7 @@ export default {
         z-index: 9;
     }
     .publicBox{
-        width: 1765px;
+        width: 91%;
         min-height: 200px;
         margin:0 auto;
         padding:10px 0 0 10px;
@@ -348,7 +358,15 @@ export default {
         top:20px;
     }
     .publicBox .pubItem .imgTop .iconDown{
-        bottom: 20px;
+        justify-content: space-between;
+        bottom: 10px;
+    }
+    .publicBox .pubItem .imgTop .iconDown>div img{
+        width: 30px;
+        height: 30px;
+    }
+    .publicBox .pubItem .imgTop .iconDown>div img:hover{
+        cursor: pointer;
     }
     .publicBox .pubItem .imgTop .iconTop p{
         width: 32px;

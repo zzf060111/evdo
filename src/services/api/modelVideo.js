@@ -32,3 +32,7 @@ export function delfavorites(params){
 export function indexCategory(params){
     return http.get(`v1/home/category`,params)
 }
+// 首页轮播
+export function banner(params){
+    return http.get(`/v1/banner`,params)
+}
