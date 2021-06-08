@@ -6,7 +6,7 @@ export function professionalCategory(params){
 }
 // 获取专业列表
 export function professionalModel(params){
-    return http.getLoad(`/v1/home/professionalModel`,params)
+    return http.get(`/v1/home/professionalModel`,params)
 }
 // 获取企业版分类
 export function enterpriseCategory(params){
@@ -14,7 +14,7 @@ export function enterpriseCategory(params){
 }
 // 获取企业版列表
 export function enterpriseModel(params){
-    return http.getLoad(`/v1/home/enterpriseModel`,params)
+    return http.get(`/v1/home/enterpriseModel`,params)
 }
 // 获取视频详情
 export function videoDetail(params){

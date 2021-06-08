@@ -20,7 +20,8 @@
             <div class="quSelBox" v-if="selArr.length>0">
                 <div class="quSelItem" v-for="(item,index) of selArr" :key="index">
                     <div class="icon" v-show="item.isSel==0&&item.txt" @click="selAnswer(index,item.id)"></div>
-                    <img :src="require('../../static/image/question/icon_xz.png')" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
+                    <img :src="require('../../static/image/question/icon_yes.png')" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
+                    <img :src="require('../../static/image/question/icon_error.png')" alt=""  v-show="item.isSel==2&&item.txt" @click="clearAnswer(index)">
                     <p v-show="item.txt">{{zmArr[index]+'.'+item.txt}}</p>
                 </div>
             </div>
@@ -28,13 +29,13 @@
                 <img src="../../static/image/question/0b9d68bbb683fa45920f795485e4524a.png" alt="">
             </div> -->
             <div class="quBottom">
-                <div class="left">
-                    <el-switch v-model="isDown" @change="changeIsdowm"></el-switch>
-                    <p>答对自动下一题</p>
-                </div>
                 <div class="right">
                     <p @click="upQuestion">上一题</p>
                     <p @click="downQuestion">下一题</p>
+                </div>
+                <div class="left">
+                    <el-switch v-model="isDown" @change="changeIsdowm"></el-switch>
+                    <p>答对自动下一题</p>
                 </div>
             </div>
         </div>
@@ -186,7 +187,11 @@ export default {
             if(str=="单选"||str=="判断"){
                 for(let i=0;i<arr.length;i++){
                     if(index==i){
-                        arr[i].isSel=1
+                        if(id==this.queArr[this.indexd].question.true_option){
+                            arr[i].isSel=1
+                        }else{
+                            arr[i].isSel=2
+                        }
                     }else{
                         arr[i].isSel=0
                     }
@@ -248,7 +253,7 @@ export default {
                 }
             })
         },
-        // 清除错题答题记录
+        // 清除答题记录
         clearTjl(){
             this.$alert('清除当前做题记录？','提示',{
                 confirmButtonText:'清除记录',
@@ -343,7 +348,11 @@ export default {
                     let newObj={};
                     newObj['id']=i;
                     newObj['txt']=obj[i];
-                    if(this.queArr[this.indexd].answer==i){
+                    if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option==i){
+                        newObj['isSel']=1;
+                    }else if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option!=i){
+                        newObj['isSel']=2;
+                    }else if(this.queArr[this.indexd].answer!=i&&this.queArr[this.indexd].question.true_option==i&&this.queArr[this.indexd].is_answer==1){
                         newObj['isSel']=1;
                     }else{
                         newObj['isSel']=0;
@@ -367,7 +376,11 @@ export default {
                     let newObj={};
                     newObj['id']=i;
                     newObj['txt']=obj[i];
-                    if(this.queArr[this.indexd].answer==i){
+                    if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option==i){
+                        newObj['isSel']=1;
+                    }else if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option!=i){
+                        newObj['isSel']=2;
+                    }else if(this.queArr[this.indexd].answer!=i&&this.queArr[this.indexd].question.true_option==i&&this.queArr[this.indexd].is_answer==1){
                         newObj['isSel']=1;
                     }else{
                         newObj['isSel']=0;
@@ -388,7 +401,11 @@ export default {
                 let newObj={};
                 newObj['id']=i;
                 newObj['txt']=obj[i];
-                if(this.queArr[this.indexd].answer==i){
+                if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option==i){
+                    newObj['isSel']=1;
+                }else if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option!=i){
+                    newObj['isSel']=2;
+                }else if(this.queArr[this.indexd].answer!=i&&this.queArr[this.indexd].question.true_option==i&&this.queArr[this.indexd].is_answer==1){
                     newObj['isSel']=1;
                 }else{
                     newObj['isSel']=0;
@@ -450,7 +467,11 @@ export default {
                             let newObj={};
                             newObj['id']=i;
                             newObj['txt']=obj[i];
-                            if(this.queArr[this.indexd].answer==i){
+                            if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option==i){
+                                newObj['isSel']=1;
+                            }else if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option!=i){
+                                newObj['isSel']=2;
+                            }else if(this.queArr[this.indexd].answer!=i&&this.queArr[this.indexd].question.true_option==i&&this.queArr[this.indexd].is_answer==1){
                                 newObj['isSel']=1;
                             }else{
                                 newObj['isSel']=0;
@@ -493,7 +514,11 @@ export default {
                                     let newObj={};
                                     newObj['id']=i;
                                     newObj['txt']=obj[i];
-                                    if(this.queArr[this.indexd].answer==i){
+                                    if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option==i){
+                                        newObj['isSel']=1;
+                                    }else if(this.queArr[this.indexd].answer==i&&this.queArr[this.indexd].question.true_option!=i){
+                                        newObj['isSel']=2;
+                                    }else if(this.queArr[this.indexd].answer!=i&&this.queArr[this.indexd].question.true_option==i&&this.queArr[this.indexd].is_answer==1){
                                         newObj['isSel']=1;
                                     }else{
                                         newObj['isSel']=0;
@@ -523,7 +548,7 @@ export default {
         color: #FFD302 !important;
     }
     .questionsItem .clearAll{
-        width: 1430px;
+        width: 85%;
         height: 44px;
         margin:0 auto 20px auto;
     }
@@ -565,5 +590,11 @@ export default {
         font-size: 30px;
         font-weight: bold;
         padding-top: 200px;
+    }
+    .questionsItem .topBox .quBottom{
+        justify-content: flex-end;
+    }
+    .questionsItem .topBox .quBottom .right{
+        margin-right: 50px;
     }
 </style>

@@ -612,12 +612,20 @@ export default {
     }
 </style>
 <style scoped>
+    .quBottom .left{
+        flex-wrap: nowrap;
+    }
     .quBottom .left img{
         width: 30px;
         height: 30px;
     }
     .quBottom .left p:last-child{
         margin-left: 30px  !important;
+    }
+    .quBottom .left p{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
     }
     .quBottom .right p:last-child{
         margin-left: 50px;

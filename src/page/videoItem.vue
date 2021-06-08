@@ -28,7 +28,13 @@
                 <div class="text">
                     <h2>{{videoObj.title}}</h2>
                     <h3>简介：</h3>
-                    <div v-html="videoObj.content"></div>
+                    <div :style="`height:${screenHeight-335}px`">
+                        <vue-scroll :ops="ops" style="width:100%;height:100%;">
+                            <div v-html="videoObj.content">
+
+                            </div>
+                        </vue-scroll>
+                    </div>
                 </div>
             </div>
         </vue-scroll>
@@ -136,7 +142,7 @@ export default {
     components:{
         topnav
     },
-    computed:mapState(["opsx","screenHeight"])
+    computed:mapState(["ops","opsx","screenHeight"])
 }
 </script>
 <style scoped>
@@ -224,10 +230,10 @@ export default {
         padding-left: 40px;
         box-sizing: border-box;
     }
-    .videoBox .text div{
+    .videoBox .text>div{
         text-align: left;
         font-size: 16px;
-        padding:0 40px;
+        padding:0 20px;
         text-indent: 44px;
         box-sizing: border-box;
         line-height: 25px;

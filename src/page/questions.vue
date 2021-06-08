@@ -375,7 +375,7 @@ export default {
      }
      /* 题目解析 */
      .questionsItem >>> .quAnalysis{
-         width: 1430px;
+         width: 85%;
          margin:0 auto;
      }
      .questionsItem >>> .quAnalysis .answer{

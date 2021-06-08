@@ -41,15 +41,18 @@
             <div class="box boxJcyx" v-show="twoNavIndex==1&&itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
-                    <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
-                        <img v-lazy="item.thumbnail">
+                    <div class="imgTop">
+                        <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
                         <div class="iconTop">
                             <p>{{(currentPage-1)*15+(index+1)}}</p>
                             <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
                             <p v-else-if="item.is_auth==0">免费</p>
                         </div>
                         <div class="iconDown">
-                            <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}
+                            <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}</p>
+                            <div @click="addSc(item.id,item.is_favorite,index)">
+                                <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+                            </div>
                         </div>
                     </div>
                     <div class="txtDown">
@@ -64,15 +67,18 @@
             <div class="box boxyxsp" v-show="twoNavIndex==2&&itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
-                    <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
-                        <img v-lazy="item.thumbnail">
+                    <div class="imgTop">
+                        <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
                         <div class="iconTop">
                             <p>{{(currentPage-1)*15+(index+1)}}</p>
                             <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
                             <p v-else-if="item.is_auth==0">免费</p>
                         </div>
                         <div class="iconDown">
-                            <img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}
+                            <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}</p>
+                            <div @click="addSc(item.id,item.is_favorite,index)">
+                                <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+                            </div>
                         </div>
                         <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
                     </div>
@@ -105,7 +111,7 @@
     import store from '../vuex/store'
     import {mapState,mapMutations} from 'vuex'
     import topnav from '../components/topnav'
-    import {enterpriseCategory,enterpriseModel} from '../services/api/modelVideo'
+    import {enterpriseCategory,enterpriseModel,addfavorites,delfavorites} from '../services/api/modelVideo'
     export default {
         data(){
             return{
@@ -195,6 +201,38 @@
                             }
                         })
                     }
+                }
+            },
+            // 收藏取消收藏模型
+            addSc(id,isSc,index){
+                if(isSc){
+                    let data={};
+                    data['ids']=id;
+                    data['type']=this.itemArr[index].video_url?'video':'model';
+                    delfavorites(data).then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.itemArr[index].is_favorite=false;
+                        }else if(res.data.code==-200){
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'warning'});
+                        }
+                    })
+                }else{
+                    let data={};
+                    data['id']=id;
+                    data['table']=this.itemArr[index].video_url?'video':'model';
+                    addfavorites(data).then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.itemArr[index].is_favorite=true;
+                        }else if(res.data.code==-200){
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'warning'});
+                        }
+                    })
                 }
             },
             // 返回顶部
@@ -404,7 +442,7 @@
     }
     .pubBox{
         width: 100%;
-        padding: 0 50px 0 350px;
+        padding: 0 0 0 350px;
         box-sizing: border-box;
     }
     .pubBox .box{
@@ -455,7 +493,16 @@
         top:20px;
     }
     .pubBox .box .pubItem .imgTop .iconDown{
-        bottom: 20px;
+        width: 205px;
+        justify-content: space-between;
+        bottom: 10px;
+    }
+    .pubBox .box .pubItem .imgTop .iconDown>div img{
+        width: 30px;
+        height: 30px;
+    }
+    .pubBox .box .pubItem .imgTop .iconDown>div img:hover{
+        cursor: pointer;
     }
     .pubBox .box .pubItem .imgTop .iconTop p{
         width: 32px;

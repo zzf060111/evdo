@@ -6,20 +6,49 @@
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
             </vue-scroll>
         </div>
-        <div class="twoNav" v-if="twoNavList.length>0">
-            <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <div class="twoNav">
+            <!-- <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
                 <el-menu-item :index="item.num" v-for="(item,index) of twoNavList" :key="index"> 
                     {{item.name}}
                 </el-menu-item>
+            </el-menu>
+            </vue-scroll> -->
+            <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
+                <el-menu-item index="1"> 
+                    基础医学
+                </el-menu-item>
+                <el-menu-item index="2">
+                    医学视频
+                </el-menu-item>
+                <!-- <el-menu-item index="3">
+                    图谱
+                </el-menu-item>
+                <el-menu-item index="4">
+                    课件
+                </el-menu-item> -->
+            </el-menu>
+        </div>
+        <div class="leftNav" :style="`height:${screenHeight-110}px`" v-if="leftNav.length>0">
+            <vue-scroll :ops="ops" style="width:100%;height:100%;">
+            <el-menu class="left-menu" :default-active="leftIndex" background-color="#F6F6F6" unique-opened @select="changLeftNav">
+                <el-submenu :index="item.num" v-for="(item,index) of leftNav" :key="index">
+                    <template slot="title">
+                        <img :src="item.more.thumbnail">
+                        <span>{{item.name}} <b>|</b> {{item.auth_count}}</span>
+                    </template>
+                    <el-menu-item-group>
+                        <el-menu-item :index="item2.num" v-for="(item2,index2) of item.child" :key="index2">{{item2.name}} <b>|</b> {{item2.auth_child_count}}</el-menu-item>
+                    </el-menu-item-group>
+                </el-submenu>
             </el-menu>
             </vue-scroll>
         </div>
         <div class="publicBox" v-if="twoNavIndex!=twoNavList.length&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
-                <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
-                    <img v-lazy="item.thumbnail">
+                <div class="imgTop">
+                    <img v-lazy="item.thumbnail"  @click="lookItem(item.id,item.need_vip)">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
                         <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
@@ -44,8 +73,8 @@
         <div class="publicBox boxyxsp"  v-if="twoNavIndex==twoNavList.length&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
-                <div class="imgTop" @click="lookItem(item.id,item.need_vip)">
-                    <img v-lazy="item.thumbnail">
+                <div class="imgTop">
+                    <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
                     <div class="iconTop">
                         <p>{{(currentPage-1)*15+(index+1)}}</p>
                         <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
@@ -87,13 +116,15 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
-import {professionalCategory,professionalModel} from '../services/api/modelVideo'
+import {professionalCategory,professionalModel,addfavorites,delfavorites} from '../services/api/modelVideo'
 export default {
     data(){
         return{
             topIcon:require('../../static/image/top/logo2@2x.png'),
             activeIndex:'2',
             twoNavIndex:'',
+            leftIndex:'',
+            leftNav:[],
             twoNavList:[],
             currentPage:1,
             pageSize:0,
@@ -106,8 +137,18 @@ export default {
     store,
     created(){
         let id=this.$route.query.id?this.$route.query.id:'noid';
+        let type=this.$route.query.type?this.$route.query.type:'';
+        if(type){
+            if(localStorage.getItem('proindex')){
+                this.twoNavIndex=localStorage.getItem('proindex');
+            }else{
+                this.twoNavIndex=type;
+            }
+        }else{
+            this.twoNavIndex=localStorage.getItem('proindex')?localStorage.getItem('proindex'):'1';
+        }
         // 获取列表
-        this.getFenlei(id);
+        this.getFenlei(this.twoNavIndex,id);
     },
     mounted(){
         this.windowChange()
@@ -188,6 +229,38 @@ export default {
                         }
                     })
                 }
+            }
+        },
+        // 收藏取消收藏模型
+        addSc(id,isSc,index){
+            if(isSc){
+                let data={};
+                data['ids']=id;
+                data['type']=this.itemArr[index].video_url?'video':'model';
+                delfavorites(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.alertTxt({msg:res.data.msg,type:'success'});
+                        this.itemArr[index].is_favorite=false;
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'warning'});
+                    }
+                })
+            }else{
+                let data={};
+                data['id']=id;
+                data['table']=this.itemArr[index].video_url?'video':'model';
+                addfavorites(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.alertTxt({msg:res.data.msg,type:'success'});
+                        this.itemArr[index].is_favorite=true;
+                    }else if(res.data.code==-200){
+                        this.alertTxt({msg:res.data.msg,type:'error'});
+                    }else{
+                        this.alertTxt({msg:res.data.msg,type:'warning'});
+                    }
+                })
             }
         },
         // 获取分类
@@ -292,6 +365,44 @@ export default {
     .professional .el-pagination{
         margin: 20px 0;
     }
+    .left-menu .el-submenu__title{
+        display: flex;
+        align-items: center;
+    }
+    .left-menu .el-submenu__title img{
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+    }
+    .left-menu .el-submenu__title span{
+        width:200px;    
+        overflow: hidden;    
+        text-overflow:ellipsis;    
+        white-space: nowrap;
+        text-align: left;
+    }
+    .left-menu .el-menu-item-group__title{
+        padding: 0 !important;
+    }
+    .left-menu .el-submenu.is-active .el-submenu__title{
+        font-weight: bold;
+    }
+    .left-menu .el-menu-item{
+        width: 90%;
+        height: 40px;
+        margin:0 auto;
+        overflow: hidden;    
+        text-overflow:ellipsis;    
+        white-space: nowrap;
+        text-align: left;
+        line-height: 40px;
+    }
+    .left-menu .el-submenu.is-active .el-menu-item.is-active{
+        background-color: #FFD302 !important;
+        border-radius: 10px;
+        color: #333 !important;
+        font-weight: bold;
+    }
 </style>
 <style scoped>
     .professional{
@@ -310,11 +421,21 @@ export default {
         left:0;
         z-index: 9;
     }
+    .leftNav{
+        width: 300px;
+        background-color: #F6F6F6;
+        overflow-y: auto;
+        position: fixed;
+        top:110px;
+        left: 0;
+        z-index: 9;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
     .publicBox{
-        width: 91%;
+        width: 100%;
         min-height: 200px;
-        margin:0 auto;
-        padding:10px 0 0 10px;
+        padding:0 0 0 350px;
         box-sizing: border-box;
         display: flex;
         flex-wrap: wrap;
@@ -358,6 +479,7 @@ export default {
         top:20px;
     }
     .publicBox .pubItem .imgTop .iconDown{
+        width: 205px;
         justify-content: space-between;
         bottom: 10px;
     }

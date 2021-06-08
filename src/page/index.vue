@@ -246,7 +246,8 @@
                     this.$router.push({
                         path:'/professional',
                         query:{
-                            id:id
+                            id:id,
+                            type:id==-1?2:1
                         }
                     })
                 }

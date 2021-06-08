@@ -1,23 +1,23 @@
 <template>
   	<div class="topnav">
 		<el-menu :default-active="activeIndex" :class="activeIndex=='2'||activeIndex=='3'||activeIndex=='4'?'el-menu-demo':''" mode="horizontal" background-color="#252B43" text-color="#ffffff" active-text-color="#FFD302" @select="routerPath">
-		  	<el-menu-item index="1">
+		  	<el-menu-item index="1" :class="activeIndex==1?'isIndex':''">
 				<img :src="topIcon" class="icon">  
 				医维度
 			</el-menu-item>
-			<el-menu-item index="2">
-				专业版
+			<el-menu-item index="2" :class="activeIndex==2?'isIndex':''">
+				个人版
 			</el-menu-item>
-			<el-menu-item index="3">
+			<el-menu-item index="3" :class="activeIndex==3?'isIndex':''">
 				企业版
 			</el-menu-item>
-			<el-menu-item index="4">
+			<el-menu-item index="4" :class="activeIndex==4?'isIndex':''">
 				自测练习
 			</el-menu-item>
-			<el-menu-item index="5">
+			<el-menu-item index="5" :class="activeIndex==5?'isIndex':''">
 				软件下载
 			</el-menu-item>
-			<el-menu-item index="6">
+			<el-menu-item index="6" :class="activeIndex==6?'isIndex':''">
 				功能介绍
 			</el-menu-item>
 	  	</el-menu>
@@ -38,7 +38,7 @@
 		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="login">
 			<el-form :model="logoform" label-width="80px" :rules="logorules" ref="logoform">
 				<el-form-item label="账号" prop="name">
-					<el-input v-model="logoform.name" type="text" placeholder="请输入手机号或邮箱"></el-input>
+					<el-input v-model="logoform.name" type="text" placeholder="请输入账号"></el-input>
 				</el-form-item>
 				<el-form-item label="密码" prop="pwd">
 					<el-input v-model="logoform.pwd" type="password" placeholder="请输入密码"></el-input>
@@ -176,8 +176,7 @@ export default {
 			},
 			logorules:{
 				name:[
-					{ required: true, message: '请输入手机号或邮箱', trigger: 'blur' },
-					{validator: checkPhone, trigger: 'blur'}
+					{ required: true, message: '请输入账号', trigger: 'blur' },
 				],
 				pwd:[
 					{ required: true, message: '请输入密码', trigger: 'blur' },
@@ -405,7 +404,7 @@ export default {
 							this.logoVisible=false;
 							this.changeUser(JSON.stringify(res.data.data));
 							localStorage.setItem('token',res.data.data.token);
-							this.$router.go(0);
+							// this.$router.go(0);
 						}else{
 							this.alertTxt({'msg':res.data.msg,'type':'error'});
 						}
@@ -529,13 +528,14 @@ export default {
 						if(this.activeIndex=='8'||this.activeIndex=='3'||this.activeIndex=='4'){
 							this.$router.push('/');
 						}else{
-							this.$alert('请登录后访问此页面','提示',{
-								confirmButtonText:'确 定',
-								center:true,
-								callback:()=>{
-									this.$router.go(0);
-								}
-							})
+							// this.$alert('请登录后访问此页面','提示',{
+							// 	confirmButtonText:'确 定',
+							// 	center:true,
+							// 	callback:()=>{
+							// 		this.$router.go(0);
+							// 	}
+							// })
+							this.logoVisible=true;
 						}
 					}else{
 						if(res.data.data.is_enterprise){
@@ -545,7 +545,7 @@ export default {
 								confirmButtonText:'确 定',
 								center:true,
 								callback:()=>{
-									this.$router.go(0);
+									// this.$router.go(0);
 								}
 							})
 						}
@@ -563,13 +563,14 @@ export default {
 						if(this.activeIndex=='8'||this.activeIndex=='3'||this.activeIndex=='4'){
 							this.$router.push('/');
 						}else{
-							this.$alert('请登录后访问此页面','提示',{
-								confirmButtonText:'确 定',
-								center:true,
-								callback:()=>{
-									this.$router.go(0);
-								}
-							})
+							// this.$alert('请登录后访问此页面','提示',{
+							// 	confirmButtonText:'确 定',
+							// 	center:true,
+							// 	callback:()=>{
+							// 		this.$router.go(0);
+							// 	}
+							// })
+							this.logoVisible=true;
 						}
 					}else{
 						this.$router.push({path:'/exercise'})
@@ -717,9 +718,17 @@ export default {
 	.el-menu.el-menu--horizontal{
 		border-bottom: none !important;
 	}
-	.topnav .el-menu-demo>.el-menu-item.is-active{
-		border-bottom: none;
+	.topnav .el-menu>.el-menu-item.is-active{
+		color: #fff !important;
+		border-bottom-color: transparent !important;
+	}
+	.topnav .el-menu-demo>.el-menu-item.isIndex{
+		color: #FFD302 !important;
+		border-bottom-color: transparent;
 		background-color: rgb(97, 101, 118)  !important;
+	}
+	.topnav .el-menu>.el-menu-item.isIndex{
+		color: #FFD302 !important;
 	}
 	.topnav .el-menu{
 		width: 600px;

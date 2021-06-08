@@ -5,10 +5,11 @@
         <p class="title">会员套餐</p>
         <div class="pubBox">
             <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index" @click="selVip(index)">
+                <div class="yiZhe">{{item.tag}}</div>
                 <h2>{{item.description}}</h2>
-                <h3>{{`¥${item.price}/`}}{{item.day==365?'年':item.day==90?'季':'月'}}</h3>
+                <h3>{{`¥${parseFloat(item.price).toFixed(1)}/`}}{{item.day==365?'年':item.day==90?'季':'月'}}</h3>
                 <div class="oldprice">
-                    ¥{{item.original_price}}
+                    ¥{{parseInt(item.original_price)}}
                     <p></p>
                 </div>
                 <div class="btn" @click="openPay(item.price,item.day,item.id)">{{arrUser.member_in?'续费':'开通'}}</div>
@@ -540,6 +541,20 @@ export default {
         position: relative;
         padding-top: 30px;
         box-sizing: border-box;
+    }
+    .member .pubBox .pubitem .yiZhe{
+        width: 90px;
+        height: 38px;
+        text-align: center;
+        line-height: 38px;
+        font-size: 18px;
+        color: #fff;
+        background-color: #FD4344;
+        border-radius: 0 15px 0 15px;
+        position: absolute;
+        top:-19px;
+        right:0;
+        z-index: 1;
     }
     .member .pubBox .pubitem h2{
         color: #333;
