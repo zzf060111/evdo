@@ -127,6 +127,35 @@
 				<el-button type="primary" @click="phoneBind('phoneform')">确 定</el-button>
 			</div>
 		</el-dialog>
+		<!-- 加入组织 -->
+        <el-dialog title="加入组织" :visible.sync="joinIntop" :append-to-body="true" :close-on-click-modal="false" center :custom-class="arrUser.user_status==2?'joinIntop':'joinIntop shenHe'" top="13vh">
+			<p>
+				您当前的账号为个人版，查看企业版内容需要加入企业用户组，升级为企业版账号。如果您所在的院校或企业已购买企业版并为您提供了邀请码，请在下方输入相关信息升级为企业版账号，企业版账号拥有全站查看权限！
+			</p>
+			<el-form :model="joinform" label-width="80px" :rules="joinrules" ref="joinform"  v-if="arrUser.user_status==2">
+				<el-form-item label="姓名" prop="name">
+					<el-input v-model="joinform.name" type="text" placeholder="请输入姓名"></el-input>
+				</el-form-item>
+                <el-form-item label="学号" prop="job">
+					<el-input v-model="joinform.job" type="text" placeholder="请输入学号"></el-input>
+				</el-form-item>
+                <el-form-item label="邀请码" prop="code">
+					<el-input v-model="joinform.code" type="text" placeholder="请输入邀请码"></el-input>
+				</el-form-item>
+			</el-form>
+			<el-form  label-width="60px"   v-if="arrUser.user_status==3">
+				<el-form-item label="姓名">
+					<el-input :value="arrUser.realname" type="text" placeholder="请输入姓名" disabled></el-input>
+				</el-form-item>
+                <el-form-item label="学号">
+					<el-input :value="arrUser.student_id" type="text" placeholder="请输入学号" disabled></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="joinInclicktop('joinform')" v-if="arrUser.user_status==2">确 定</el-button>
+				<el-button type="primary" v-if="arrUser.user_status==3">审核中</el-button>
+			</div>
+		</el-dialog>
   </div>
 </template>
 
@@ -134,7 +163,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import {register,getUserCode,passwordReset,login,socials,wechatwebcallback,mobilebind,qqcallback,wechatBind,QQBind,qqcode2user} from '../services/api/topnav'
-import {info,user_mobile_code} from '../services/api/personal'
+import {info,user_mobile_code,joinReq} from '../services/api/personal'
 export default {
 	data () {
 		// 验证手机号
@@ -225,7 +254,24 @@ export default {
                     { required: true, message: '请输入验证码', trigger: 'blur' },
                 ]
             },
-			bindData:{}
+			bindData:{},
+			joinIntop:false,
+			joinform:{
+				name:'',
+				job:'',
+				code:''
+			},
+			joinrules:{
+				name:[
+					{ required: true, message: '请输入姓名', trigger: 'blur' },
+				],
+				job:[
+					{ required: true, message: '请输入工号', trigger: 'blur' },
+				],
+				code:[
+					{ required: true, message: '请输入邀请码', trigger: 'blur' },
+				]
+			}
 		}
 	},
 	store,
@@ -331,6 +377,8 @@ export default {
 				if(this.activeIndex=='8'||this.activeIndex=='3'||this.activeIndex=='4'){
                 	this.$router.push('/');
 				}
+			}else{
+				this.changeUser(JSON.stringify(res.data.data));
 			}
 		})
 	},
@@ -541,13 +589,14 @@ export default {
 						if(res.data.data.is_enterprise){
 							this.$router.push({path:'/enterprise'})
 						}else{
-							this.$alert('此页面需企业级账号权限，请加入组织后访问','提示',{
-								confirmButtonText:'确 定',
-								center:true,
-								callback:()=>{
-									// this.$router.go(0);
-								}
-							})
+							// this.$alert('此页面需企业级账号权限，请加入组织后访问','提示',{
+							// 	confirmButtonText:'确 定',
+							// 	center:true,
+							// 	callback:()=>{
+							// 		// this.$router.go(0);
+							// 	}
+							// })
+							this.showJoin();
 						}
 					}
 				})
@@ -629,7 +678,39 @@ export default {
 			let r = window.location.hash.split("?")[1].match(reg); 　　
 			if (r != null) return decodeURIComponent(r[2]); 
 		　　    return null; 
-		}
+		},
+		// 加入组织
+		showJoin(){
+			this.joinIntop=true;
+		},
+		joinInclicktop(formName){
+             this.$refs[formName].validate((valid)=>{
+                if(valid){
+                    let data={};
+                    data["code"]=this.joinform.code;
+                    data["name"]=this.joinform.name;
+                    data["student_id"]=this.joinform.job;
+                    joinReq(data).then((res)=>{
+                        if(res.data.code==0){
+                            this.alertTxt({msg:res.data.msg,type:'success'});
+                            this.joinIntop=false;
+                            let arr=this.arrUser;
+                            arr.user_status=3;
+                            info().then((res)=>{
+								if(res.data.code==0){
+									this.changeUser(JSON.stringify(res.data.data));
+								}else if(res.data.code==200){
+									localStorage.removeItem('token');
+									this.changeUser('');
+								}
+							})
+                        }else{
+                            this.alertTxt({msg:res.data.msg,type:'error'});
+                        }
+                    })
+                }
+			})
+        }
 	},
 	computed:mapState(["forgetReg","forgetStr","searchval","arrUser"])
 }
@@ -678,6 +759,29 @@ export default {
 		text-align: center;
 		font-size: 14px;
 		color: #999;
+	}
+	.joinIntop.el-dialog{
+		width: 360px;
+		height: 500px;
+		border-radius: 10px;
+	}
+	.joinIntop.shenHe.el-dialog{
+		height: 440px;
+	}
+	.joinIntop.shenHe.el-dialog .el-button--primary{
+		background-color: #96BAFA;
+		border: 1px solid #96BAFA;
+	}
+	.joinIntop.el-dialog .el-dialog__body{
+		padding: 25px !important;
+	}
+	.joinIntop.el-dialog p{
+		width: 100%;
+		font-size: 16px;
+		margin-bottom: 30px;
+	}
+	.joinIntop.el-dialog .dialog-footer{
+		margin-top:-30px !important;
 	}
 	.el-dialog__header{
 		border-bottom: 1px solid #ddd;

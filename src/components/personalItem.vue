@@ -1,67 +1,121 @@
 <template>
-    <div class="personalItem">
-        <p class="title">账户信息</p>
-        <div class="upload">
-            <el-upload
-            class="avatar-uploader"
-            action="123"
-            :headers="{'Content-Type':'multipart/form-data'}"
-            :http-request="uploadFile"
-            :show-file-list="false"
-            :before-upload="beforeAvatarUpload">
-            <img :src="require('../../static/image/personal/icon_xiangji@2x.png')">
-            </el-upload>
-            <img v-if="arrUser.avatar" :src="arrUser.avatar" class="avatar">
-            <img v-else :src="require('../../static/image/personal/touxiang1@2x.png')" class="avatar">
-        </div>
-        <div class="formBox">
-            <el-form  label-width="100px" >
-				<el-form-item label="昵称" prop="phone">
-					<el-input type="text" :value="arrUser.nickname" disabled v-if="arrUser"></el-input>
-                    <p @click="showName">修改</p>
-				</el-form-item>
-				<el-form-item label="账号" prop="pwd">
-					<el-input  type="text" :value="arrUser.user_login" v-if="arrUser" disabled></el-input>
-				</el-form-item>
-				<el-form-item label="密码" prop="truePwd">
-					<el-input type="password" value="123456" disabled></el-input>
-                    <p @click="showPwd">修改</p>
-				</el-form-item>
-			</el-form>
-        </div>
-        <div class="bindBox">
-            <div class="item">
-                <div class="left">
-                    <div>
-                        <img :src="arrUser.mobile?require('../../static/image/personal/icon_phone2@2x.png'):require('../../static/image/personal/icon_phone@2x.png')">
-                        手机
-                    </div>
-                    <p>{{arrUser.mobile?arrUser.mobile:'未绑定'}}</p>
+    <div class="personalItem" :style="`height:${screenHeight-60}px`">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
+        <div style="display:flex;justify-content: center;">
+            <div class="rightBox">
+                <p class="title">账户信息</p>
+                <div class="upload">
+                    <el-upload
+                    class="avatar-uploader"
+                    action="123"
+                    :headers="{'Content-Type':'multipart/form-data'}"
+                    :http-request="uploadFile"
+                    :show-file-list="false"
+                    :before-upload="beforeAvatarUpload">
+                    <img :src="require('../../static/image/personal/icon_xiangji@2x.png')">
+                    </el-upload>
+                    <img v-if="arrUser.avatar" :src="arrUser.avatar" class="avatar">
+                    <img v-else :src="require('../../static/image/personal/touxiang1@2x.png')" class="avatar">
                 </div>
-                <div :class="arrUser.mobile?`btn`:`btn isbind`" @click="showPhone">{{arrUser.mobile?'修改手机':'去绑定'}}</div>
-            </div>
-            <div class="item">
-                <div class="left">
-                    <div>
-                        <img :src="arrUser.weixin?require('../../static/image/personal/icon_wechat2@2x.png'):require('../../static/image/personal/icon_wechat@2x.png')">
-                        微信
-                    </div>
-                    <p>{{arrUser.weixin?'已绑定':'未绑定'}}</p>
+                <div class="formBox">
+                    <el-form  label-width="100px" >
+                        <el-form-item label="昵称" prop="phone">
+                            <el-input type="text" :value="arrUser.nickname" disabled v-if="arrUser"></el-input>
+                            <p @click="showName">修改</p>
+                        </el-form-item>
+                        <el-form-item label="账号" prop="pwd">
+                            <el-input  type="text" :value="arrUser.user_login" v-if="arrUser" disabled></el-input>
+                        </el-form-item>
+                        <el-form-item label="密码" prop="truePwd">
+                            <el-input type="password" value="123456" disabled></el-input>
+                            <p @click="showPwd">修改</p>
+                        </el-form-item>
+                    </el-form>
                 </div>
-                <div :class="arrUser.weixin?`btn`:`btn isbind`" @click="showWeixin(arrUser.weixin)">{{arrUser.weixin?'解绑':'去绑定'}}</div>
-            </div>
-            <div class="item">
-                <div class="left">
-                    <div>
-                        <img :src="arrUser.qq?require('../../static/image/personal/icon_qq2@2x.png'):require('../../static/image/personal/icon_qq@2x.png')">
-                        QQ
+                <div class="bindBox">
+                    <div class="item">
+                        <div class="left">
+                            <div>
+                                <img :src="arrUser.mobile?require('../../static/image/personal/icon_phone2@2x.png'):require('../../static/image/personal/icon_phone@2x.png')">
+                                手机
+                            </div>
+                            <p>{{arrUser.mobile?arrUser.mobile:'未绑定'}}</p>
+                        </div>
+                        <div :class="arrUser.mobile?`btn`:`btn isbind`" @click="showPhone">{{arrUser.mobile?'修改手机':'去绑定'}}</div>
                     </div>
-                    <p>{{arrUser.qq?'已绑定':'未绑定'}}</p>
+                    <div class="item">
+                        <div class="left">
+                            <div>
+                                <img :src="arrUser.weixin?require('../../static/image/personal/icon_wechat2@2x.png'):require('../../static/image/personal/icon_wechat@2x.png')">
+                                微信
+                            </div>
+                            <p>{{arrUser.weixin?'已绑定':'未绑定'}}</p>
+                        </div>
+                        <div :class="arrUser.weixin?`btn`:`btn isbind`" @click="showWeixin(arrUser.weixin)">{{arrUser.weixin?'解绑':'去绑定'}}</div>
+                    </div>
+                    <div class="item">
+                        <div class="left">
+                            <div>
+                                <img :src="arrUser.qq?require('../../static/image/personal/icon_qq2@2x.png'):require('../../static/image/personal/icon_qq@2x.png')">
+                                QQ
+                            </div>
+                            <p>{{arrUser.qq?'已绑定':'未绑定'}}</p>
+                        </div>
+                        <div :class="arrUser.qq?`btn`:`btn isbind`" @click="showQQ(arrUser.qq)">{{arrUser.qq?'解绑':'去绑定'}}</div>
+                    </div>
                 </div>
-                <div :class="arrUser.qq?`btn`:`btn isbind`" @click="showQQ(arrUser.qq)">{{arrUser.qq?'解绑':'去绑定'}}</div>
+                <!-- <div class="loginOut" @click="logOut">退出登陆</div> -->
+            </div>
+            <div class="leftBox">
+                <p class="title">组织信息</p>
+                <div v-if="arrUser.is_enterprise&&arrUser.user_status==1">
+                    <div class="formBox">
+                        <el-form :model="detailform" label-width="100px"  ref="detailform">
+                            <el-form-item label="院校" prop="organization">
+                                <el-input v-model="detailform.organization" type="text" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="班级" prop="class">
+                                <el-input v-model="detailform.class" type="text" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="姓名" prop="name">
+                                <el-input v-model="detailform.name" type="text" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="学号" prop="sno">
+                                <el-input v-model="detailform.sno" type="text" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="邀请码" prop="code">
+                                <el-input v-model="detailform.code" type="text" disabled></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div class="btnBox" @click="quitGroup">
+                        退出组织
+                    </div>
+                </div>
+                <div v-else-if="!arrUser.is_enterprise" class="addZz">
+                    <p>您暂时未加入任何组织</p>
+                    <div class="addBtn" @click="addJoin">
+                        加入组织
+                    </div>
+                </div>
+                <!-- <div v-else-if="!arrUser.is_enterprise&&arrUser.user_status==3">
+                    <div class="formBox">
+                        <el-form :model="detailform" label-width="100px"  ref="detailform">
+                            <el-form-item label="姓名" prop="name">
+                                <el-input v-model="detailform.name" type="text" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="学号" prop="sno">
+                                <el-input v-model="detailform.sno" type="text" disabled></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                    <div class="addBtn">
+                        正在审核中
+                    </div>
+                </div> -->
             </div>
         </div>
-        <div class="loginOut" @click="logOut">退出登陆</div>
+        </vue-scroll>
         <!-- 修改昵称 -->
         <el-dialog title="修改昵称" :visible.sync="changeName" :append-to-body="true" :close-on-click-modal="false" center custom-class="changeName" top="13vh">
 			<el-form :model="nameform" label-width="80px" :rules="namerules" ref="nameform">
@@ -110,7 +164,7 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
-import {logout,info,profile,password,user_mobile_code,mobileReg,oauth2unbind} from '../services/api/personal'
+import {logout,info,profile,password,user_mobile_code,mobileReg,oauth2unbind,quitGroup} from '../services/api/personal'
 import {socials} from '../services/api/topnav'
 import axios from 'axios'
 export default {
@@ -189,6 +243,13 @@ export default {
                 regtxt:[
                     { required: true, message: '请输入验证码', trigger: 'blur' },
                 ]
+            },
+            detailform:{
+                organization:'',
+                class:'',
+                name:'',
+                sno:'',
+                code:''
             }
         }
     },
@@ -437,11 +498,57 @@ export default {
                     this.$router.push('/');
                 }else{
                     this.changeUser(JSON.stringify(res.data.data));
+                    let obj=res.data.data;
+                    if(obj.is_enterprise&&obj.user_status==1){
+                        let objs={};
+                        objs['organization']=obj.organization;
+                        objs['class']=obj.class;
+                        objs['name']=obj.realname;
+                        objs['sno']=obj.student_id;
+                        objs['code']=obj.class_code;
+                        this.detailform=objs;
+                    }else if(!obj.is_enterprise&&obj.user_status==3){
+                        let objs={};
+                        objs['organization']=obj.organization;
+                        objs['class']=obj.class;
+                        objs['name']=obj.realname;
+                        objs['sno']=obj.student_id;
+                        objs['code']=obj.class_code;
+                        this.detailform=objs;
+                    }
                 }
             })
+        },
+        // 退出组织
+        quitGroup(){
+            this.$alert('确定退出组织','退出组织',{
+                confirmButtonText:'确定',
+                center:true,
+                customClass:'errorAlert',
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        quitGroup().then((res)=>{
+                            if(res.data.code==0){
+                                this.alertTxt({msg:res.data.msg,type:'success'});
+                                // this.$emit('changeNav',2);
+                                this.isLogin();
+                            }else if(res.data.code==-200){
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                                this.$router.push('/');
+                            }else{
+                                this.alertTxt({msg:res.data.msg,type:'error'});
+                            }
+                        })
+                    }
+                }
+            })
+        },
+        // 加入组织
+        addJoin(){
+            this.$parent.jumpJoin();
         }
     },
-    computed:mapState(["forgetStr","forgetReg","arrUser"])
+    computed:mapState(["opsx","forgetStr","forgetReg","arrUser","screenHeight"])
 }
 </script>
 <style>
@@ -469,12 +576,21 @@ export default {
     }
 </style>
 <style scoped>
-    .personalItem{
-        display: flex;
-        flex-direction: column;
+    /* .personalItem .__view{
+        display: flex !important;
+        justify-content: center;
         align-items: center;
+    } */
+    .personalItem .rightBox,.personalItem .leftBox{
+        width: 740px;
+        height: 800px;  
+        border: 1px solid #D1D1D1;
+        margin-top: 20px;
     }
-    .personalItem>p.title{
+    .personalItem .rightBox{
+        margin-right: 20px;
+    }
+    .personalItem .rightBox>p.title,.personalItem .leftBox>p.title{
         width: 100%;
         height: 50px;
         line-height: 60px;
@@ -484,13 +600,40 @@ export default {
         padding-left: 50px;
         box-sizing: border-box;
     }
-    .personalItem .upload{
+    .personalItem .leftBox .addZz{
+        height: 80%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .personalItem .leftBox .addZz p{
+        font-size: 20px;
+        color: #666;
+    }
+    .personalItem .leftBox .addZz .addBtn,.personalItem .leftBox .addBtn{
+        width: 110px;
+        height: 40px;
+        border: 1px solid #6495ED;
+        text-align: center;
+        line-height: 40px;
+        color: #6495ED;
+        font-size: 18px;
+        margin-top: 30px;
+    }
+    .personalItem .leftBox .addBtn{
+        margin:30px auto 0 auto;
+    }
+    .personalItem .leftBox .addZz .addBtn:hover{
+        cursor: pointer;
+    }
+    .personalItem .rightBox .upload{
         width: 120px;
         height: 100px;
-        margin: 30px 0 50px 0;
+        margin: 30px auto 50px auto;
         position: relative;
     }
-    .personalItem .upload .avatar-uploader{
+    .personalItem .rightBox .upload .avatar-uploader{
         width: 34px;
         height: 33px;
         position: absolute;
@@ -498,49 +641,53 @@ export default {
         bottom: 0;
         z-index: 1;
     }
-    .personalItem .upload .avatar-uploader img{
+    .personalItem .rightBox .upload .avatar-uploader img{
         width: 100%;
         height: 100%;
     }
-    .personalItem .upload .avatar{
+    .personalItem .rightBox .upload .avatar{
         width: 100px;
         height: 100px;
     }
-    .personalItem .formBox{
+    .personalItem .rightBox .formBox,.personalItem .leftBox .formBox{
         width: 620px;
+        margin: 0 auto;
     }
-    .personalItem .bindBox{
-        width: 620px;
-        padding-left: 110px;
+    .personalItem .leftBox .formBox{
+        margin-top: 180px;
+    }
+    .personalItem .rightBox .bindBox{
+        width: 520px;
         box-sizing: border-box;
         text-align: left;
+        margin-left:160px;
     }
-    .personalItem .bindBox .item{
+    .personalItem .rightBox .bindBox .item{
         margin-bottom: 20px;
     }
-    .personalItem .bindBox .item,.personalItem .bindBox .item .left{
+    .personalItem .rightBox .bindBox .item,.personalItem .rightBox .bindBox .item .left{
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .personalItem .bindBox .item .left{
+    .personalItem .rightBox .bindBox .item .left{
         width: 300px;
         color: #333;
         font-size: 20px;
     }
-    .personalItem .bindBox .item .left>p{
+    .personalItem .rightBox .bindBox .item .left>p{
         width: 150px;
     }
-    .personalItem .bindBox .item .left>div{
+    .personalItem .rightBox .bindBox .item .left>div{
         display: flex;
         align-items: center;
     }
-    .personalItem .bindBox .item .left img{
+    .personalItem .rightBox .bindBox .item .left img{
         width: 60px;
         height: 60px;
         margin-right: 15px;
     }
-    .personalItem .bindBox .item .btn{
+    .personalItem .rightBox .bindBox .item .btn{
         width: 110px;
         height: 40px;
         border-radius: 5px;
@@ -550,15 +697,15 @@ export default {
         text-align: center;
         line-height: 40px;
     }
-    .personalItem .bindBox .item .btn:hover{
+    .personalItem .rightBox .bindBox .item .btn:hover{
         cursor: pointer;
     }
-    .personalItem .bindBox .item .btn.isbind{
+    .personalItem .rightBox .bindBox .item .btn.isbind{
         background-color: transparent;
         border: 1px solid #6495ED;
         color: #6495ED;
     }
-    .personalItem .loginOut{
+    .personalItem .loginOut,.personalItem .leftBox .btnBox{
         width: 110px;
         height: 40px;
         border: 1px solid #FF5555;
@@ -567,7 +714,11 @@ export default {
         color: #FF5555;
         margin-top: 20px;
     }
-    .personalItem .loginOut:hover{
+    .personalItem .leftBox .btnBox{
+        font-size: 18px;
+        margin:50px auto 0 auto;
+    }
+    .personalItem .loginOut:hover,.personalItem .leftBox .btnBox:hover{
         cursor: pointer;
     }
 </style>

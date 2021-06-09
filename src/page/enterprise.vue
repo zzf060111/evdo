@@ -479,6 +479,9 @@
         width: 100%;
         height: 100%;
     }
+    .pubBox .box .pubItem .imgTop>img:hover{
+        cursor: pointer;
+    }
    .pubBox .box .pubItem .imgTop .iconTop,.pubBox .box .pubItem .imgTop .iconDown{
         width: 200px;
         display: flex;

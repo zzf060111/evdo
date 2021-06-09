@@ -7,7 +7,7 @@
             <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index" @click="selVip(index)">
                 <div class="yiZhe">{{item.tag}}</div>
                 <h2>{{item.description}}</h2>
-                <h3>{{`¥${parseFloat(item.price).toFixed(1)}/`}}{{item.day==365?'年':item.day==90?'季':'月'}}</h3>
+                <h3>{{`¥${parseFloat(item.price).toFixed(1)}`}}<span>{{item.day==365?'/年':item.day==90?'/季':'/月'}}</span></h3>
                 <div class="oldprice">
                     ¥{{parseInt(item.original_price)}}
                     <p></p>
@@ -541,6 +541,7 @@ export default {
         position: relative;
         padding-top: 30px;
         box-sizing: border-box;
+        border: 1px solid #DEAE81;
     }
     .member .pubBox .pubitem .yiZhe{
         width: 90px;
@@ -561,9 +562,13 @@ export default {
         font-size: 30px;
     }
     .member .pubBox .pubitem h3{
-        color: #DEBEA5;
+        color: #D18B55;
         font-size: 27px;
         margin-top: 30px;
+    }
+    .member .pubBox .pubitem h3 span{
+        font-size: 15px;
+        opacity: 0.8;
     }
     .member .pubBox .pubitem .oldprice{
         color: #aaa;
@@ -585,14 +590,17 @@ export default {
         width: 143px;
         height: 44px;
         border-radius: 22px;
-        background-color: #F5DABF;
+        background-color: #DEAE81;
         text-align: center;
         line-height: 44px;
         font-size: 23px;
         color: #fff;
         margin:0 auto;
     }
-    .member .pubBox .pubitem.selected{
+    .member .pubBox .pubitem .btn:hover{
+        background-color: #E98222;
+    }
+    /* .member .pubBox .pubitem.selected{
         border: 1px solid #DEBEA5;
         background-color: #F5DABF;
     }
@@ -601,7 +609,7 @@ export default {
     }
     .member .pubBox .pubitem:not(.selected){
         border: 1px solid #DEDEDE;
-    }
+    } */
     .member .pubBox .pubitem:nth-child(2){
         margin:0 100px;
     }

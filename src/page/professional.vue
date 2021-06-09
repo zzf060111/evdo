@@ -44,7 +44,7 @@
             </el-menu>
             </vue-scroll>
         </div>
-        <div class="publicBox" v-if="twoNavIndex!=twoNavList.length&&itemArr.length>0">
+        <div class="publicBox" v-if="twoNavIndex==1&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
                 <div class="imgTop">
@@ -70,7 +70,7 @@
         <div v-else-if="twoNavIndex!=twoNavList.length&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
             暂无数据
         </div>
-        <div class="publicBox boxyxsp"  v-if="twoNavIndex==twoNavList.length&&itemArr.length>0">
+        <div class="publicBox boxyxsp"  v-if="twoNavIndex==2&&itemArr.length>0">
             <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                 <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
                 <div class="imgTop">
@@ -166,31 +166,43 @@ export default {
             this.getList(obj);
         },
         // 导航
+        // changeNav(key){
+        //     this.changeSearch('');
+        //     this.twoNavIndex=key;
+        //     localStorage.setItem('proindex',key);
+        //     this.itemArr=[];
+        //     this.valueShow=false;
+        //     this.currentPage=1;
+        //     let id=this.twoNavList[parseInt(key)-1].id;
+        //     let data={};
+        //     if(id==0){
+        //         data['type']='M';
+        //         data['page']=this.currentPage;
+        //         data['isRecommaned']=1;
+        //         data['limit']=18;
+        //     }else if(id==-1){
+        //         data['type']='V';
+        //         data['page']=this.currentPage;
+        //         data['limit']=18;
+        //     }else{
+        //         data['type']='M';
+        //         data['page']=this.currentPage;
+        //         data['parent_id']=id;
+        //         data['limit']=18;
+        //     }
+        //     this.getList(data);
+        // },
         changeNav(key){
             this.changeSearch('');
             this.twoNavIndex=key;
-            localStorage.setItem('proindex',key);
+            this.leftNav=[];
             this.itemArr=[];
             this.valueShow=false;
-            this.currentPage=1;
-            let id=this.twoNavList[parseInt(key)-1].id;
-            let data={};
-            if(id==0){
-                data['type']='M';
-                data['page']=this.currentPage;
-                data['isRecommaned']=1;
-                data['limit']=18;
-            }else if(id==-1){
-                data['type']='V';
-                data['page']=this.currentPage;
-                data['limit']=18;
-            }else{
-                data['type']='M';
-                data['page']=this.currentPage;
-                data['parent_id']=id;
-                data['limit']=18;
-            }
-            this.getList(data);
+            localStorage.setItem('proindex',key);
+            localStorage.removeItem('proLeftnav');
+            localStorage.removeItem('prodata');
+            this.getFenlei(key,'noid');
+            this.toTop(50)
         },
         // 分页
         handleCurrentChange(val){
@@ -211,6 +223,22 @@ export default {
                 clearTimeout(c);
             }
         },
+        // 切换左侧导航
+        changLeftNav(key,keyPath){
+            this.changeSearch('');
+            localStorage.setItem('proLeftnav',key);
+            this.itemArr=[];
+            this.valueShow=false;
+            let obj=this.data;
+            let arr=this.leftNav;
+            let id1=arr[parseInt(keyPath[0])-1].id;
+            let id2=arr[parseInt(keyPath[0])-1].child[parseInt(key.split('-')[1])-1].id;
+            obj.parent_id=id1;
+            obj.category_id=id2;
+            obj.page=1;
+            obj['keywords']='';
+            this.getList(obj);
+        },
         // 查看详情
         lookItem(id,isVip){
             if(isVip){
@@ -219,9 +247,9 @@ export default {
                     center:true
                 })
             }else{
-                if(this.twoNavIndex!=this.twoNavList.length){
+                if(this.twoNavIndex=='1'){
                     window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
-                }else if(this.twoNavIndex==this.twoNavList.length){
+                }else if(this.twoNavIndex=='2'){
                     this.$router.push({
                         path:'/videoItem',
                         query:{
@@ -264,39 +292,102 @@ export default {
             }
         },
         // 获取分类
-        getFenlei(jumpId){
+        // getFenlei(jumpId){
+        //     let data={};
+        //     data['type']='M';
+        //     professionalCategory(data).then((res)=>{
+        //         if(res.data.code==0){
+        //             let arr=res.data.data;
+        //             let newArr=[];
+        //             for(let i=0;i<arr.length;i++){
+        //                 let obj={};
+        //                 obj['id']=arr[i].id;
+        //                 obj['name']=arr[i].name;
+        //                 newArr.push(obj);
+        //             }
+        //             newArr.unshift({id:0,name:'常用'});
+        //             newArr.push({id:-1,name:'医学动画'});
+        //             for(let i=0;i<newArr.length;i++){
+        //                 newArr[i]['num']=(i+1).toString();
+        //             }
+        //             if(jumpId!='noid'){
+        //                 if(localStorage.getItem('proindex')){
+        //                     this.twoNavIndex=localStorage.getItem('proindex')
+        //                 }else{
+        //                     for(let i=0;i<newArr.length;i++){
+        //                         if(jumpId==newArr[i].id){
+        //                             this.twoNavIndex=newArr[i].num;
+        //                         }
+        //                     }
+        //                 }
+        //             }else{
+        //                 this.twoNavIndex=localStorage.getItem('proindex')?localStorage.getItem('proindex'):newArr[0].num;
+        //             }
+        //             this.currentPage=localStorage.getItem('prodata')?JSON.parse(localStorage.getItem('prodata')).page:1;
+        //             this.twoNavList=newArr;
+        //             let data1={};
+        //             if(localStorage.getItem('prodata')){
+        //                 data1=JSON.parse(localStorage.getItem('prodata'));
+        //             }else{
+        //                 if(jumpId!='noid'){
+        //                     if(jumpId==-1){
+        //                         data1['type']='V';
+        //                         data1['page']=this.currentPage;
+        //                         data1['limit']=18;
+        //                     }else{
+        //                         data1['type']='M';
+        //                         data1['page']=this.currentPage;
+        //                         data1['parent_id']=jumpId;
+        //                         data1['limit']=18;
+        //                     }
+        //                 }else{
+        //                     data1['type']='M';
+        //                     data1['page']=this.currentPage;
+        //                     data1['isRecommaned']=1;
+        //                     data1['limit']=18;
+        //                 }
+        //             }
+        //             this.getList(data1);
+        //         }else{
+        //             this.alertTxt({msg:res.data.msg,type:'error'});
+        //         }
+        //     })
+        // },
+        getFenlei(index,jumpId){
             let data={};
-            data['type']='M';
+            if(index==1){
+                data['type']='M';
+            }else if(index==2){
+                data['type']='V';
+            }
             professionalCategory(data).then((res)=>{
                 if(res.data.code==0){
                     let arr=res.data.data;
-                    let newArr=[];
                     for(let i=0;i<arr.length;i++){
-                        let obj={};
-                        obj['id']=arr[i].id;
-                        obj['name']=arr[i].name;
-                        newArr.push(obj);
+                        arr[i]['num']=(i+1).toString();
+                        for(let j=0;j<arr[i].child.length;j++){
+                            arr[i].child[j]['num']=`${i+1}-${(j+1)}`;
+                        }
                     }
-                    newArr.unshift({id:0,name:'常用'});
-                    newArr.push({id:-1,name:'医学动画'});
-                    for(let i=0;i<newArr.length;i++){
-                        newArr[i]['num']=(i+1).toString();
-                    }
+                    this.leftNav=arr;
                     if(jumpId!='noid'){
-                        if(localStorage.getItem('proindex')){
-                            this.twoNavIndex=localStorage.getItem('proindex')
+                        if(localStorage.getItem('proLeftnav')){
+                            this.leftIndex=localStorage.getItem('proLeftnav');
                         }else{
-                            for(let i=0;i<newArr.length;i++){
-                                if(jumpId==newArr[i].id){
-                                    this.twoNavIndex=newArr[i].num;
+                            if(jumpId==-1){
+                                this.leftIndex=localStorage.getItem('proLeftnav')?localStorage.getItem('proLeftnav'):arr[0].child[0].num;
+                            }else{
+                                for(let i=0;i<arr.length;i++){
+                                    if(jumpId==arr[i].id){
+                                        this.leftIndex=arr[i].child[0].num;
+                                    }
                                 }
                             }
                         }
                     }else{
-                        this.twoNavIndex=localStorage.getItem('proindex')?localStorage.getItem('proindex'):newArr[0].num;
+                        this.leftIndex=localStorage.getItem('proLeftnav')?localStorage.getItem('proLeftnav'):arr[0].child[0].num;
                     }
                     this.currentPage=localStorage.getItem('prodata')?JSON.parse(localStorage.getItem('prodata')).page:1;
-                    this.twoNavList=newArr;
                     let data1={};
                     if(localStorage.getItem('prodata')){
                         data1=JSON.parse(localStorage.getItem('prodata'));
@@ -305,18 +396,27 @@ export default {
                             if(jumpId==-1){
                                 data1['type']='V';
                                 data1['page']=this.currentPage;
-                                data1['limit']=18;
+                                data1['parent_id']=arr[0].id;
+                                data1['category_id']=arr[0].child[0].id;
                             }else{
                                 data1['type']='M';
                                 data1['page']=this.currentPage;
                                 data1['parent_id']=jumpId;
-                                data1['limit']=18;
+                                for(let i=0;i<arr.length;i++){
+                                    if(jumpId==arr[i].id){
+                                        data1['category_id']=arr[i].child[0].id;
+                                    }
+                                }
                             }
                         }else{
-                            data1['type']='M';
+                            if(index==1){
+                                data1['type']='M';
+                            }else if(index==2){
+                                data1['type']='V';
+                            }
                             data1['page']=this.currentPage;
-                            data1['isRecommaned']=1;
-                            data1['limit']=18;
+                            data1['parent_id']=arr[0].id;
+                            data1['category_id']=arr[0].child[0].id;
                         }
                     }
                     this.getList(data1);
@@ -344,6 +444,7 @@ export default {
     beforeRouteLeave(to, form, next) {
         next();
         if(to.name!="VideoItem"){
+            localStorage.removeItem('proLeftnav');
             localStorage.removeItem('proindex');
             localStorage.removeItem('prodata');
         }
@@ -402,6 +503,13 @@ export default {
         border-radius: 10px;
         color: #333 !important;
         font-weight: bold;
+    }
+    .left-menu .el-submenu .el-menu .el-menu-item{
+        border-radius: 10px;
+    }
+    .left-menu .el-submenu .el-submenu__title:hover,.left-menu .el-submenu .el-menu .el-menu-item:hover{
+        border-radius: 10px;
+        background-color: #ccc !important;
     }
 </style>
 <style scoped>
@@ -464,6 +572,9 @@ export default {
     .publicBox .pubItem .imgTop>img{
         width: 100%;
         height: 100%;
+    }
+    .publicBox .pubItem .imgTop>img:hover{
+        cursor: pointer;
     }
     .publicBox .pubItem .imgTop .iconTop,.publicBox .pubItem .imgTop .iconDown{
         width: 200px;

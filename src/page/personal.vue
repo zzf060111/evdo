@@ -15,14 +15,18 @@
                     {{arrUser.clock_in?'已签到':'签到'}}
                 </div>
             </div>
-            <div class="cardBox card1">
+            <!-- <div class="cardBox card1">
                 <img :src="require('../../static/image/personal/bg_members@2x.png')" class="bj">
                 <p><img :src="require('../../static/image/personal/icon_members3@2x.png')" v-if="arrUser.is_enterprise"> <span :class="arrUser.is_enterprise?'':'changWidth'">{{arrUser.is_enterprise?arrUser.organization+'-'+arrUser.class:'加入企业用户组，共享全站权限'}}</span></p>
                 <div class="btn" @click="jumpJoin">{{btnTxt1}}</div>
+            </div> -->
+            <div class="academy" v-if="arrUser.is_enterprise">
+                <img :src="require('../../static/image/personal/icon_qiye_selected.png')" alt="">
+                <p>{{arrUser.organization}}</p>
             </div>
             <div class="cardBox card2">
                 <img :src="require('../../static/image/personal/bg_members@2x.png')" class="bj">
-                <p>{{arrUser.member_in?'专业版会员期限至'+`${new Date(arrUser.member_at*1000).getFullYear()}年${new Date(arrUser.member_at*1000).getMonth()+1}月${new Date(arrUser.member_at*1000).getDate()}日`:'开通专业版VIP'}}</p>
+                <p><img :src="require('../../static/image/personal/icon_members3@2x.png')"><span>{{arrUser.member_in?'专业版会员期限至'+`${new Date(arrUser.member_at*1000).getFullYear()}-${setNum(new Date(arrUser.member_at*1000).getMonth()+1)}-${setNum(new Date(arrUser.member_at*1000).getDate())}`:'开通专业版VIP'}}</span></p>
                 <div class="btn" @click="jumpMember">{{arrUser.member_in?'点击续费':'点击开通'}}</div>
             </div>
             <div class="navBox">
@@ -32,6 +36,7 @@
                     <p>{{item.str}}</p>
                 </div>
             </div>
+            <div class="loginOut" @click="logOut">退出登陆</div>
             </vue-scroll>
         </div>
         <div class="rightBox">
@@ -40,7 +45,7 @@
                 <collection v-else-if="rightShow==1"></collection>
                 <helpCenter v-else-if="rightShow==2"></helpCenter>
                 <member  v-else-if="rightShow==5"></member>
-                <detailsItem v-else-if="rightShow==6" @changeNav="changeNav"></detailsItem>
+                <!-- <detailsItem v-else-if="rightShow==6" @changeNav="changeNav"></detailsItem> -->
             </div>
         </div>
         <!-- 加入组织 -->
@@ -66,7 +71,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
-import {info,setClockIn,joinReq} from '../services/api/personal'
+import {logout,info,setClockIn,joinReq} from '../services/api/personal'
 export default {
     data(){
         return{
@@ -197,20 +202,23 @@ export default {
             })
         },
         // 加入组织
+        // jumpJoin(){
+        //     if(this.btnTxt1=='加入组织'){
+        //         this.joinIn=true;
+        //     }else if(this.btnTxt1=='审核中'){
+        //         this.isLogin();
+        //     }else if(this.btnTxt1=="查看详情"){
+        //         this.rightShow='6';
+        //         localStorage.setItem('rightShow','6');
+        //         let arr=this.navArr;
+        //         for(let i=0;i<arr.length;i++){
+        //             arr[i].isSel=false;
+        //         }
+        //         this.navArr=arr;
+        //     }
+        // },
         jumpJoin(){
-            if(this.btnTxt1=='加入组织'){
-                this.joinIn=true;
-            }else if(this.btnTxt1=='审核中'){
-                this.isLogin();
-            }else if(this.btnTxt1=="查看详情"){
-                this.rightShow='6';
-                localStorage.setItem('rightShow','6');
-                let arr=this.navArr;
-                for(let i=0;i<arr.length;i++){
-                    arr[i].isSel=false;
-                }
-                this.navArr=arr;
-            }
+            this.joinIn=true;
         },
         joinInclick(formName){
              this.$refs[formName].validate((valid)=>{
@@ -255,7 +263,37 @@ export default {
                     }
                 }
             })
-        }
+        },
+        // 出来个位数
+        setNum(num){
+            if(num<10){
+                return `0${num}`;
+            }else{
+                return num;
+            }
+        },
+        // 退出登陆
+        logOut(){
+            this.$alert('确认退出登陆','退出登陆',{
+                confirmButtonText:'确 定',
+                center:true,
+                customClass:'errorAlert',
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        logout().then((res)=>{
+                            if(res.data.code==0){
+                                this.alertTxt({'msg':res.data.msg,'type':'success'});
+                                localStorage.removeItem('user');
+                                this.changeUser('')
+                                this.$router.push('/')
+                            }else{
+                                this.alertTxt({'msg':res.data.msg,'type':'error'});
+                            }
+                        })
+                    }
+                }
+            })
+        },
     },
     beforeRouteLeave(to, form, next) {
         next();
@@ -307,10 +345,11 @@ export default {
         z-index: 9;
         overflow-x: hidden;
         overflow-y: auto;
+        background-color: #fff;
     }
     .personal .leftNav .user{
         width: 100%;
-        height: 300px;
+        height: 250px;
         position: relative;
         display: flex;
         flex-direction: column;
@@ -343,6 +382,21 @@ export default {
     .personal .leftNav .user .sign:hover{
         cursor: pointer;
     }
+    .personal .leftNav .academy{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 0 30px;
+        box-sizing: border-box;
+    }
+    .personal .leftNav .academy p{
+        font-size: 16px;
+        color: #5E81F4;
+        margin-left: 5px;
+        text-align: left;
+    }
     .personal .leftNav .cardBox{
         width: 100%;
         height: 140px;
@@ -354,20 +408,21 @@ export default {
         align-items: center;
     }
     .personal .leftNav .cardBox p{
-        font-size: 18px;
+        font-size: 16px;
         color: #333;
         display: flex;
         justify-content: center;
+        align-items: center;
         flex-wrap: wrap;
     }
     .personal .leftNav .cardBox p img{
-        width: 40px;
+        width: 35px;
         height: 33.84px;
-        margin-right: 10px;
+        margin-right: 5px;
     }
     .personal .leftNav .cardBox p span{
         display: block;
-        width: 240px;
+        max-width: 250px;
         text-align: left;
     }
     .personal .leftNav .cardBox p span.changWidth{
@@ -377,7 +432,7 @@ export default {
     .personal .leftNav .cardBox.card2 p{
         width: 300px;
     }
-    .personal .leftNav .cardBox.card2 p,.personal .leftNav .cardBox p span{
+    .personal .leftNav .cardBox.card2 p span,.personal .leftNav .cardBox p span,.personal .leftNav .academy p{
         display: -webkit-box;
         -webkit-line-clamp:2;
         overflow: hidden;
@@ -424,6 +479,19 @@ export default {
         width: 30px;
         height: 30px;
         margin-right: 20px;
+    }
+    .personal .leftNav .loginOut{
+        width: 150px;
+        height: 40px;
+        border: 1px solid #FF5555;
+        text-align: center;
+        line-height: 40px;
+        color: #FF5555;
+        margin: 20px auto 0 auto;
+        font-size: 18px;
+    }
+    .personal .leftNav .loginOut:hover{
+        cursor: pointer;
     }
     .personal .rightBox{
         width: 100%;

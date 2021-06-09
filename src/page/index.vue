@@ -3,7 +3,7 @@
         <vue-scroll :ops="ops" style="width:100%;height:100%;">
         <div class="topNav">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
-                <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex" ref="child"></topnav>
             </vue-scroll>
         </div>
         <div class="carouse">
@@ -117,8 +117,8 @@
                 <p>方便快捷的在线3D人体解剖平台</p>
             </div>
             <div class="btn">
-                <p :class="arrUser&&!arrUser.is_enterprise?'isSel':''" @click="changeUser(0)">专业版</p>
-                <p :class="arrUser&&arrUser.is_enterprise?'isSel':''" @click="changeUser(1)">企业版</p>
+                <p :class="arrUser&&!arrUser.is_enterprise?'isSel':''" @click="changeUserIndex(0)">专业版</p>
+                <p :class="arrUser&&arrUser.is_enterprise?'isSel':''" @click="changeUserIndex(1)">企业版</p>
             </div>
         </div>
         <div class="bottomTitle">
@@ -148,7 +148,7 @@
                 flDownList:[],
                 moveVal:0,
                 itemArr:[],
-                bannerArr:[]
+                bannerArr:[],
             }
         },
         store,
@@ -209,7 +209,7 @@
                event.target.parentElement.querySelector(`.${num}`).style.cssText += "opacity:0";
            },
             //切换用户版本
-            changeUser(num){
+            changeUserIndex(num){
                if(num==0){
                    this.$router.push('/professional')
                }else if(num==1){
@@ -219,10 +219,11 @@
                             center:true,
                         })
                    }else if(this.arrUser&&!this.arrUser.is_enterprise){
-                        this.$alert('此页面需企业级账号权限，请加入组织后访问','提示',{
-                            confirmButtonText:'确 定',
-                            center:true,
-                        })
+                        // this.$alert('此页面需企业级账号权限，请加入组织后访问','提示',{
+                        //     confirmButtonText:'确 定',
+                        //     center:true,
+                        // })
+                        this.$refs.child.showJoin();
                    }else if(this.arrUser&&this.arrUser.is_enterprise){
                         this.$router.push('/enterprise')
                    }
