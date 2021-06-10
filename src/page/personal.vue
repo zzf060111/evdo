@@ -26,7 +26,7 @@
             </div>
             <div class="cardBox card2">
                 <img :src="require('../../static/image/personal/bg_members@2x.png')" class="bj">
-                <p><img :src="require('../../static/image/personal/icon_members3@2x.png')"><span>{{arrUser.member_in?'专业版会员期限至'+`${new Date(arrUser.member_at*1000).getFullYear()}-${setNum(new Date(arrUser.member_at*1000).getMonth()+1)}-${setNum(new Date(arrUser.member_at*1000).getDate())}`:'开通专业版VIP'}}</span></p>
+                <p><img :src="require('../../static/image/personal/icon_members3@2x.png')"><span>{{arrUser.member_in?'个人版会员期限至'+`${new Date(arrUser.member_at*1000).getFullYear()}-${setNum(new Date(arrUser.member_at*1000).getMonth()+1)}-${setNum(new Date(arrUser.member_at*1000).getDate())}`:'开通个人版VIP'}}</span></p>
                 <div class="btn" @click="jumpMember">{{arrUser.member_in?'点击续费':'点击开通'}}</div>
             </div>
             <div class="navBox">
@@ -362,6 +362,7 @@ export default {
         width: 120px;
         height: 120px;
         margin-bottom: 30px;
+        border-radius: 60px;
     }
     .personal .leftNav .user h3{
         font-size: 30px;

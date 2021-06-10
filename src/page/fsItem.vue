@@ -6,6 +6,7 @@
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
             </vue-scroll>
         </div>
+        <div style="height:10px"></div>
         <div class="itemBox" v-if="objItem">
             <div class="title">
                 <img :src="require('../../static/image/fslist/back.png')" class="back" @click="back">
@@ -16,6 +17,7 @@
                 
             </div>
         </div>
+        <div style="height:10px"></div>
         </vue-scroll>
     </div>
 </template>
@@ -62,12 +64,8 @@ export default {
 }
 </script>
 <style scoped>
-    .fsitem{
-        padding: 20px 0;
-        box-sizing: border-box;
-    }
     .itemBox{
-        width: 96%;
+        width: 1690px;
         margin: 0 auto;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     }

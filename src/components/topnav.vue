@@ -935,6 +935,7 @@ export default {
 		width: 32px;
 		height: 32px;
 		margin-right: 5px;
+		border-radius: 16px;
 	}
 	.userBox p{
 		height: 36.19px;

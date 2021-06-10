@@ -6,8 +6,8 @@
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
                 </vue-scroll>
             </div>
-            <img :src="require('../../static/image/fslist/backr.png')" alt="" class="back" @click="backJump">
             <div class="videoBox" :style="`height:${screenHeight-160}px`">
+                <img :src="require('../../static/image/fslist/backr.png')" alt="" class="back" @click="backJump">
                 <div class="video" :style="`height:${screenHeight-210}px`">
                     <img :src="require('../../static/image/fslist/stop.png')" alt="" class="stopIcon" v-if="isStop" @click="playVideoi">
                     <video ref="myVideo" :src="videoObj.video_url" controls :poster="videoObj.thumbnail"></video>
@@ -157,16 +157,17 @@ export default {
         height: 55px;
         position: absolute;
         top:0px;
-        left:5%;
+        left:20px;
         z-index: 1;
     }
     .videoBox{
-        width: 90%;
+        width: 1600px;
         background-color: rgba(17,17,18,0.8);
-        margin: auto;
+        margin:0 auto;
         box-shadow: 0 0 5px rgb(255 255 255 / 60%);
         border-radius: 10px;
         display: flex;
+        position: relative;
     }
     .videoBox .video{
         width: 75%;

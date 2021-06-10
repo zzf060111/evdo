@@ -504,7 +504,7 @@ export default {
         color: #333 !important;
         font-weight: bold;
     }
-    .left-menu .el-submenu .el-menu .el-menu-item{
+    .left-menu .el-submenu .el-menu .el-menu-item,.left-menu .el-submenu .el-submenu__title{
         border-radius: 10px;
     }
     .left-menu .el-submenu .el-submenu__title:hover,.left-menu .el-submenu .el-menu .el-menu-item:hover{

@@ -16,6 +16,11 @@ export default new Router({
       component:resolve => require(['@/page/index'], resolve)
     },
     {
+      path: '/indexOther',
+      name: 'IndexOther',
+      component:resolve => require(['@/page/indexOther'], resolve)
+    },
+    {
       path: '/professional',
       name: 'Professional',
       component: resolve => require(['@/page/professional'], resolve)

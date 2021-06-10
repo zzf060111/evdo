@@ -648,6 +648,7 @@ export default {
     .personalItem .rightBox .upload .avatar{
         width: 100px;
         height: 100px;
+        border-radius: 50px;
     }
     .personalItem .rightBox .formBox,.personalItem .leftBox .formBox{
         width: 620px;

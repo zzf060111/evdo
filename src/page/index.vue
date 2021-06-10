@@ -1,6 +1,6 @@
 <template>
     <div class="index" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="ops" style="width:100%;height:100%;">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex" ref="child"></topnav>
@@ -123,11 +123,11 @@
         </div>
         <div class="bottomTitle">
             <div class="aBox">
-                <a href="#">关于医维度</a>
-                <a href="#">联系与合作</a>
-                <a href="#">用户协议</a>
-                <a href="#">在线客服</a>
-                <a href="#">公众号</a>
+                <p @click="jumpOther(1)">关于医维度</p>
+                <p @click="jumpOther(2)">联系与合作</p>
+                <p @click="jumpOther(3)">用户协议</p>
+                <p @click="jumpOther(4)">在线客服</p>
+                <p @click="jumpOther(5)">公众号</p>
             </div>
             <p>河南中博健康科技有限公司|豫ICP备18001437号</p>
         </div>
@@ -319,7 +319,16 @@
                 }else{
                     window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
                 }
-            },   
+            },
+            // 跳转其他
+            jumpOther(num){
+                this.$router.push({
+                    path:'/indexOther',
+                    query:{
+                        num:num
+                    }
+                })
+            }   
         },
         components:{
             topnav
@@ -354,7 +363,7 @@
 </style>
 <style scoped>
     .carouse{
-        width: 82%;
+        width: 1600px;
         height: 3rem;
         /* display: flex;
         align-items: center;
@@ -362,7 +371,7 @@
         margin: 20px auto;
     }
     .fenleiBox{
-        width: 83%;
+        width: 1600px;
         min-height: 466px;
         display: flex;
         flex-wrap: wrap;
@@ -390,7 +399,7 @@
         line-height: 50px;
     }
     .otherflBox{
-        width: 83%;
+        width: 1500px;
         min-height: 200px;
         margin: 0 auto;
         padding-top: 20px;
@@ -426,9 +435,11 @@
         font-weight: bold;
     }
     .moveList{
-        width: 85%;
+        width: 1650px;
         min-height: 300px;
         margin: 0 auto;
+        padding-left: 5px;
+        box-sizing: border-box;
     }
     .moveList .moveNav{
         display: flex;
@@ -709,13 +720,15 @@
         justify-content: center;
         align-items: center;
     }
-    .bottomTitle .aBox a{
+    .bottomTitle .aBox p{
         font-size: 16px;
         color: #666;
-        text-decoration: none;
         display: inline-block;
         margin: 0 30px;
         font-weight: 400;
+    }
+    .bottomTitle .aBox p:hover{
+        cursor: pointer;
     }
     .bottomTitle p{
         font-size: 14px;
