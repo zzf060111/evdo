@@ -1,6 +1,6 @@
 <template>
     <div class="exercise" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="ops" style="width:100%;height:100%;">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
                 <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                     <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
@@ -32,7 +32,7 @@
                     </el-menu>
                 </vue-scroll>
             </div>
-            <div class="centerBox">
+            <div class="centerBox" ref="centerBox" :style="`padding-left:${centerBoxPl+300}px`">
                 <div class="box">
                     <div class="item" v-for="(item,index) of itemArr" :key="index" @click="jumpItem(item.id,item.txt)">
                         <img :src="item.icon" alt="">
@@ -88,7 +88,8 @@ export default {
                     icon:require('../../static/image/exercise/icon_wdsc.png')
                 }
             ],
-            questionArr:[]
+            questionArr:[],
+            centerBoxPl:0
         }
     },
     store,
@@ -96,7 +97,36 @@ export default {
         this.getFenlei();
     },
     mounted(){
-        this.windowChange()
+        this.windowChange();
+        this.$nextTick(()=>{
+            // 获取父元素
+            let centerBox=this.$refs.centerBox;
+            // 获取宽度
+            let wcenterBox = centerBox.getBoundingClientRect().width;
+            // 添加左内边距
+            if(wcenterBox<=730){
+                this.centerBoxPl=0
+            }else{
+                this.centerBoxPl=(wcenterBox-Math.floor((wcenterBox-50)/340)*340-50)/2;
+            }
+        });
+        const that = this;
+        window.onresize=()=>{
+            return(()=>{
+                this.$nextTick(()=>{
+                    // 获取父元素
+                    let centerBox=this.$refs.centerBox;
+                    // 获取宽度
+                    let wcenterBox = centerBox.getBoundingClientRect().width;
+                    // 添加左内边距
+                    if(wcenterBox<=730){
+                        this.centerBoxPl=0
+                    }else{
+                        this.centerBoxPl=(wcenterBox-Math.floor((wcenterBox-50)/340)*340-50)/2;
+                    }
+                });
+            })()
+        }
     },
     methods:{
         ...mapMutations(["windowChange","alertTxt"]),
@@ -348,6 +378,8 @@ export default {
     }
     .centerBox{
         width: 100%;
+        max-width: 1920px;
+        margin: 0 auto;
         padding: 0 50px 0 350px;
         box-sizing: border-box;
     }
@@ -360,7 +392,7 @@ export default {
         margin: 0 auto;
     }
     .centerBox .box .item{
-        width: 300px;
+        min-width: 300px;
         height: 306px;
         background-color: #F8F9F9;
         margin:0 40px 40px 0;

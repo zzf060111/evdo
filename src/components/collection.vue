@@ -24,7 +24,7 @@
                 <p @click="deleteSc" v-if="arr.length>0">删除</p>
             </div>
         </div>
-        <div class="pubBox"  :style="`height:${screenHeight-180}px`">
+        <div class="pubBox"  :style="`height:${screenHeight-130}px;padding-left:${pubBoxPl}px`" ref="pubBox">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <div class="box boxJcyx" v-if="showValue&&twoNavIndex==1&&arr.length>0">
                     <div class="pubItem" v-for="(item,index) of arr" :key="index">
@@ -77,7 +77,7 @@
                 </div>
             </vue-scroll>
         </div>
-        <div class="pageBox" v-show="twoNavIndex==1||twoNavIndex==5">
+        <!-- <div class="pageBox" v-show="twoNavIndex==1||twoNavIndex==5">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <el-pagination
             background
@@ -90,7 +90,7 @@
             >
             </el-pagination>
              </vue-scroll>
-        </div>
+        </div> -->
     </div>
 </template>
 <script>
@@ -107,7 +107,8 @@ export default {
             arrId:[],
             selNum:0,
             setStr:'',
-            showValue:false
+            showValue:false,
+            pubBoxPl:0
         }
     },
     store,
@@ -121,6 +122,35 @@ export default {
     },
     mounted(){
         this.windowChange();
+        this.$nextTick(()=>{
+            // 获取父元素
+            let pubBox=this.$refs.pubBox;
+            // 获取宽度
+            let wpubBox = pubBox.getBoundingClientRect().width;
+            // 添加左内边距
+            if(wpubBox<=302){
+                this.pubBoxPl=0;
+            }else{
+                this.pubBoxPl=(wpubBox-Math.floor(wpubBox/292)*292)/2;
+            }
+        });
+        const that = this;
+        window.onresize=()=>{
+            return(()=>{
+                this.$nextTick(()=>{
+                    // 获取父元素
+                    let pubBox=this.$refs.pubBox;
+                    // 获取宽度
+                    let wpubBox = pubBox.getBoundingClientRect().width;
+                    // 添加左内边距
+                    if(wpubBox<=302){
+                        this.pubBoxPl=0;
+                    }else{
+                        this.pubBoxPl=(wpubBox-Math.floor(wpubBox/292)*292)/2;
+                    }
+                });
+            })()
+        }
     },
     methods:{
         ...mapMutations(["windowChange","alertTxt","changeUser"]),
@@ -326,6 +356,7 @@ export default {
 <style scoped>
     .collection .topNavBox{
         width: 100%;
+        min-width: 440px;
         height: 50px;
         display: flex;
         justify-content: space-between;
@@ -346,6 +377,8 @@ export default {
     }
     .collection .pubBox{
         width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
         box-sizing: border-box;
     }
      .pubBox .box{
@@ -463,11 +496,11 @@ export default {
         left: 102px;
         z-index: 1;
     }
-    .pageBox{
+    /* .pageBox{
         width: 100%;
         height: 50px;
         margin: 0px auto;
         padding-top:20px;
         box-sizing: border-box;
-    }
+    } */
 </style>

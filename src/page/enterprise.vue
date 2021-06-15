@@ -1,6 +1,6 @@
 <template>
     <div class="enterprise" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="ops" style="width:100%;height:100%;">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
@@ -37,7 +37,7 @@
             </el-menu>
             </vue-scroll>
         </div>
-        <div class="pubBox">
+        <div class="pubBox" ref="pubBox" :style="`padding-left:${pubBoxPl+330}px`">
             <div class="box boxJcyx" v-show="twoNavIndex==1&&itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
@@ -125,7 +125,8 @@
                 itemArr:[],
                 showValue:false,
                 pageSize:0,
-                total:0
+                total:0,
+                pubBoxPl:0
             }
         },
         store,
@@ -350,7 +351,36 @@
             }
         },
         mounted(){
-            this.windowChange()
+            this.windowChange();
+            this.$nextTick(()=>{
+                // 获取父元素
+                let pubBox=this.$refs.pubBox;
+                // 获取宽度
+                let wpubBox = pubBox.getBoundingClientRect().width;
+                // 添加左内边距
+                if(wpubBox<=642){
+                    this.pubBoxPl=0;
+                }else{
+                    this.pubBoxPl=(wpubBox-Math.floor((wpubBox-350)/292)*292-350)/2;
+                }
+            });
+            const that = this;
+            window.onresize=()=>{
+                return(()=>{
+                    this.$nextTick(()=>{
+                        // 获取父元素
+                        let pubBox=this.$refs.pubBox;
+                        // 获取宽度
+                        let wpubBox = pubBox.getBoundingClientRect().width;
+                        // 添加左内边距
+                        if(wpubBox<=642){
+                            this.pubBoxPl=0;
+                        }else{
+                            this.pubBoxPl=(wpubBox-Math.floor((wpubBox-350)/292)*292-350)/2;
+                        }
+                    });
+                })()
+            }
         },
         beforeRouteLeave(to, form, next) {
             next();
@@ -442,6 +472,8 @@
     }
     .pubBox{
         width: 100%;
+        max-width: 1920px;
+        margin:0 auto;
         padding: 0 0 0 350px;
         box-sizing: border-box;
     }

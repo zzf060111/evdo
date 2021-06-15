@@ -1,6 +1,6 @@
 <template>
     <div class="professional" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="ops" style="width:100%;height:100%;">
+        <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
@@ -44,70 +44,72 @@
             </el-menu>
             </vue-scroll>
         </div>
-        <div class="publicBox" v-if="twoNavIndex==1&&itemArr.length>0">
-            <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
-                <div class="imgTop">
-                    <img v-lazy="item.thumbnail"  @click="lookItem(item.id,item.need_vip)">
-                    <div class="iconTop">
-                        <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
-                        <p v-else-if="item.is_auth==0">免费</p>
-                    </div>
-                    <div class="iconDown">
-                        <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}</p>
-                        <div @click="addSc(item.id,item.is_favorite,index)">
-                            <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+        <div class="parentBox" ref="publicBox" :style="`padding-left:${publicBoxPl+330}px`">
+            <div class="publicBox" v-if="twoNavIndex==1&&itemArr.length>0"> 
+                <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
+                    <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
+                    <div class="imgTop">
+                        <img v-lazy="item.thumbnail"  @click="lookItem(item.id,item.need_vip)">
+                        <div class="iconTop">
+                            <p>{{(currentPage-1)*15+(index+1)}}</p>
+                            <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <p v-else-if="item.is_auth==0">免费</p>
+                        </div>
+                        <div class="iconDown">
+                            <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.view_count}}</p>
+                            <div @click="addSc(item.id,item.is_favorite,index)">
+                                <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="txtDown">
-                    <h2>{{item.title}}</h2>
-                    <p>{{item.subtitle}}  {{item.sub_title2}}</p>
+                    <div class="txtDown">
+                        <h2>{{item.title}}</h2>
+                        <p>{{item.subtitle}}  {{item.sub_title2}}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div v-else-if="twoNavIndex!=twoNavList.length&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
-            暂无数据
-        </div>
-        <div class="publicBox boxyxsp"  v-if="twoNavIndex==2&&itemArr.length>0">
-            <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
-                <div class="imgTop">
-                    <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
-                    <div class="iconTop">
-                        <p>{{(currentPage-1)*15+(index+1)}}</p>
-                        <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
-                        <p v-else-if="item.is_auth==0">免费</p>
-                    </div>
-                    <div class="iconDown">
-                        <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}</p>
-                        <div @click="addSc(item.id,item.is_favorite,index)">
-                            <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+            <div v-else-if="twoNavIndex!=twoNavList.length&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
+                暂无数据
+            </div>
+            <div class="publicBox boxyxsp" v-if="twoNavIndex==2&&itemArr.length>0">
+                <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
+                    <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
+                    <div class="imgTop">
+                        <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
+                        <div class="iconTop">
+                            <p>{{(currentPage-1)*15+(index+1)}}</p>
+                            <img v-if="item.is_auth==1" :src="require('../../static/image/professional/icon_members@2x.png')">
+                            <p v-else-if="item.is_auth==0">免费</p>
                         </div>
+                        <div class="iconDown">
+                            <p><img :src="require('../../static/image/professional/icon_view@2x.png')">{{item.hits}}</p>
+                            <div @click="addSc(item.id,item.is_favorite,index)">
+                                <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
+                            </div>
+                        </div>
+                        <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
                     </div>
-                    <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
-                </div>
-                <div class="txtDown">
-                    <h2>{{item.title}}</h2>
-                    <p>{{item.sub_title}} {{item.sub_title2}}</p>
+                    <div class="txtDown">
+                        <h2>{{item.title}}</h2>
+                        <p>{{item.sub_title}} {{item.sub_title2}}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div v-else-if="twoNavIndex==twoNavList.length&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
-            暂无数据
-        </div>
-        <div class="pageBox" v-if="itemArr.length>0">
-            <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage"
-            :page-size="pageSize"
-            layout="total,prev, pager, next,jumper"
-            :total="total"
-            hide-on-single-page
-            >
-            </el-pagination>
+            <div v-else-if="twoNavIndex==twoNavList.length&&itemArr.length==0&&valueShow" style="padding-top:20px;font-size:20px;font-weight:bold">
+                暂无数据
+            </div>
+            <div class="pageBox" v-if="itemArr.length>0">
+                <el-pagination
+                background
+                @current-change="handleCurrentChange"
+                :current-page.sync="currentPage"
+                :page-size="pageSize"
+                layout="total,prev, pager, next,jumper"
+                :total="total"
+                hide-on-single-page
+                >
+                </el-pagination>
+            </div>
         </div>
         </vue-scroll>
     </div>    
@@ -131,7 +133,8 @@ export default {
             total:0,
             itemArr:[],
             valueShow:false,
-            data:{}
+            data:{},
+            publicBoxPl:0
         }
     },
     store,
@@ -151,7 +154,36 @@ export default {
         this.getFenlei(this.twoNavIndex,id);
     },
     mounted(){
-        this.windowChange()
+        this.windowChange();
+        this.$nextTick(()=>{
+            // 获取父元素
+            let publicBox=this.$refs.publicBox;
+            // 获取宽度
+            let wpublicBox = publicBox.getBoundingClientRect().width;
+            // 添加左内边距
+            if(wpublicBox<=642){
+                this.publicBoxPl=0;
+            }else{
+                this.publicBoxPl=(wpublicBox-Math.floor((wpublicBox-350)/292)*292-350)/2;
+            }
+        });
+        const that = this;
+        window.onresize=()=>{
+            return(()=>{
+                this.$nextTick(()=>{
+                    // 获取父元素
+                    let publicBox=this.$refs.publicBox;
+                    // 获取宽度
+                    let wpublicBox = publicBox.getBoundingClientRect().width;
+                    // 添加左内边距
+                    if(wpublicBox<=642){
+                        this.publicBoxPl=0;
+                    }else{
+                        this.publicBoxPl=(wpublicBox-Math.floor((wpublicBox-350)/292)*292-350)/2;
+                    }
+                });
+            })()
+        }
     },
     methods:{
         ...mapMutations(["windowChange","alertTxt","changeSearch"]),
@@ -540,10 +572,17 @@ export default {
         overflow-x: hidden;
         overflow-y: auto;
     }
+    .parentBox{
+        width: 100%;
+        max-width: 1920px;
+        margin: 0 auto;
+        padding: 0 0 0 350px;
+        box-sizing: border-box;
+    }
     .publicBox{
         width: 100%;
         min-height: 200px;
-        padding:0 0 0 350px;
+        padding:10px 0 0 10px;
         box-sizing: border-box;
         display: flex;
         flex-wrap: wrap;

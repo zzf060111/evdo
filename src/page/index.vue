@@ -6,20 +6,20 @@
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex" ref="child"></topnav>
             </vue-scroll>
         </div>
-        <div class="carouse">
-            <el-carousel ref="carousel" @click.native="jumpBanner">
+        <div class="carouse" ref="carouse">
+            <el-carousel ref="carousel" @click.native="jumpBanner" :height="carouseHeight">
                 <el-carousel-item v-for="(item,index) of bannerArr" :key="index">
                     <img v-lazy="item.image">
                 </el-carousel-item>
             </el-carousel>
         </div>
-        <div class="fenleiBox" v-if="flTopList.length>0">
+        <div class="fenleiBox" ref="fenleibox" :style="`padding-left:${fenleiboxPl}px`">
             <div class="flItem" v-for="(item,index) of flTopList" :key="index" @click="jumpMove(item.id)">
                 <img :src="item.more?item.more.mobile_thumbnail:item.img" alt="">
                 <p>{{item.name}}</p>
             </div>
         </div>
-        <div class="otherflBox">
+        <div class="otherflBox" ref="otherflBox">
             <h4>更多分类</h4>
             <div class="itemBox">
                 <div class="items" v-for="(item,index) of flDownList" :key="index" @click="jumpMove(item.id)">
@@ -28,12 +28,12 @@
                 </div>
             </div>
         </div>
-        <div class="moveList">
+        <div class="moveList" ref="moveList">
             <div class="moveNav">
                 <p :class="moveVal==0?'selected':''" @click="clickMove(0)">推荐</p>
                 <p :class="moveVal==1?'selected':''" @click="clickMove(1)">人气</p>
             </div>
-            <div class="moveBox" v-if="itemArr.length>0">
+            <div class="moveBox" v-if="itemArr.length>0" :style="`padding-left:${moveBoxPl}px`">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
                     <div class="imgTop">
@@ -62,7 +62,7 @@
             <p></p>
         </div>
         <div class="productBox">
-            <div class="boxleft" @mouseenter="mEnter($event,'left1')" @mouseleave="mLeave($event,'left1')" @click="jumpfslist()">
+            <div class="boxleft" @mouseenter="mEnter($event,'left1')" @mouseleave="mLeave($event,'left1')" @click="jumpfslist()" ref="boxleft">
                 <img v-lazy="require('../../static/image/index/pic1@2x.png')" class="bj">
                 <h2>医维度在线版</h2>
                 <p>
@@ -72,14 +72,14 @@
             </div>
             <div class="boxright">
                 <div class="top">
-                    <div @mouseenter="mEnter($event,'right1')" @mouseleave="mLeave($event,'right1')" @click="jumpfslist()">
+                    <div @mouseenter="mEnter($event,'right1')" @mouseleave="mLeave($event,'right1')" @click="jumpfslist()" ref="boxrightTop1" class="boxrightTop1">
                         <img v-lazy="require('../../static/image/index/pic2@2x.png')" class="bj">
                         <h2>医维度在线版</h2>
                         <h2>企业定制独立部署版</h2>
                         <p>重建人体精细模型达一万多件，结构位置准确，形态纹理逼真</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right1">
                     </div>
-                    <div @mouseenter="mEnter($event,'right2')" @mouseleave="mLeave($event,'right2')" @click="jumpfslist()">
+                    <div @mouseenter="mEnter($event,'right2')" @mouseleave="mLeave($event,'right2')" @click="jumpfslist()" ref="boxrightTop2" class="boxrightTop2">
                         <img v-lazy="require('../../static/image/index/pic4@2x.png')" class="bj">
                         <h2>医维度单机版系列软件</h2>
                         <p>一点触控旋转，两点触控缩放与平移，鼠标左键旋转，滚轮</p>
@@ -88,20 +88,20 @@
                     </div>
                 </div>
                 <div class="down">
-                    <div @mouseenter="mEnter($event,'right3')" @mouseleave="mLeave($event,'right3')" @click="jumpfslist()">
+                    <div @mouseenter="mEnter($event,'right3')" @mouseleave="mLeave($event,'right3')" @click="jumpfslist()" ref="boxrightDown1" class="boxrightDown1">
                         <img v-lazy="require('../../static/image/index/pic3@2x.png')" class="bj">
                         <h2>医维度XR系列</h2>
                         <p>配合VR眼镜在VR模式下浏览标本，可对标本进行贴图切换</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right3">
                     </div>
-                    <div @mouseenter="mEnter($event,'right4')" @mouseleave="mLeave($event,'right4')" @click="jumpfslist()">
+                    <div @mouseenter="mEnter($event,'right4')" @mouseleave="mLeave($event,'right4')" @click="jumpfslist()" ref="boxrightDown2" class="boxrightDown2">
                         <img v-lazy="require('../../static/image/index/pic5@2x.png')" class="bj">
                         <h2>九大系统</h2>
                         <h2>三维科普动画</h2>
                         <p>反色显示切片用以观察</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right4">
                     </div>
-                    <div @mouseenter="mEnter($event,'right5')" @mouseleave="mLeave($event,'right5')" @click="jumpfslist()">
+                    <div @mouseenter="mEnter($event,'right5')" @mouseleave="mLeave($event,'right5')" @click="jumpfslist()" ref="boxrightDown3" class="boxrightDown3">
                         <img v-lazy="require('../../static/image/index/pic6@2x.png')" class="bj">
                         <h2>在线三维</h2>
                         <h2>全景展馆</h2>
@@ -138,7 +138,8 @@
     import store from '../vuex/store'
     import {mapState,mapMutations} from 'vuex'
     import topnav from '../components/topnav'
-    import {indexCategory,professionalModel,banner,addfavorites,delfavorites} from '../services/api/modelVideo' 
+    import {indexCategory,professionalModel,banner,addfavorites,delfavorites} from '../services/api/modelVideo'
+    import $ from 'jquery'
     export default {
         data(){
             return{
@@ -149,6 +150,9 @@
                 moveVal:0,
                 itemArr:[],
                 bannerArr:[],
+                carouseHeight:'',
+                fenleiboxPl:0,
+                moveBoxPl:0
             }
         },
         store,
@@ -197,7 +201,76 @@
             })
         },
         mounted(){
-            this.windowChange()
+            this.windowChange();
+            this.$nextTick(() => {
+                // 获取图片（或外层框）
+                let carouse = this.$refs.carouse;
+                let fenleibox=this.$refs.fenleibox;
+                let moveList=this.$refs.moveList;
+                let boxleft=this.$refs.boxleft;
+                let boxrightTop1=this.$refs.boxrightTop1;
+                let boxrightTop2=this.$refs.boxrightTop2;
+                let boxrightDown1=this.$refs.boxrightDown1;
+                let boxrightDown2=this.$refs.boxrightDown2;
+                let boxrightDown3=this.$refs.boxrightDown3;
+                // 获取其宽度
+                let wcarouse = carouse.getBoundingClientRect().width;
+                let wfenleibox=fenleibox.getBoundingClientRect().width;
+                let wmoveList=moveList.getBoundingClientRect().width;
+                let wboxleft=boxleft.getBoundingClientRect().width;
+                let wboxrightTop1=boxrightTop1.getBoundingClientRect().width;
+                let wboxrightTop2=boxrightTop2.getBoundingClientRect().width;
+                let wboxrightDown1=boxrightDown1.getBoundingClientRect().width;
+                let wboxrightDown2=boxrightDown2.getBoundingClientRect().width;
+                let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
+                // 设置其高度（以宽度的60%为例）
+                this.carouseHeight=0.4 * wcarouse+'px';
+                this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/226)*226)/2;
+                this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
+                $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
+                $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
+                $('.boxrightTop2').attr('style',`height:${wboxrightTop2*0.53}px`);
+                $('.boxrightDown1').attr('style',`height:${wboxrightDown1*0.775}px`);
+                $('.boxrightDown2').attr('style',`height:${wboxrightDown2*1.09}px`);
+                $('.boxrightDown3').attr('style',`height:${wboxrightDown3*1.09}px`);
+            });
+            const that = this;
+            window.onresize = () => {
+                return (() => {
+                    this.$nextTick(() => {
+                        // 获取图片（或外层框）
+                        let carouse = this.$refs.carouse;
+                        let fenleibox=this.$refs.fenleibox;
+                        let moveList=this.$refs.moveList;
+                        let boxleft=this.$refs.boxleft;
+                        let boxrightTop1=this.$refs.boxrightTop1;
+                        let boxrightTop2=this.$refs.boxrightTop2;
+                        let boxrightDown1=this.$refs.boxrightDown1;
+                        let boxrightDown2=this.$refs.boxrightDown2;
+                        let boxrightDown3=this.$refs.boxrightDown3;
+                        // 获取其宽度
+                        let wcarouse = carouse.getBoundingClientRect().width;
+                        let wfenleibox=fenleibox.getBoundingClientRect().width;
+                        let wmoveList=moveList.getBoundingClientRect().width;
+                        let wboxleft=boxleft.getBoundingClientRect().width;
+                        let wboxrightTop1=boxrightTop1.getBoundingClientRect().width;
+                        let wboxrightTop2=boxrightTop2.getBoundingClientRect().width;
+                        let wboxrightDown1=boxrightDown1.getBoundingClientRect().width;
+                        let wboxrightDown2=boxrightDown2.getBoundingClientRect().width;
+                        let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
+                        // 设置其高度（以宽度的60%为例）
+                        this.carouseHeight=0.4 * wcarouse+'px';
+                        this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/226)*226)/2;
+                        this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
+                        $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
+                        $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
+                        $('.boxrightTop2').attr('style',`height:${wboxrightTop2*0.53}px`);
+                        $('.boxrightDown1').attr('style',`height:${wboxrightDown1*0.775}px`);
+                        $('.boxrightDown2').attr('style',`height:${wboxrightDown2*1.09}px`);
+                        $('.boxrightDown3').attr('style',`height:${wboxrightDown3*1.09}px`);
+                    })
+                })()
+            }
         },
         methods:{
             ...mapMutations(["windowChange","alertTxt"]),
@@ -339,18 +412,16 @@
 <style>
     .index .el-carousel{
         width: 100%;
-        height: 3rem;
     }
     .index .el-carousel__item{
         width: 100%;
-        height: 3rem;
     }
     .index .el-carousel__item img{
         width: 100%;
         height: 100%;
     }
     .index .el-carousel__arrow{
-        top:100% !important;
+        top:50% !important;
     }
     .index .el-carousel__button{
         width: 40px;
@@ -363,25 +434,27 @@
 </style>
 <style scoped>
     .carouse{
-        width: 1600px;
-        height: 3rem;
+        width: 75%;
+        /* height: 2.5rem; */
         /* display: flex;
         align-items: center;
         justify-content: center; */
         margin: 20px auto;
     }
     .fenleiBox{
-        width: 1600px;
+        width: 75%;
+        max-width: 1600px;
         min-height: 466px;
         display: flex;
         flex-wrap: wrap;
         margin:0 auto;
+        box-sizing: border-box;
     }
     .fenleiBox .flItem{
         width: 200px;
         height: 200px;
         position: relative;
-        margin:10px 33px;
+        margin:10px 13px;
     }
     .fenleiBox .flItem:hover{
         cursor: pointer;
@@ -399,7 +472,7 @@
         line-height: 50px;
     }
     .otherflBox{
-        width: 1500px;
+        width: 70%;
         min-height: 200px;
         margin: 0 auto;
         padding-top: 20px;
@@ -414,6 +487,7 @@
         display: flex;
         flex-wrap: wrap;
         margin-top: 10px;
+        flex-basis: auto;
     }
     .otherflBox .itemBox .items{
         min-width: 200px;
@@ -435,10 +509,11 @@
         font-weight: bold;
     }
     .moveList{
-        width: 1650px;
+        width: 90%;
+        max-width: 1920px;
         min-height: 300px;
         margin: 0 auto;
-        padding-left: 5px;
+        /* padding-left: 5px; */
         box-sizing: border-box;
     }
     .moveList .moveNav{
@@ -573,12 +648,13 @@
         margin-top: 10px;
     }
     .productBox{
-        width: 100%;
-        min-height: 700px;
+        width: 80%;
+        min-height: 200px;
         display: flex;
         justify-content: center;
         align-content: center;
         flex-wrap: wrap;
+        margin: 0 auto 10px auto;
     }
     .productBox div{
         position: relative;
@@ -614,16 +690,19 @@
         transition: opacity 1s;
     }
     .productBox .boxleft{
-        width: 422px;
+        /* width: 422px; */
+        width: 28%;
         height: 672px;
         padding: 50px 20px 0 20px;
         box-sizing: border-box;
         text-align: left;
+        overflow: hidden;
     }
     .productBox .boxleft:hover{
         cursor: pointer;
     }
     .productBox .boxright{
+        width: 68%;
         margin-left:16px;
     }
     .productBox .boxright>div{
@@ -633,6 +712,7 @@
         padding: 50px 20px 0 20px;
         box-sizing: border-box;
         text-align: left;
+        overflow: hidden;
     }
     .productBox .boxright>div div:hover{
         cursor: pointer;
@@ -641,27 +721,32 @@
         margin-bottom: 16px;
     }
     .productBox .boxright .top div:nth-child(1){
-        width: 430px;
+        /* width: 430px; */
+        width: 41%;
         height: 328px;
     }
     .productBox .boxright .top div:nth-child(2){
-        width: 746px;
+        /* width: 746px; */
+        width: 60%;
         height: 328px;
         margin-left:16px;
     }
     .productBox .boxright .down div:nth-child(1){
-        width: 430px;
+        /* width: 430px; */
+        width: 41%;
         height: 328px;
     }
     .productBox .boxright .down div:nth-child(2){
-        width: 365px;
+        /* width: 365px; */
+        width: 29%;
         height: 328px;
-        margin-left:16px;
+        margin-left:15px;
     }
     .productBox .boxright .down div:nth-child(3){
-        width: 365px;
+        /* width: 365px; */
+        width: 29%;
         height: 328px;
-        margin-left:16px;
+        margin-left:15px;
     }
     .bottomNav{
         width: 100%;
