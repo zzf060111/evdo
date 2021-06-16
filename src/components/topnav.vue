@@ -719,6 +719,22 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 	/* 登录、注册、忘记密码 */
+	.el-dialog .el-dialog__header{
+        padding: 0;
+        height: 44px;
+        background: #F1F4F5;
+        border-radius: 10px 10px 0 0;
+        line-height: 44px;
+    }
+	.el-dialog .el-dialog__header .el-dialog__title{
+		font-size: 16px;
+		display: inline-block;
+		height: 44px;
+		line-height: 44px;
+	}
+    .el-dialog .el-dialog__header .el-dialog__headerbtn{
+        top:15px;
+    }
 	.el-dialog,.login.el-dialog,.bindPhone.el-dialog{
 		width: 450px;
 		height: 420px;
@@ -735,8 +751,8 @@ export default {
 		height: 530px;
 	}
 	.toast.el-dialog{
-		width: 400px;
-		height: 600px;
+		width: 380px;
+		height: 588px;
 		border-radius: 10px;
 	}
 	.toast.el-dialog div{
@@ -835,7 +851,10 @@ export default {
 		color: #FFD302 !important;
 	}
 	.topnav .el-menu{
-		width: 600px;
+		width: 700px;
+	}
+	.topnav .el-menu>.el-menu-item{
+		font-size: 18px;
 	}
 </style>
 <style scoped>
@@ -927,6 +946,7 @@ export default {
 		z-index: 1; */
 		font-size: 16px;
 		margin-left: 50px;
+		margin-right: 80px;
 	}
 	.userBox:hover{
 		cursor: pointer;

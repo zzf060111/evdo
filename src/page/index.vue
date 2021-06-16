@@ -19,21 +19,21 @@
                 <p>{{item.name}}</p>
             </div>
         </div>
-        <div class="otherflBox" ref="otherflBox">
+        <div class="otherflBox">
             <h4>更多分类</h4>
-            <div class="itemBox">
+            <div class="itemBox" ref="otherflBox" :style="`padding-left:${otherflBoxPl}px`">
                 <div class="items" v-for="(item,index) of flDownList" :key="index" @click="jumpMove(item.id)">
                     <p>{{item.name}}</p>
                     <img :src="require('../../static/image/index/icon_go.png')" alt="">
                 </div>
             </div>
         </div>
-        <div class="moveList" ref="moveList">
+        <div class="moveList" ref="moveList" :style="`padding-left:${moveBoxPl}px`">
             <div class="moveNav">
                 <p :class="moveVal==0?'selected':''" @click="clickMove(0)">推荐</p>
                 <p :class="moveVal==1?'selected':''" @click="clickMove(1)">人气</p>
             </div>
-            <div class="moveBox" v-if="itemArr.length>0" :style="`padding-left:${moveBoxPl}px`">
+            <div class="moveBox" v-if="itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
                     <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
                     <div class="imgTop">
@@ -152,7 +152,8 @@
                 bannerArr:[],
                 carouseHeight:'',
                 fenleiboxPl:0,
-                moveBoxPl:0
+                moveBoxPl:0,
+                otherflBoxPl:0
             }
         },
         store,
@@ -206,6 +207,7 @@
                 // 获取图片（或外层框）
                 let carouse = this.$refs.carouse;
                 let fenleibox=this.$refs.fenleibox;
+                let otherflBox=this.$refs.otherflBox;
                 let moveList=this.$refs.moveList;
                 let boxleft=this.$refs.boxleft;
                 let boxrightTop1=this.$refs.boxrightTop1;
@@ -216,6 +218,7 @@
                 // 获取其宽度
                 let wcarouse = carouse.getBoundingClientRect().width;
                 let wfenleibox=fenleibox.getBoundingClientRect().width;
+                let wotherflBox=otherflBox.getBoundingClientRect().width;
                 let wmoveList=moveList.getBoundingClientRect().width;
                 let wboxleft=boxleft.getBoundingClientRect().width;
                 let wboxrightTop1=boxrightTop1.getBoundingClientRect().width;
@@ -225,7 +228,8 @@
                 let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
                 // 设置其高度（以宽度的60%为例）
                 this.carouseHeight=0.4 * wcarouse+'px';
-                this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/226)*226)/2;
+                this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/288)*288)/2;
+                this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                 this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
                 $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                 $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
@@ -241,6 +245,7 @@
                         // 获取图片（或外层框）
                         let carouse = this.$refs.carouse;
                         let fenleibox=this.$refs.fenleibox;
+                        let otherflBox=this.$refs.otherflBox;
                         let moveList=this.$refs.moveList;
                         let boxleft=this.$refs.boxleft;
                         let boxrightTop1=this.$refs.boxrightTop1;
@@ -251,6 +256,7 @@
                         // 获取其宽度
                         let wcarouse = carouse.getBoundingClientRect().width;
                         let wfenleibox=fenleibox.getBoundingClientRect().width;
+                        let wotherflBox=otherflBox.getBoundingClientRect().width;
                         let wmoveList=moveList.getBoundingClientRect().width;
                         let wboxleft=boxleft.getBoundingClientRect().width;
                         let wboxrightTop1=boxrightTop1.getBoundingClientRect().width;
@@ -260,7 +266,8 @@
                         let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
                         // 设置其高度（以宽度的60%为例）
                         this.carouseHeight=0.4 * wcarouse+'px';
-                        this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/226)*226)/2;
+                        this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/288)*288)/2;
+                        this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                         this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
                         $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                         $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
@@ -435,6 +442,7 @@
 <style scoped>
     .carouse{
         width: 75%;
+        max-width: 1690px;
         /* height: 2.5rem; */
         /* display: flex;
         align-items: center;
@@ -442,8 +450,8 @@
         margin: 20px auto;
     }
     .fenleiBox{
-        width: 75%;
-        max-width: 1600px;
+        width: 81%;
+        max-width: 1920px;
         min-height: 466px;
         display: flex;
         flex-wrap: wrap;
@@ -451,10 +459,12 @@
         box-sizing: border-box;
     }
     .fenleiBox .flItem{
-        width: 200px;
-        height: 200px;
+        /* width: 240px;
+        height: 240px; */
+        width: 150px;
+        height: 170px;
         position: relative;
-        margin:10px 13px;
+        margin:40px 71px;
     }
     .fenleiBox .flItem:hover{
         cursor: pointer;
@@ -464,29 +474,30 @@
         height: 150px;
     }
     .fenleiBox p{
-        font-size: 16px;
-        width: 200px;
+        font-size: 20px;
+        width: 150px;
         text-align: center;
         color: #333;
         height: 50px;
         line-height: 50px;
     }
     .otherflBox{
-        width: 70%;
+        width: 72%;
+        max-width: 1600px;
         min-height: 200px;
         margin: 0 auto;
-        padding-top: 20px;
+        padding-top: 52px;
         box-sizing: border-box;
     }
     .otherflBox h4{
-        font-size: 24px;
+        font-size: 20px;
     }
     .otherflBox .itemBox{
         width: 100%;
         min-height: 50px;
         display: flex;
         flex-wrap: wrap;
-        margin-top: 10px;
+        margin-top: 40px;
         flex-basis: auto;
     }
     .otherflBox .itemBox .items{
@@ -512,16 +523,17 @@
         width: 90%;
         max-width: 1920px;
         min-height: 300px;
-        margin: 0 auto;
+        margin: 70px auto 0 auto;
         /* padding-left: 5px; */
         box-sizing: border-box;
     }
     .moveList .moveNav{
         display: flex;
         justify-content: center;
+        margin-bottom: 36px;
     }
     .moveList .moveNav p{
-        font-size: 30px;
+        font-size: 28px;
         margin: 0 30px;
         padding-bottom: 5px;
         box-sizing: border-box;
@@ -649,12 +661,13 @@
     }
     .productBox{
         width: 80%;
+        max-width: 1632px;
         min-height: 200px;
         display: flex;
         justify-content: center;
         align-content: center;
         flex-wrap: wrap;
-        margin: 0 auto 10px auto;
+        margin: 0 auto 60px auto;
     }
     .productBox div{
         position: relative;

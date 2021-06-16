@@ -4,7 +4,7 @@
         <vue-scroll :ops="opsx" style="width:100%;height:100%;" v-else>
         <p class="title">会员套餐</p>
         <div class="pubBox">
-            <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index" @click="selVip(index)">
+            <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index"  @click="openPay(item.price,item.day,item.id)" @mouseover="selVip(index)" @mouseout="delVip">
                 <div class="yiZhe">{{item.tag}}</div>
                 <h2>{{item.description}}</h2>
                 <h3>{{`¥${parseFloat(item.price).toFixed(1)}`}}<span>{{item.day==365?'/年':item.day==90?'/季':'/月'}}</span></h3>
@@ -12,7 +12,7 @@
                     ¥{{parseInt(item.original_price)}}
                     <p></p>
                 </div>
-                <div class="btn" @click="openPay(item.price,item.day,item.id)">{{arrUser.member_in?'续费':'开通'}}</div>
+                <div class="btn">{{arrUser.member_in?'续费':'开通'}}</div>
             </div>
         </div>
         <div class="vipTip" v-if="arrUser.is_enterprise">您当前已经是企业版会员，包含全部专业版权限，请确认是否需要购买或续费之后再操作。</div>
@@ -49,7 +49,7 @@
         </div>
         </vue-scroll>
         <!-- 提示vip支付 -->
-		<el-dialog title="VIP充值" :visible.sync="vipTost" :append-to-body="true" :close-on-click-modal="false" center custom-class="vipTost" top="13vh" >
+		<el-dialog title="VIP充值" :visible.sync="vipTost" :append-to-body="true" :close-on-click-modal="false" center custom-class="vipTost" top="30vh" >
 			<div class="priceBox">
                 <p>支付金额</p>
                 <h3>¥{{payPrice}}</h3>
@@ -85,7 +85,7 @@
             </div>
 		</el-dialog>
         <!-- 微信支付二维码 -->
-        <el-dialog title="扫码支付" :visible.sync="wxerweima" :append-to-body="true" :close-on-click-modal="false" center custom-class="erweima" top="20vh" width="300px">
+        <el-dialog title="扫码支付" :visible.sync="wxerweima" :append-to-body="true" :close-on-click-modal="false" center custom-class="erweima" top="30vh" width="300px">
             <div id="qrcode" ref="qrCodeUrl"></div>
         </el-dialog>
     </div>
@@ -107,7 +107,7 @@ export default {
             tableData1:[],
             tableData2:[],
             vipList:[],
-            selIndex:0,
+            selIndex:-1,
             loading:false,
             vipTost:false,
             payPrice:'',
@@ -191,6 +191,9 @@ export default {
         selVip(index){
             this.selIndex=index;
         },
+        delVip(){
+            this.selIndex=-1;
+        },
         // 获取购买记录
         getVipOrderThis(){
             this.valueShow=false;
@@ -273,7 +276,7 @@ export default {
             })
         },
         // 购买套餐
-        openPay(price,day,id){
+        openPay(price,day,id,index){
             this.vipTost=true;
             this.payPrice=price;
             this.payDay=day;
@@ -377,7 +380,7 @@ export default {
 </script>
 <style>
     .erweima.el-dialog{
-        height: 35vh;
+        height: 300px;
         border-radius: 5px;
     }
     .erweima .el-dialog__body{
@@ -385,7 +388,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 3vh;
+        margin-top: 20px;
     }
     .erweima .el-dialog__header{
         border-bottom: none;
@@ -543,6 +546,9 @@ export default {
         box-sizing: border-box;
         border: 1px solid #DEAE81;
     }
+    .member .pubBox .pubitem:hover{
+        cursor: pointer;
+    }
     .member .pubBox .pubitem .yiZhe{
         width: 90px;
         height: 38px;
@@ -597,9 +603,12 @@ export default {
         color: #fff;
         margin:0 auto;
     }
-    .member .pubBox .pubitem .btn:hover{
+    .member .pubBox .pubitem.selected .btn{
         background-color: #E98222;
     }
+    /* .member .pubBox .pubitem .btn:hover{
+        background-color: #E98222;
+    } */
     /* .member .pubBox .pubitem.selected{
         border: 1px solid #DEBEA5;
         background-color: #F5DABF;
@@ -632,5 +641,6 @@ export default {
     .member .vipTip{
         font-size: 20px;
         color: #FD4344;
+        margin-bottom: 30px;
     }
 </style>

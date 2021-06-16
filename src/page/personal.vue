@@ -322,8 +322,8 @@ export default {
 </script>
 <style>
     .joinIn.el-dialog{
-		width: 450px;
-		height: 420px;
+		width: 360px;
+		height: 340px;
 		border-radius: 10px;
 	}
 </style>
@@ -388,7 +388,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 27px;
         padding: 0 30px;
         box-sizing: border-box;
     }
@@ -402,6 +402,7 @@ export default {
         width: 100%;
         height: 140px;
         position: relative;
+        margin-top: 20px;
         margin-bottom: 10px;
         display: flex;
         flex-direction: column;

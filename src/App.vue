@@ -73,7 +73,6 @@ export default {
   padding-bottom: 10px !important;
 }
 .el-message-box__header{
-  padding-top: 20px !important;
   background-color: #F1F4F5;
 }
 .el-message-box__content{
@@ -85,5 +84,14 @@ export default {
 .errorAlert.el-message-box .el-button{
   background-color: #FF5555 !important;
   border-color: #FF5555  !important;
+}
+.el-message-box__title{
+  font-size: 16px;
+  color: #666;
+}
+.el-message-box__header,.el-message-box__title{
+  padding: 0;
+  padding-top: 0 !important;
+  height: 44px;
 }
 </style>

@@ -557,6 +557,15 @@ export default {
         color: #333;
         text-align: center;
     }
+    .personalItem .el-form-item{
+        margin-bottom: 30px;
+    }
+    .personalItem .el-form-item .el-form-item__label,.personalItem .el-form-item .el-input input{
+        height: 60px;
+    }
+    .personalItem .el-form-item .el-form-item__label{
+        line-height: 60px;
+    }
     .personalItem .el-form-item p{
         background-color: transparent;
     }
@@ -565,13 +574,40 @@ export default {
         font-size: 20px;
     }
     .el-dialog.changeName{
-       height: 250px;
+        width: 360px;
+        height: 220px;
+    }
+    .el-dialog.changeName .el-dialog__body{
+        padding-top: 30px;
+    }
+    .el-dialog .el-dialog__header{
+        padding: 0;
+        height: 44px;
+        background: #F1F4F5;
+        border-radius: 10px 10px 0 0;
+        line-height: 44px;
+    }
+    .el-dialog .el-dialog__header .el-dialog__headerbtn{
+        top:15px;
+    }
+    .el-dialog .el-dialog__body{
+        padding-top:20px;
+        padding-bottom: 10px;
+    }
+    .el-dialog .el-dialog__title{
+        font-size: 16px;
+        color: #666;
     }
     .el-dialog.changePhone{
-        height: 300px;
+        width: 400px;
+        height: 284px;
+    }
+    .el-dialog.changePwd{
+        width: 360px;
+        height: 340px;
     }
     .el-dialog.changeName,.el-dialog.changePhone,.el-dialog.changePwd{
-        width: 450px;
+        /* width: 450px; */
         border-radius: 10px;
     }
 </style>
@@ -583,9 +619,9 @@ export default {
     } */
     .personalItem .rightBox,.personalItem .leftBox{
         width: 740px;
-        height: 800px;  
+        height: 930px;  
         border: 1px solid #D1D1D1;
-        margin-top: 20px;
+        margin-top: 30px;
     }
     .personalItem .rightBox{
         margin-right: 20px;
@@ -630,7 +666,7 @@ export default {
     .personalItem .rightBox .upload{
         width: 120px;
         height: 100px;
-        margin: 30px auto 50px auto;
+        margin: 40px auto 70px auto;
         position: relative;
     }
     .personalItem .rightBox .upload .avatar-uploader{
@@ -655,7 +691,7 @@ export default {
         margin: 0 auto;
     }
     .personalItem .leftBox .formBox{
-        margin-top: 180px;
+        margin-top: 210px;
     }
     .personalItem .rightBox .bindBox{
         width: 520px;
@@ -664,7 +700,7 @@ export default {
         margin-left:160px;
     }
     .personalItem .rightBox .bindBox .item{
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
     .personalItem .rightBox .bindBox .item,.personalItem .rightBox .bindBox .item .left{
         display: flex;

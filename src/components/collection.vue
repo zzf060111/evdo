@@ -352,6 +352,11 @@ export default {
     .el-menu--horizontal>.el-menu-item.is-active{
         border-bottom: 3px solid #FFD302 !important;
     }
+    .collection .topNavBox .el-menu-item{
+        height: 50px;
+        padding: 0;
+        margin: 0 20px;
+    }
 </style>
 <style scoped>
     .collection .topNavBox{
@@ -422,8 +427,8 @@ export default {
         width: 20px;
         height: 20px;
         position: absolute;
-        top: 5px;
-        right: 5px;
+        top: 17px;
+        right: 20px;
         z-index: 9;
     }
    .pubBox .box .pubItem .imgTop .iconTop,.pubBox .box .pubItem .imgTop .iconDown{

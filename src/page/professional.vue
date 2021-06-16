@@ -494,6 +494,12 @@ export default {
     }
     .professional .twoNav .el-menu-item{
         height: 50px !important;
+        font-size: 16px;
+        padding: 0;
+        margin:0 20px;
+    }
+    .professional .twoNav .el-menu-item:hover{
+        background-color: transparent !important;
     }
     .professional .el-pagination{
         margin: 20px 0;
@@ -501,6 +507,11 @@ export default {
     .left-menu .el-submenu__title{
         display: flex;
         align-items: center;
+        font-size: 16px;
+    }
+    .left-menu .el-submenu.is-opened .el-submenu__title,.left-menu .el-submenu.is-opened .el-menu,.left-menu .el-submenu.is-opened .el-menu .el-menu-item{
+        background-color: #fff !important;
+        border-radius: 0;
     }
     .left-menu .el-submenu__title img{
         width: 30px;
@@ -562,6 +573,8 @@ export default {
         z-index: 9;
     }
     .leftNav{
+        padding-top: 20px;
+        box-sizing: border-box;
         width: 300px;
         background-color: #F6F6F6;
         overflow-y: auto;

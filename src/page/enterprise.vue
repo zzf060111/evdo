@@ -402,6 +402,12 @@
     }
     .enterprise .twoNav .el-menu-item{
         height: 50px !important;
+        font-size: 16px;
+        padding: 0;
+        margin: 0 20px;
+    }
+    .enterprise .twoNav .el-menu-item:hover{
+        background-color: transparent !important;
     }
     .left-menu .el-submenu__title{
         display: flex;
@@ -460,6 +466,8 @@
         z-index: 9;
     }
     .leftNav{
+        padding-top: 20px;
+        box-sizing: border-box;
         width: 300px;
         background-color: #F6F6F6;
         overflow-y: auto;

@@ -308,6 +308,12 @@ export default {
     }
     .exercise .twoNav .el-menu-item{
         height: 50px !important;
+        font-size: 16px;
+        padding: 0;
+        margin: 0 20px;
+    }
+    .exercise .twoNav .el-menu-item:hover{
+        background-color: transparent !important;
     }
     .left-menu .el-submenu__title{
         display: flex;
@@ -347,6 +353,9 @@ export default {
         color: #333 !important;
         font-weight: bold;
     }
+    .left-menu  .el-menu-item:hover{
+        border-radius: 10px;
+    }
 </style>
 <style scoped>
     .exercise{
@@ -366,6 +375,8 @@ export default {
         z-index: 9;
     }
     .leftNav{
+        padding-top: 20px;
+        box-sizing: border-box;
         width: 300px;
         background-color: #F6F6F6;
         overflow-y: auto;
