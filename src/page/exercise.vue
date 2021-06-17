@@ -338,7 +338,7 @@ export default {
         font-weight: bold;
     }
     .exercise .left-menu .el-menu-item{
-        width: 100%;
+        width: 90%;
         height: 40px;
         margin:0 auto;
         overflow: hidden;    
@@ -396,7 +396,7 @@ export default {
     }
     .centerBox .box{
         width: 100%;
-        padding:50px 0 0 50px;
+        padding:110px 0 0 50px;
         box-sizing: border-box;
         display: flex;
         flex-wrap: wrap;

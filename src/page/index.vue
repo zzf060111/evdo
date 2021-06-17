@@ -21,7 +21,7 @@
         </div>
         <div class="otherflBox">
             <h4>更多分类</h4>
-            <div class="itemBox" ref="otherflBox" :style="`padding-left:${otherflBoxPl}px`">
+            <div class="itemBox" ref="otherflBox">
                 <div class="items" v-for="(item,index) of flDownList" :key="index" @click="jumpMove(item.id)">
                     <p>{{item.name}}</p>
                     <img :src="require('../../static/image/index/icon_go.png')" alt="">
@@ -231,6 +231,7 @@
                 this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/288)*288)/2;
                 this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                 this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
+                console.log(this.moveBoxPl);
                 $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                 $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
                 $('.boxrightTop2').attr('style',`height:${wboxrightTop2*0.53}px`);
@@ -442,7 +443,7 @@
 <style scoped>
     .carouse{
         width: 75%;
-        max-width: 1690px;
+        max-width: 1630px;
         /* height: 2.5rem; */
         /* display: flex;
         align-items: center;
@@ -521,7 +522,7 @@
     }
     .moveList{
         width: 90%;
-        max-width: 1920px;
+        max-width: 1820px;
         min-height: 300px;
         margin: 70px auto 0 auto;
         /* padding-left: 5px; */

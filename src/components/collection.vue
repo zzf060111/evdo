@@ -355,7 +355,8 @@ export default {
     .collection .topNavBox .el-menu-item{
         height: 50px;
         padding: 0;
-        margin: 0 20px;
+        margin: 0 35px;
+        font-size: 18px;
     }
 </style>
 <style scoped>

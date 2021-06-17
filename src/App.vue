@@ -67,13 +67,24 @@ export default {
   z-index: 9;
 }
 /* 公共弹窗 */
-.el-message-box--center{
-  width: 300px !important;
-  height: 170px !important;
+.el-message-box--center,.errorAlert.el-message-box--center{
+  width: 360px !important;
+  height: 240px !important;
   padding-bottom: 10px !important;
+  border-radius: 10px;
 }
 .el-message-box__header{
   background-color: #F1F4F5;
+}
+.el-message-box--center .el-message-box__content{
+  padding: 0;
+  font-size: 18px;
+  margin: 50px 0 48px 0;
+}
+.el-message-box--center .el-button{
+  width: 200px;
+  height: 44px;
+  font-size: 16px;
 }
 .el-message-box__content{
   margin: 10px 0;

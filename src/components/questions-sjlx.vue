@@ -62,7 +62,7 @@
         <div class="quAnalysis" v-show="isAnalysis">
             <div class="answer">
                 <p>答案 <span>{{zmArr[parseInt(queArr[indexd].question.true_option)-1]}}</span></p>
-                <p>您选择 <span>{{zmArr[parseInt(queArr[indexd].answer-1)]}}</span></p>
+                <p>您选择 <span :style="`color:${queArr[indexd].answer==queArr[indexd].question.true_option?'#6495ED':'#EB4847'}`">{{zmArr[parseInt(queArr[indexd].answer-1)]}}</span></p>
             </div>
             <!-- <div class="videoBox analysisBox">
                 <div class="title">视频讲解</div>

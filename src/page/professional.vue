@@ -552,7 +552,7 @@ export default {
     }
     .left-menu .el-submenu .el-submenu__title:hover,.left-menu .el-submenu .el-menu .el-menu-item:hover{
         border-radius: 10px;
-        background-color: #ccc !important;
+        background-color: #f5f5f5 !important;
     }
 </style>
 <style scoped>

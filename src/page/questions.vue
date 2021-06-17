@@ -1,6 +1,6 @@
 <template>
     <div class="questions" :style="`height:${screenHeight-60}px`">
-        <img :src="require('../../static/image/question/back.png')" alt="" class="jumpBack" @click="jumpBack">
+        <!-- <img :src="require('../../static/image/question/back.png')" alt="" class="jumpBack" @click="jumpBack"> -->
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
             <div class="topNav">
                 <vue-scroll :ops="opsx" style="width:100%;height:100%;">
@@ -9,7 +9,7 @@
             </div>
             <div class="twoNav">
                 <el-breadcrumb separator-class="el-icon-arrow-right">
-                    <el-breadcrumb-item v-for="(item,index) of arrTxt" :key="index">{{item}}</el-breadcrumb-item>
+                    <el-breadcrumb-item v-for="(item,index) of arrTxt" :key="index" :to="index==arrTxt.length-1?'':'/exercise'">{{item}}</el-breadcrumb-item>
                 </el-breadcrumb>
             </div>
             <div class="questionsBox">
@@ -56,9 +56,10 @@ export default {
     methods:{
         ...mapMutations(["windowChange"]),
         // 返回上一页
-        jumpBack(){
-            this.$router.push({path:'/exercise'});
-        },
+        // jumpBack(index){
+        //     // this.$router.push({path:'/exercise'});
+        //     console.log(index);
+        // },
         // 改变
         changetimeKs(str){
             this.timeKs=str;
@@ -138,16 +139,23 @@ export default {
 <style>
     .questions .el-breadcrumb{
         height: 100%;
-        line-height: 50px;
+        line-height: 80px;
         font-size: 14px;
     }
     .questions .el-breadcrumb .el-breadcrumb__inner{
-        color: #fff;
+        color: #999;
+        font-weight: 400;
+    }
+    .questions .el-breadcrumb .el-breadcrumb__inner:hover{
+        cursor: pointer;
+    }
+    .questions .el-breadcrumb .el-breadcrumb__item:last-child .el-breadcrumb__inner{
+        color: #333;
     }
 </style>
 <style lang="css" scoped>
     .questions{
-        padding-top: 50px;
+        padding-top: 80px;
         box-sizing: border-box;
         position: relative;
     }
@@ -160,20 +168,19 @@ export default {
         z-index: 1;
     }
     .twoNav{
-        width: 100%;
-        height: 50px;
-        background-color: #616576;
+        width: 85%;
+        height: 80px;
         font-size: 16px;
-        padding-left: 50px;
         box-sizing: border-box;
         position: fixed;
         top:60px;
-        left:0;
+        left:7.5%;
         z-index: 9;
+        background-color: #fff;
     }
     /* 子页面样式 */
     .questionsItem{
-        padding-top: 50px;
+        /* padding-top: 30px; */
         box-sizing: border-box;
         position: relative;
     }
@@ -266,11 +273,12 @@ export default {
          height: 144px;
      }
      .questionsItem >>> .topBox .quBottom{
-         height: 100px;
+         height: 44px;
          display: flex;
          justify-content: space-between;
          align-items: center;
          font-size: 16px;
+         margin: 10px 0;
      }
      .questionsItem >>> .topBox .quBottom>div{
          display: flex;
@@ -280,7 +288,7 @@ export default {
          color: #666;
          margin-left: 10px;
          height: 100%;
-         line-height: 100px;
+         line-height: 44px;
      }
      .questionsItem >>> .topBox .quBottom>div.right p{
          width: 120px;
@@ -298,13 +306,14 @@ export default {
      }
     .questionsItem >>> .bottomBox{
         width: 85%;
-        margin: 0 auto;
+        margin: 20px auto 0 auto;
     }
     .questionsItem >>> .bottomBox .title{
         height: 60px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 10px;
     }
     .questionsItem >>> .bottomBox .title .left{
         display: flex;
@@ -322,7 +331,7 @@ export default {
         margin-right: 5px;
     }
     .questionsItem >>> .bottomBox .title .right{
-        width: 200px;
+        width: 158px;
         height: 40px;
         border: 1px solid #6495ED;
         color: #6495ED;
@@ -346,37 +355,38 @@ export default {
         font-size: 16px;
         border: 1px solid #DEDEDE;
         box-sizing: border-box;
-        margin-right: 3.2px;
-        margin-bottom: 4px;
+        margin-right: 4px;
+        margin-bottom: 12px;
     }
     .questionsItem >>> .bottomBox .quSolt .itemQu:hover{
         cursor: pointer;
     }
     .questionsItem >>> .bottomBox .pageBox{
-        height: 80px;
+        height: 90px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
      .questionsItem >>> .bottomBox .pageBox p{
-         width: 90px;
-         height: 40px;
-         border: 1px solid #C4CACE;
-         font-size: 12px;
-         color: #666;
-         text-align: center;
-         line-height: 40px;
+        width: 60px;
+        height: 30px;
+        background: #F1F4F5;
+        border: 1px solid #C4CACE;
+        opacity: 1;
+        border-radius: 3px;
+        text-align: center;
+        line-height: 30px;
      }
      .questionsItem >>> .bottomBox .pageBox p:hover{
          cursor: pointer;
      }
      .questionsItem >>> .bottomBox .pageBox p:first-child{
-         margin-right: 20px;
+         margin-right: 50px;
      }
      /* 题目解析 */
      .questionsItem >>> .quAnalysis{
          width: 85%;
-         margin:0 auto;
+         margin:20px auto 0 auto;
      }
      .questionsItem >>> .quAnalysis .answer{
          width: 100%;
@@ -402,6 +412,7 @@ export default {
          color: #333;
          border-bottom: 1px solid #C4CACE;
          margin-bottom: 20px;
+         margin-top: 14px;
      }
      .questionsItem >>> .quAnalysis .videoBox .video{
          width: 672px;

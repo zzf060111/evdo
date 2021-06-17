@@ -2,6 +2,7 @@
     <div class="member" :style="`height:${screenHeight-60}px`" v-if="vipList.length>0">
         <div v-if="html" v-html="html" style="opacity:0"></div>
         <vue-scroll :ops="opsx" style="width:100%;height:100%;" v-else>
+        <div style="width:1600px;margin:0 auto">
         <p class="title">会员套餐</p>
         <div class="pubBox">
             <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index"  @click="openPay(item.price,item.day,item.id)" @mouseover="selVip(index)" @mouseout="delVip">
@@ -22,7 +23,7 @@
                 <b v-show="item.isSel"></b>
             </p>
         </div>
-        <div class="recordBox">
+        <div class="recordBox" :style="`height:${screenHeight-600}px`">
             <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="valueShow&&showTable==1&&tableData1.length>0" @handle-scroll="handleScroll">
                 <el-table :data="tableData1" stripe style="width: 100%" :show-header=false  v-loading="loading" element-loading-text="加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.2)">
                     <el-table-column prop="name" label="名称" width="200" align='center' class-name="one"></el-table-column>
@@ -46,6 +47,7 @@
             <div class="noHave" v-show="valueShow&&showTable==2&&tableData2.length==0">
                 暂无赠送记录
             </div>
+        </div>
         </div>
         </vue-scroll>
         <!-- 提示vip支付 -->
@@ -310,7 +312,6 @@ export default {
                         this.alertTxt({msg:res.data.msg,type:'error'});
                     }
                 }else if(data.payType=='alipay'){
-                    console.log(res);
                     if(res.data){
                         this.html=res.data;
                         this.vipTost=false;
@@ -505,12 +506,13 @@ export default {
         text-align: left;
         font-size: 18px;
         color: #333;
-        padding-left: 50px;
+        padding-left: 70px;
         box-sizing: border-box;
         display: flex;
+        margin-bottom: 40px;
     }
     .member .title p:first-child{
-        margin-right: 50px;
+        margin-right: 70px;
     }
     .member .title p{
         padding-bottom: 5px;
@@ -623,11 +625,11 @@ export default {
         margin:0 100px;
     }
     .member .recordBox{
-        width: 100%;
-        height: 320px;
+        width: 1550px;
+        /* min-height: 320px; */
         padding: 0 50px;
         box-sizing: border-box;
-        margin-top: 20px;
+        margin: 20px auto 0 auto;
         position: relative;
     }
     .member .recordBox .noHave{

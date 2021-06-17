@@ -117,7 +117,7 @@
         </div>
         </vue-scroll>
         <!-- 修改昵称 -->
-        <el-dialog title="修改昵称" :visible.sync="changeName" :append-to-body="true" :close-on-click-modal="false" center custom-class="changeName" top="13vh">
+        <el-dialog title="修改昵称" :visible.sync="changeName" :append-to-body="true" :close-on-click-modal="false" center custom-class="changeName" top="430px">
 			<el-form :model="nameform" label-width="80px" :rules="namerules" ref="nameform">
 				<el-form-item label="新昵称" prop="name">
 					<el-input v-model="nameform.name" type="text" placeholder="请输入新的昵称"></el-input>
@@ -128,8 +128,8 @@
 			</div>
 		</el-dialog>
         <!-- 修改密码 -->
-         <el-dialog title="修改密码" :visible.sync="changePwd" :append-to-body="true" :close-on-click-modal="false" center custom-class="changePwd" top="13vh">
-			<el-form :model="pwdform" label-width="80px" :rules="pwdrules" ref="pwdform">
+         <el-dialog title="修改密码" :visible.sync="changePwd" :append-to-body="true" :close-on-click-modal="false" center custom-class="changePwd" top="370px">
+			<el-form :model="pwdform" label-width="100px" :rules="pwdrules" ref="pwdform">
 				<el-form-item label="原密码" prop="oldPwd">
 					<el-input v-model="pwdform.oldPwd" type="password" placeholder="请输入原密码"></el-input>
 				</el-form-item>
@@ -145,7 +145,7 @@
 			</div>
 		</el-dialog>
         <!-- 修改手机 -->
-        <el-dialog title="修改手机" :visible.sync="changePhone" :append-to-body="true" :close-on-click-modal="false" center custom-class="changePhone" top="13vh">
+        <el-dialog title="修改手机" :visible.sync="changePhone" :append-to-body="true" :close-on-click-modal="false" center custom-class="changePhone" top="398px">
 			<el-form :model="phoneform" label-width="80px" :rules="phonerules" ref="phoneform">
 				<el-form-item label="手机号" prop="phone">
 					<el-input v-model="phoneform.phone" type="text" placeholder="请输入手机号"></el-input>
@@ -568,6 +568,9 @@ export default {
     }
     .personalItem .el-form-item p{
         background-color: transparent;
+        height: 60px;
+        line-height: 60px;
+        top:0
     }
     .personalItem .el-input__inner{
         color: #333 !important;

@@ -49,7 +49,7 @@
             </div>
         </div>
         <!-- 加入组织 -->
-        <el-dialog title="加入组织" :visible.sync="joinIn" :append-to-body="true" :close-on-click-modal="false" center custom-class="joinIn" top="13vh">
+        <el-dialog title="加入组织" :visible.sync="joinIn" :append-to-body="true" :close-on-click-modal="false" center custom-class="joinIn" top="370px">
 			<el-form :model="joinform" label-width="80px" :rules="joinrules" ref="joinform">
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="joinform.name" type="text" placeholder="请输入姓名"></el-input>
@@ -346,6 +346,8 @@ export default {
         overflow-x: hidden;
         overflow-y: auto;
         background-color: #fff;
+        padding-top: 20px;
+        box-sizing: border-box;
     }
     .personal .leftNav .user{
         width: 100%;
@@ -418,7 +420,7 @@ export default {
         flex-wrap: wrap;
     }
     .personal .leftNav .cardBox p img{
-        width: 35px;
+        width: 40px;
         height: 33.84px;
         margin-right: 5px;
     }
@@ -426,6 +428,7 @@ export default {
         display: block;
         max-width: 250px;
         text-align: left;
+        font-size: 18px;
     }
     .personal .leftNav .cardBox p span.changWidth{
         width: 300px;
@@ -480,7 +483,7 @@ export default {
     .personal .leftNav .navBox .navItem>img{
         width: 30px;
         height: 30px;
-        margin-right: 20px;
+        margin-right: 35px;
     }
     .personal .leftNav .loginOut{
         width: 150px;
@@ -489,7 +492,7 @@ export default {
         text-align: center;
         line-height: 40px;
         color: #FF5555;
-        margin: 20px auto 0 auto;
+        margin: 30px auto 0 auto;
         font-size: 18px;
     }
     .personal .leftNav .loginOut:hover{

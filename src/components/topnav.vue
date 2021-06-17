@@ -35,8 +35,8 @@
 			</div>
 		</div>
 		<!-- 登陆、注册、忘记密码 -->
-		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="login">
-			<el-form :model="logoform" label-width="80px" :rules="logorules" ref="logoform">
+		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="login" top="341px">
+			<el-form :model="logoform" label-width="70px" :rules="logorules" ref="logoform">
 				<el-form-item label="账号" prop="name">
 					<el-input v-model="logoform.name" type="text" placeholder="请输入账号"></el-input>
 				</el-form-item>
@@ -56,8 +56,8 @@
 			</div>
 		</el-dialog>
 		<!-- 忘记密码 -->
-		<el-dialog title="忘记密码" :visible.sync="forgetVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="forget" top="13vh">
-			<el-form :model="forgetform" label-width="80px" :rules="forgetrules" ref="forgetform">
+		<el-dialog title="忘记密码" :visible.sync="forgetVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="forget" top="332px">
+			<el-form :model="forgetform" label-width="100px" :rules="forgetrules" ref="forgetform">
 				<el-form-item label="账号" prop="phone">
 					<el-input v-model="forgetform.phone" type="text" placeholder="请输入手机号或邮箱"></el-input>
 				</el-form-item>
@@ -77,8 +77,8 @@
 			</div>
 		</el-dialog>
 		<!-- 注册 -->
-		<el-dialog title="注册" :visible.sync="regVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="forget regUser" top="13vh">
-			<el-form :model="regform" label-width="80px" :rules="forgetrules" ref="regform">
+		<el-dialog title="注册" :visible.sync="regVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="regUser" top="332px">
+			<el-form :model="regform" label-width="100px" :rules="forgetrules" ref="regform">
 				<el-form-item label="账号" prop="phone">
 					<el-input v-model="regform.phone" type="text" placeholder="请输入手机号或邮箱"></el-input>
 				</el-form-item>
@@ -113,7 +113,7 @@
 			<p>扫描二维码，关注医维度公众号</p>
 		</el-dialog>
 		<!-- 绑定手机 -->
-        <el-dialog title="绑定手机" :visible.sync="bindPhone" :append-to-body="true" :close-on-click-modal="false" center custom-class="bindPhone" top="13vh">
+        <el-dialog title="绑定手机" :visible.sync="bindPhone" :append-to-body="true" :close-on-click-modal="false" center custom-class="bindPhone" top="246px">
 			<el-form :model="phoneform" label-width="80px" :rules="phonerules" ref="phoneform">
 				<el-form-item label="手机号" prop="phone">
 					<el-input v-model="phoneform.phone" type="text" placeholder="请输入手机号"></el-input>
@@ -128,7 +128,7 @@
 			</div>
 		</el-dialog>
 		<!-- 加入组织 -->
-        <el-dialog title="加入组织" :visible.sync="joinIntop" :append-to-body="true" :close-on-click-modal="false" center :custom-class="arrUser.user_status==2?'joinIntop':'joinIntop shenHe'" top="13vh">
+        <el-dialog title="加入组织" :visible.sync="joinIntop" :append-to-body="true" :close-on-click-modal="false" center :custom-class="arrUser.user_status==2?'joinIntop':'joinIntop shenHe'" top="246px">
 			<p>
 				您当前的账号为个人版，查看企业版内容需要加入企业用户组，升级为企业版账号。如果您所在的院校或企业已购买企业版并为您提供了邀请码，请在下方输入相关信息升级为企业版账号，企业版账号拥有全站查看权限！
 			</p>
@@ -735,25 +735,48 @@ export default {
     .el-dialog .el-dialog__header .el-dialog__headerbtn{
         top:15px;
     }
-	.el-dialog,.login.el-dialog,.bindPhone.el-dialog{
-		width: 450px;
-		height: 420px;
+	.el-dialog,.login.el-dialog,.bindPhone.el-dialog,.regUser.el-dialog{
 		border-radius: 10px;
 	}
+	/* login */
+	.login.el-dialog{
+		width: 360px;
+		height: 398px;
+	}
+	.el-dialog .el-dialog__body{
+		padding: 30px 27px 0 27px!important;
+	}
+	.el-dialog .el-dialog__body .el-form-item__label{
+		padding-right: 20px;
+		font-size: 16px;
+		color: #666;
+		text-align: left;
+	}
+	.el-dialog .el-dialog__body .el-form-item{
+		margin-bottom: 16px;
+	}
+	.el-dialog .el-button{
+		width: 200px;
+		height: 44px;
+		font-size: 16px;
+		border-radius: 0;
+	}
+	/* reguser */
+	.regUser.el-dialog,.forget.el-dialog{
+		width: 380px;
+		height: 417px;
+	}
 	.bindPhone.el-dialog{
-		height: 300px;
-	}
-	.forget.el-dialog{
-		width: 400px;
-		height: 450px;
-	}
-	.regUser.el-dialog{
-		height: 530px;
+		width: 380px;
+		height: 280px;
 	}
 	.toast.el-dialog{
 		width: 380px;
 		height: 588px;
 		border-radius: 10px;
+	}
+	.toast.el-dialog .el-dialog__body{
+		padding-left: 40px !important;
 	}
 	.toast.el-dialog div{
 		font-size: 16px;
@@ -979,12 +1002,12 @@ export default {
 	}
 	.fdiv2{
 		margin-bottom:10px;
-		font-size: 18px;
+		font-size: 14px;
 		color: #999;
 	}
 	.fdiv3 img{
-		width:30px;
-		height: 30px;
+		width:44px;
+		height: 44px;
 		margin:0 5px;
 	}
 	.fdiv3 img:hover{

@@ -7,27 +7,34 @@
                     <span>{{`${(indexd+1)}. ${queArr[indexd].question.title}`}}</span>
                 </div>
             </div>
-            <div class="quSelBox" v-if="selArr.length>0">
+            <div class="quSelBox" v-if="selArr.length>0" v-show="questionType==0">
                 <div class="quSelItem" v-for="(item,index) of selArr" :key="index">
                     <div class="icon" v-show="item.isSel==0&&item.txt" @click="selAnswer(index,item.id)"></div>
                     <img :src="require('../../static/image/question/icon_xz.png')" alt=""  v-show="item.isSel==1&&item.txt" @click="clearAnswer(index)">
                     <p v-show="item.txt">{{zmArr[index]}}.{{item.txt}}</p>
                 </div>
             </div>
+            <div class="quSelBox" v-if="selArr.length>0" v-show="questionType==1">
+                <div class="quSelItem" v-for="(item,index) of selArr" :key="index">
+                    <div class="icon" v-show="item.isSel==0&&item.txt"></div>
+                    <img :src="require('../../static/image/question/icon_xz.png')" alt=""  v-show="item.isSel==1&&item.txt">
+                    <p v-show="item.txt">{{zmArr[index]}}.{{item.txt}}</p>
+                </div>
+            </div>
             <!-- <div class="quImg">
                 <img src="../../static/image/question/0b9d68bbb683fa45920f795485e4524a.png" alt="">
             </div> -->
-            <div class="quBottom">
-                <div class="left" v-show="questionType==0">
-                    <img :src="stopVisible?require('../../static/image/question/icon_djs2.png'):require('../../static/image/question/icon_djs.png')" alt="" @click="pauseTime">
-                    <p>倒计时：{{ksTime}}</p>
-                    <p>提示：{{queArr[indexd].question.type==1?'提示：判断题，请判断对错':'单选题，请选择你认为正确的答案'}}</p>
-                </div>
-                <div class="right">
-                    <p @click="upQuestion">上一题</p>
-                    <p @click="downQuestion">下一题</p>
-                    <p @click="handedIn" v-show="questionType==0">交卷</p>
-                </div>
+        </div>
+        <div class="quBottom">
+            <div class="left" v-show="questionType==0">
+                <img :src="stopVisible?require('../../static/image/question/icon_djs2.png'):require('../../static/image/question/icon_djs.png')" alt="" @click="pauseTime">
+                <p>倒计时：{{ksTime}}</p>
+                <p>提示：{{queArr[indexd].question.type==1?'提示：判断题，请判断对错':'单选题，请选择你认为正确的答案'}}</p>
+            </div>
+            <div class="right">
+                <p @click="upQuestion">上一题</p>
+                <p @click="downQuestion">下一题</p>
+                <p @click="handedIn" v-show="questionType==0">交卷</p>
             </div>
         </div>
         <div class="bottomBox">
@@ -78,7 +85,7 @@
         <div class="quAnalysis" v-show="questionType==1">
             <div class="answer">
                 <p>答案 <span>{{zmArr[parseInt(queArr[indexd].question.true_option)-1]}}</span></p>
-                <p>您选择 <span>{{queArr[indexd].answer?zmArr[parseInt(queArr[indexd].answer-1)]:'未答'}}</span></p>
+                <p>您选择 <span :style="`color:${queArr[indexd].answer==queArr[indexd].question.true_option?'#6495ED':'#EB4847'}`">{{queArr[indexd].answer?zmArr[parseInt(queArr[indexd].answer-1)]:'未答'}}</span></p>
             </div>
             <!-- <div class="videoBox analysisBox">
                 <div class="title">视频讲解</div>
@@ -136,7 +143,7 @@
                 </div>
             </div>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="abandonks">放弃本次考试</el-button>
+				<el-button @click="abandonks">重新考试</el-button>
                 <el-button type="primary" @click="continueks">继续答题</el-button>
 			</div>
 		</el-dialog>
@@ -577,21 +584,37 @@ export default {
 <style>
     .stop .el-dialog__header{
         border-bottom: none;
+        background-color: #fff;
+        height: 40px;
     }
     .stop.el-dialog{
         width: 360px;
         height: 206px;
+        border-radius: 10px;
+    }
+    .stop.el-dialog .el-dialog__body,.stop.el-dialog .el-dialog__footer{
+        padding: 0 !important;
     }
     .handed.stop.el-dialog{
-        width: 400px !important;
-        height: 256px !important;
+        width: 360px !important;
+        height: 254px !important;
+        border-radius: 10px;
+    }
+    .handed.stop.el-dialog .el-dialog__header{
+        height: 31px;
     }
     .handed.stop.el-dialog h4{
         color: #6495ED;
+        margin-bottom: 10px;
     }
     .handed.stop.el-dialog h2{
         font-size: 36px;
+        font-weight: 400;
         color: #6495ED;
+        margin-bottom: 20px;
+    }
+    .handed.stop.el-dialog p{
+        margin-bottom: 30px;
     }
     .stop.el-dialog button{
         width: 140px;
@@ -599,15 +622,26 @@ export default {
     }
     .stop.el-dialog .textCount{
         text-align: center;
+        font-size: 16px;
     }
-    .stop.el-dialog .textCount div{
+    .stop.el-dialog .textCount div:nth-child(2){
         display: flex;
         justify-content: center;
         align-items: center;
+        margin: 20px 0 30px 0;
+    }
+    .stop.el-dialog .textCount div:nth-child(1){
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 0 20px 0;
+    }
+    .stop.el-dialog .textCount p:nth-child(2){
+        margin-bottom: 30px;
     }
     .stop.el-dialog .textCount div img{
-        width: 25px;
-        height: 25px;
+        width: 22px;
+        height: 22px;
         margin-right: 5px;
     }
 </style>
@@ -632,7 +666,8 @@ export default {
         background-color: #EB4847  !important;
     }
     .quSolt .itemQu.ishere{
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+        /* box-shadow: 0 0 0 1px rgba(0,0,0,0.5); */
+        border: 1px solid #999 !important;
     }
     .quSolt .itemQu.isAnswer{
         background-color: #6495ED;
@@ -649,4 +684,39 @@ export default {
         border: 1px solid #EB4847;
         color: #fff !important;
     }
+    .questionsItem .quBottom{
+         width: 85%;
+         height: 44px;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         font-size: 16px;
+         margin: 30px auto 50px auto;
+         padding-bottom: 50px;
+         border-bottom: 1px solid #C4CACE;
+     }
+     .questionsItem .quBottom>div{
+         display: flex;
+         align-items: center;
+     }
+     .questionsItem .quBottom>div.left p{
+         color: #333;
+         margin-left: 10px;
+         height: 100%;
+         line-height: 44px;
+     }
+     .questionsItem .quBottom>div.right p{
+         width: 120px;
+         height: 44px;
+         line-height: 44px;
+         text-align: center;
+         color: #fff;
+         background-color: #6495ED;
+     }
+     .questionsItem .quBottom>div.right p:hover{
+         cursor: pointer;
+     }
+     .questionsItem .quBottom>div.right p:first-child{
+         margin-right: 50px;
+     }
 </style>
