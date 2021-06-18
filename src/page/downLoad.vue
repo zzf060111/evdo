@@ -61,7 +61,8 @@ export default {
 </script>
 <style scoped>
     .downLoad .imgbox{
-        width: 1690px;
+        width: 90%;
+        max-width: 1690px;
         margin: 0 auto;
         position: relative;
     }

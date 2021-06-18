@@ -127,7 +127,12 @@ export default {
     store,
     created(){
         // 判断侧边栏
-        this.rightShow=localStorage.getItem('rightShow')?localStorage.getItem('rightShow'):'3';
+        if(this.$route.params.rShow){
+            this.rightShow=this.$route.params.rShow;
+            localStorage.setItem('rightShow',this.$route.params.rShow);
+        }else{
+            this.rightShow=localStorage.getItem('rightShow')?localStorage.getItem('rightShow'):'3';
+        }
         let arr=this.navArr;
         for(let i=0;i<arr.length;i++){
             if(arr[i].id==this.rightShow){

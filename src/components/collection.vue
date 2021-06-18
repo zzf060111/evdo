@@ -174,11 +174,24 @@ export default {
                     if(isVip){
                         this.$alert('此模型需开通会员','提示',{
                             confirmButtonText:'立即开通',
-                            center:true
+                            center:true,
+                            callback:(action)=>{
+                                if(action=='confirm'){
+                                    this.$parent.jumpMember();
+                                }
+                            }
                         })
                     }else{
                         if(this.twoNavIndex=='1'){
-                            window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                            // window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                            let f=document.createElement('form');
+                            f.style.display='none';
+                            f.action='https://www.evdo.vip/portal/model/view/';
+                            f.method='post';
+                            f.innerHTML='<input type="hidden" name="id" value="'+id+'"/><input type="hidden" name="token" value="'+localStorage.getItem('token')+'"/><input type="hidden" name="version" value="'+2.0+'"/>';
+                            document.body.appendChild(f);
+                            f.submit();
+                            f.remove();
                         }else if(this.twoNavIndex=='2'){
                             // window.location.href='https://www.evdo.vip/portal/video/view/id/'+id;
                             this.$router.push({
@@ -362,7 +375,7 @@ export default {
 <style scoped>
     .collection .topNavBox{
         width: 100%;
-        min-width: 440px;
+        min-width: 520px;
         height: 50px;
         display: flex;
         justify-content: space-between;

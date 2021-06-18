@@ -107,7 +107,7 @@
 		<el-dialog title="通知" :visible.sync="toastVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="regUser toast" top="13vh" @close="Toastclose()">
 			<div>亲爱的医维度用户您好！</div>
 			<div class="txt">
-				 温馨提示您，版本更新后，取消会员积分充值规则，现可开通专业版会员享更多资源，或加入组织成为企业版用户，享全站查看权限。您之前的会员积分现已转换成超值会员时长，详情可至个人中心查看。如有疑问，请扫描下方二维码，关注“医维度”公众号，咨询客服人员。感谢您的配合！
+				 温馨提示您，版本更新后，取消会员积分充值规则，现可开通个人版会员享更多资源，或加入组织成为企业版用户，享全站查看权限。您之前的会员积分现已转换成超值会员时长，详情可至个人中心查看。如有疑问，请扫描下方二维码，关注“医维度”公众号，咨询客服人员。感谢您的配合！
 			</div>
 			<img :src="require('../../static/image/top/pic_ewm@2x.png')" alt="">
 			<p>扫描二维码，关注医维度公众号</p>
@@ -438,6 +438,10 @@ export default {
 					this.$router.push('/personal')
 				}
 			})
+		},
+		// 弹出登陆弹窗
+		jumpLogin(){
+			this.logoVisible=true;
 		},
 		// 登录
 		login(formName){

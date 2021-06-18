@@ -300,6 +300,9 @@ export default {
         color: #666 !important;
         margin-top:5px;
     }
+    .helpCenter .questionsBox .el-button{
+        width: 38px;
+    }
 </style>
 <style scoped>
     .helpCenter .box{
@@ -309,10 +312,14 @@ export default {
         box-sizing: border-box;
         display: flex;
         justify-content: center;
+        flex-wrap: wrap;
     }
     .helpCenter .box .left{
-        width: 800px;
+        width: 45%;
+        max-width: 800px;
+        min-width: 500px;
         margin-right: 80px;
+        margin-bottom: 20px;
     }
     .helpCenter .box .left .noList{
         padding-top: 20px;
@@ -321,6 +328,7 @@ export default {
     }
     .helpCenter .box .right{
         width: 500px;
+        margin-right: 80px;
     }
     .helpCenter .box .left p,.helpCenter .box .right p{
         text-align: left;

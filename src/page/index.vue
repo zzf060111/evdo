@@ -231,7 +231,7 @@
                 this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/288)*288)/2;
                 this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                 this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
-                console.log(this.moveBoxPl);
+                // console.log(this.moveBoxPl);
                 $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                 $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
                 $('.boxrightTop2').attr('style',`height:${wboxrightTop2*0.53}px`);
@@ -465,7 +465,7 @@
         width: 150px;
         height: 170px;
         position: relative;
-        margin:40px 71px;
+        margin:40px 70px;
     }
     .fenleiBox .flItem:hover{
         cursor: pointer;

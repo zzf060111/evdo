@@ -1,7 +1,7 @@
 <template>
     <div class="personalItem" :style="`height:${screenHeight-60}px`">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
-        <div style="display:flex;justify-content: center;">
+        <div style="display:flex;justify-content: center;flex-wrap:wrap">
             <div class="rightBox">
                 <p class="title">账户信息</p>
                 <div class="upload">
@@ -621,12 +621,16 @@ export default {
         align-items: center;
     } */
     .personalItem .rightBox,.personalItem .leftBox{
-        width: 740px;
+        width:45%;
+        max-width: 740px;
+        min-width: 520px;
         height: 930px;  
         border: 1px solid #D1D1D1;
         margin-top: 30px;
+        padding-right: 10px;
+        box-sizing: border-box;
     }
-    .personalItem .rightBox{
+    .personalItem .rightBox,.personalItem .leftBox{
         margin-right: 20px;
     }
     .personalItem .rightBox>p.title,.personalItem .leftBox>p.title{
@@ -690,17 +694,19 @@ export default {
         border-radius: 50px;
     }
     .personalItem .rightBox .formBox,.personalItem .leftBox .formBox{
-        width: 620px;
+        /* width: 83%; */
+        max-width: 620px;
         margin: 0 auto;
     }
     .personalItem .leftBox .formBox{
         margin-top: 210px;
     }
     .personalItem .rightBox .bindBox{
-        width: 520px;
-        box-sizing: border-box;
+        /* width: 70%; */
+        max-width: 520px;
+        min-width: 370px;
         text-align: left;
-        margin-left:160px;
+        margin-left:140px;
     }
     .personalItem .rightBox .bindBox .item{
         margin-bottom: 30px;

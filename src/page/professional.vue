@@ -3,7 +3,7 @@
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
-                <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage"></topnav>
+                <topnav :topIcon="topIcon" :activeIndex="activeIndex" @searchPage="searchPage" ref="child"></topnav>
             </vue-scroll>
         </div>
         <div class="twoNav">
@@ -276,11 +276,33 @@ export default {
             if(isVip){
                 this.$alert('此模型需开通会员','提示',{
                     confirmButtonText:'立即开通',
-                    center:true
+                    center:true,
+                    callback:(action)=>{
+                        if(action=='confirm'){
+                            if(localStorage.getItem('token')){
+                                this.$router.push({
+                                    name:'Personal',
+                                    params:{
+                                        rShow:5
+                                    }
+                                })
+                            }else{
+                                this.$refs.child.jumpLogin();
+                            }
+                        }
+                    }
                 })
             }else{
                 if(this.twoNavIndex=='1'){
-                    window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                    // window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                    let f=document.createElement('form');
+                    f.style.display='none';
+                    f.action='https://www.evdo.vip/portal/model/view/';
+                    f.method='post';
+                    f.innerHTML='<input type="hidden" name="id" value="'+id+'"/><input type="hidden" name="token" value="'+localStorage.getItem('token')+'"/><input type="hidden" name="version" value="'+2.0+'"/>';
+                    document.body.appendChild(f);
+                    f.submit();
+                    f.remove();
                 }else if(this.twoNavIndex=='2'){
                     this.$router.push({
                         path:'/videoItem',

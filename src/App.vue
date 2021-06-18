@@ -71,7 +71,7 @@ export default {
   width: 360px !important;
   height: 240px !important;
   padding-bottom: 10px !important;
-  border-radius: 10px;
+  border-radius: 10px !important;
 }
 .el-message-box__header{
   background-color: #F1F4F5;
@@ -88,6 +88,10 @@ export default {
 }
 .el-message-box__content{
   margin: 10px 0;
+}
+.leftCount.el-message-box--center .el-message-box__content{
+  margin: 30px 0 35px 0;
+  padding: 0 30px;
 }
 .leftCount .el-message-box__content{
   text-align: left !important;
