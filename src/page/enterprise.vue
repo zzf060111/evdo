@@ -404,7 +404,7 @@
                 })()
             }
         },
-        beforeRouteLeave(to, form, next) {
+        beforeRouteLeave(to, form, next){
             next();
             if(to.name!="VideoItem"){
                 localStorage.removeItem('entindex');

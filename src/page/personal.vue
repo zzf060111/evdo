@@ -10,7 +10,7 @@
             <div class="user">
                 <img :src="arrUser.avatar" class="headImg" v-if="arrUser.avatar">
                 <h3 v-if="arrUser.nickname">{{arrUser.nickname}}</h3>
-                <div class="sign" v-if="!arrUser.is_enterprise" :style="arrUser.clock_in?'color:#ff5555':''" @click="setClockIn">
+                <div class="sign"  :style="arrUser.clock_in?'color:#ff5555':''" @click="setClockIn">
                     <img :src="arrUser.clock_in?require('../../static/image/personal/signin2.png'):require('../../static/image/personal/signin@2x.png')" class="bj">
                     {{arrUser.clock_in?'已签到':'签到'}}
                 </div>
@@ -97,12 +97,12 @@ export default {
                     str:'个人信息',
                     isSel:true
                 },
-                {
-                    id:'4',
-                    img:require('../../static/image/personal/icon_function@2x.png'),
-                    str:'功能介绍',
-                    isSel:false
-                }
+                // {
+                //     id:'4',
+                //     img:require('../../static/image/personal/icon_function@2x.png'),
+                //     str:'功能介绍',
+                //     isSel:false
+                // }
             ],
             btnTxt1:'',
             joinIn:false,
@@ -300,7 +300,7 @@ export default {
             })
         },
     },
-    beforeRouteLeave(to, form, next) {
+    beforeRouteLeave(to, form, next){
         next();
         if(to.name!="VideoItem"){
             localStorage.removeItem('rightShow');

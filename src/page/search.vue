@@ -71,7 +71,8 @@
                 暂无数据
             </div>
         </div>
-        <div class="pageBox" v-if="itemArr.length>0">                <el-pagination
+        <div class="pageBox" v-if="itemArr.length>0">                
+            <el-pagination
             background
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"

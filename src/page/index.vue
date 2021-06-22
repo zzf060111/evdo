@@ -66,7 +66,7 @@
                 <img v-lazy="require('../../static/image/index/pic1@2x.png')" class="bj">
                 <h2>医维度在线版</h2>
                 <p>
-                    医维度虚拟仿真教学软件系统是一款在线多终端数字化虚拟仿真医学平台，包含Web端、PC客户端、手机APP，所有终端数据同步，系统内容实时更新。卓越的跨平台3D渲染引擎可以在任意终端流畅运行，准确还原组织、器官的材质纹理与形态。
+                    医维度虚拟仿真教学软件系统是一款在线多终端数字化虚拟仿真医学平台，包含Web端、PC客户端、手机APP，所有终端数据同步，系统内容实时更新。卓越的跨平台3D渲染引擎可以在任意终端流畅运行，准确还原组织、器官的材质纹理与形态。该平台一直保持着持续的更新迭代，其中包括两套由真实人体断层重建的三维数字人体、两千余件真实的人体三维标本等，中博公司在2016年成立了专业的三维标本数字化扫描技术团队，自主研发多款高端三维彩色扫描设备与数据处理方案。
                 </p>
                 <img :src="require('../../static/image/index/right.png')" class="rd left1">
             </div>
@@ -76,14 +76,13 @@
                         <img v-lazy="require('../../static/image/index/pic2@2x.png')" class="bj">
                         <h2>医维度在线版</h2>
                         <h2>企业定制独立部署版</h2>
-                        <p>重建人体精细模型达一万多件，结构位置准确，形态纹理逼真</p>
+                        <p>为您的企业或院校特殊定制、独立部署，数据的存取更加快速、稳定、安全。</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right1">
                     </div>
                     <div @mouseenter="mEnter($event,'right2')" @mouseleave="mLeave($event,'right2')" @click="jumpfslist()" ref="boxrightTop2" class="boxrightTop2">
                         <img v-lazy="require('../../static/image/index/pic4@2x.png')" class="bj">
                         <h2>医维度单机版系列软件</h2>
-                        <p>一点触控旋转，两点触控缩放与平移，鼠标左键旋转，滚轮</p>
-                        <p>缩放，右键平移</p>
+                        <p>医维度单机版系列软件包括系统解剖学、局部解剖学，虚拟数字人等多款非常实用的基础医学类软件，无须联网、本地运行，非常适合院校、博物馆、生命科学馆、医院等使用场景</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right2">
                     </div>
                 </div>
@@ -91,21 +90,21 @@
                     <div @mouseenter="mEnter($event,'right3')" @mouseleave="mLeave($event,'right3')" @click="jumpfslist()" ref="boxrightDown1" class="boxrightDown1">
                         <img v-lazy="require('../../static/image/index/pic3@2x.png')" class="bj">
                         <h2>医维度XR系列</h2>
-                        <p>配合VR眼镜在VR模式下浏览标本，可对标本进行贴图切换</p>
+                        <p>医维度VR、AR、MR、3D立体显示系统、全息投影等技术与设备可以满足您对高科技产品的众多需求</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right3">
                     </div>
                     <div @mouseenter="mEnter($event,'right4')" @mouseleave="mLeave($event,'right4')" @click="jumpfslist()" ref="boxrightDown2" class="boxrightDown2">
                         <img v-lazy="require('../../static/image/index/pic5@2x.png')" class="bj">
                         <h2>九大系统</h2>
                         <h2>三维科普动画</h2>
-                        <p>反色显示切片用以观察</p>
+                        <p>医维度自主创作的人体九大系统3D动画能以2D和3D两种模式播放，可以让观众在享受视觉盛宴的同时了解大量人体解剖知识。</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right4">
                     </div>
                     <div @mouseenter="mEnter($event,'right5')" @mouseleave="mLeave($event,'right5')" @click="jumpfslist()" ref="boxrightDown3" class="boxrightDown3">
                         <img v-lazy="require('../../static/image/index/pic6@2x.png')" class="bj">
                         <h2>在线三维</h2>
                         <h2>全景展馆</h2>
-                        <p>全屏观看、收藏、分享</p>
+                        <p>在线全景展馆系统可以对您的各种实景场地进行三维扫描，然后上线至网络，无论是学习还是企业宣传，都是非常优秀的一款产品。</p>
                         <img :src="require('../../static/image/index/right.png')" class="rd right5">
                     </div>
                 </div>
@@ -166,7 +165,12 @@
                     data['name']='医学动画';
                     data['id']=-1;
                     data['img']=require('../../static/image/index/icon_shouye_yxdh.png');
+                    let data1={};
+                    data1['name']='自测练习';
+                    data1['id']=-2;
+                    data1['img']=require('../../static/image/index/icon_zclx.png');
                     arr.push(data);
+                    arr.push(data1);
                     this.flTopList=arr;
                     this.flDownList=res.data.data.category;
                 }
@@ -228,14 +232,14 @@
                 let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
                 // 设置其高度（以宽度的60%为例）
                 this.carouseHeight=0.4 * wcarouse+'px';
-                this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/288)*288)/2;
+                this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/290)*290)/2;
                 this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                 this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
                 // console.log(this.moveBoxPl);
                 $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                 $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
                 $('.boxrightTop2').attr('style',`height:${wboxrightTop2*0.53}px`);
-                $('.boxrightDown1').attr('style',`height:${wboxrightDown1*0.775}px`);
+                $('.boxrightDown1').attr('style',`height:${wboxrightDown1*0.778}px`);
                 $('.boxrightDown2').attr('style',`height:${wboxrightDown2*1.09}px`);
                 $('.boxrightDown3').attr('style',`height:${wboxrightDown3*1.09}px`);
             });
@@ -267,13 +271,13 @@
                         let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
                         // 设置其高度（以宽度的60%为例）
                         this.carouseHeight=0.4 * wcarouse+'px';
-                        this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/288)*288)/2;
+                        this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/290)*290)/2;
                         this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                         this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
                         $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                         $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
                         $('.boxrightTop2').attr('style',`height:${wboxrightTop2*0.53}px`);
-                        $('.boxrightDown1').attr('style',`height:${wboxrightDown1*0.775}px`);
+                        $('.boxrightDown1').attr('style',`height:${wboxrightDown1*0.778}px`);
                         $('.boxrightDown2').attr('style',`height:${wboxrightDown2*1.09}px`);
                         $('.boxrightDown3').attr('style',`height:${wboxrightDown3*1.09}px`);
                     })
@@ -295,10 +299,11 @@
                    this.$router.push('/professional')
                }else if(num==1){
                    if(!this.arrUser){
-                       this.$alert('请登录后访问此页面','提示',{
-                            confirmButtonText:'确 定',
-                            center:true,
-                        })
+                    //    this.$alert('请登录后访问此页面','提示',{
+                    //         confirmButtonText:'确 定',
+                    //         center:true,
+                    //     })
+                        this.$refs.child.jumpLogin();
                    }else if(this.arrUser&&!this.arrUser.is_enterprise){
                         // this.$alert('此页面需企业级账号权限，请加入组织后访问','提示',{
                         //     confirmButtonText:'确 定',
@@ -316,22 +321,32 @@
             },
             // 跳转企业、专业详情
             jumpMove(id){
-                if(this.arrUser.is_enterprise){
-                    this.$router.push({
-                        path:'/enterprise',
-                        query:{
-                            id:id,
-                            type:id==-1?2:1
-                        }
-                    })
+                if(id==-2){
+                    if(!this.arrUser){
+                         this.$refs.child.jumpLogin();
+                    }else{
+                         this.$router.push({
+                            path:'/exercise',
+                        })
+                    }
                 }else{
-                    this.$router.push({
-                        path:'/professional',
-                        query:{
-                            id:id,
-                            type:id==-1?2:1
-                        }
-                    })
+                    if(this.arrUser.is_enterprise){
+                        this.$router.push({
+                            path:'/enterprise',
+                            query:{
+                                id:id,
+                                type:id==-1?2:1
+                            }
+                        })
+                    }else{
+                        this.$router.push({
+                            path:'/professional',
+                            query:{
+                                id:id,
+                                type:id==-1?2:1
+                            }
+                        })
+                    }
                 }
             },
             // 切换模型
@@ -395,7 +410,21 @@
                 if(isVip){
                     this.$alert('此模型需开通会员','提示',{
                         confirmButtonText:'立即开通',
-                        center:true
+                        center:true,
+                        callback:(action)=>{
+                            if(action=='confirm'){
+                                if(localStorage.getItem('token')){
+                                    this.$router.push({
+                                        name:'Personal',
+                                        params:{
+                                            rShow:5
+                                        }
+                                    })
+                                }else{
+                                    this.$refs.child.jumpLogin();
+                                }
+                            }
+                        }
                     })
                 }else{
                     window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
@@ -667,7 +696,6 @@
         display: flex;
         justify-content: center;
         align-content: center;
-        flex-wrap: wrap;
         margin: 0 auto 60px auto;
     }
     .productBox div{
@@ -682,7 +710,7 @@
     .productBox div p{
         font-size: 18px;
         color: #fff;
-        line-height: 42px;
+        line-height: 32px;
         opacity: 0.8;
     }
     .productBox .bj{
@@ -747,7 +775,7 @@
     }
     .productBox .boxright .down div:nth-child(1){
         /* width: 430px; */
-        width: 41%;
+        width: 40.7%;
         height: 328px;
     }
     .productBox .boxright .down div:nth-child(2){

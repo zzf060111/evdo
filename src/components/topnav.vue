@@ -38,7 +38,7 @@
 		<el-dialog title="登陆" :visible.sync="logoVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="login" top="341px">
 			<el-form :model="logoform" label-width="70px" :rules="logorules" ref="logoform">
 				<el-form-item label="账号" prop="name">
-					<el-input v-model="logoform.name" type="text" placeholder="请输入账号"></el-input>
+					<el-input v-model="logoform.name" type="text" placeholder="请输入账号" autocomplete="on" name="logoformName"></el-input>
 				</el-form-item>
 				<el-form-item label="密码" prop="pwd">
 					<el-input v-model="logoform.pwd" type="password" placeholder="请输入密码"></el-input>
@@ -164,6 +164,7 @@ import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import {register,getUserCode,passwordReset,login,socials,wechatwebcallback,mobilebind,qqcallback,wechatBind,QQBind,qqcode2user} from '../services/api/topnav'
 import {info,user_mobile_code,joinReq} from '../services/api/personal'
+import CryptoJS from 'crypto-js';
 export default {
 	data () {
 		// 验证手机号
@@ -380,7 +381,12 @@ export default {
 			}else{
 				this.changeUser(JSON.stringify(res.data.data));
 			}
-		})
+		});
+		// 判断账号密码
+		if(localStorage.getItem('loginName')&&localStorage.getItem('loginPwd')){
+			this.logoform.name=localStorage.getItem('loginName');
+			this.logoform.pwd=this.decryptBy(localStorage.getItem('loginPwd'));
+		}
 	},
 	props: {
 		topIcon: {
@@ -456,6 +462,8 @@ export default {
 							this.logoVisible=false;
 							this.changeUser(JSON.stringify(res.data.data));
 							localStorage.setItem('token',res.data.data.token);
+							localStorage.setItem('loginName',data.username);
+							localStorage.setItem('loginPwd',this.encryptBy(data.password));
 							// this.$router.go(0);
 						}else{
 							this.alertTxt({'msg':res.data.msg,'type':'error'});
@@ -714,7 +722,35 @@ export default {
                     })
                 }
 			})
-        }
+        },
+		// 加密
+		encryptBy(message){
+			var key = '12345678';
+			function encryptByDES (message, key) {
+			var keyHex = CryptoJS.enc.Utf8.parse(key)
+			var option = {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7}
+			var encrypted = CryptoJS.DES.encrypt(message, keyHex, option)
+			return encrypted.ciphertext.toString()
+			}
+			return encryptByDES(message, key);
+		},
+		// 解密
+		decryptBy(message){
+			var key = '12345678';
+			//DES  ECB模式解密
+			function decryptByDES(message,key){
+			var keyHex = CryptoJS.enc.Utf8.parse(key);
+			var decrypted = CryptoJS.DES.decrypt({
+			ciphertext: CryptoJS.enc.Hex.parse(message)
+			}, keyHex, {
+			mode: CryptoJS.mode.ECB,
+			padding: CryptoJS.pad.Pkcs7
+			});
+			var result_value = decrypted.toString(CryptoJS.enc.Utf8);
+			return result_value;
+			}
+			return decryptByDES(message, key);
+		}
 	},
 	computed:mapState(["forgetReg","forgetStr","searchval","arrUser"])
 }

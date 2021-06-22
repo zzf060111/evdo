@@ -1,9 +1,9 @@
 <template>
-    <div class="member" :style="`height:${screenHeight-60}px`" v-if="vipList.length>0">
+    <div class="member" :style="`height:${screenHeight-60}px`">
         <div v-if="html" v-html="html" style="opacity:0"></div>
         <vue-scroll :ops="opsx" style="width:100%;height:100%;" v-else>
-        <div style="width:1600px;margin:0 auto">
-        <p class="title">会员套餐</p>
+        <div style="width:80%;max-width:1600px;margin:0 auto">
+        <p class="title">个人版会员套餐</p>
         <div class="pubBox">
             <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index"  @click="openPay(item.price,item.day,item.id)" @mouseover="selVip(index)" @mouseout="delVip">
                 <div class="yiZhe">{{item.tag}}</div>
@@ -16,21 +16,21 @@
                 <div class="btn">{{arrUser.member_in?'续费':'开通'}}</div>
             </div>
         </div>
-        <div class="vipTip" v-if="arrUser.is_enterprise">您当前已经是企业版会员，包含全部专业版权限，请确认是否需要购买或续费之后再操作。</div>
+        <div class="vipTip" v-if="arrUser.is_enterprise">您当前已经是企业版会员，包含全部个人版权限，请确认是否需要购买或续费之后再操作。</div>
         <div class="title">
             <p v-for="(item,index) of navArr" :key="index" @click="selNav(item.id)">
                 {{item.txt}}
                 <b v-show="item.isSel"></b>
             </p>
         </div>
-        <div class="recordBox" :style="`height:${screenHeight-600}px`">
+        <div class="recordBox" :style="`height:${screenHeight-700}px`" ref="recordBox">
             <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="valueShow&&showTable==1&&tableData1.length>0" @handle-scroll="handleScroll">
-                <el-table :data="tableData1" stripe style="width: 100%" :show-header=false  v-loading="loading" element-loading-text="加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.2)">
-                    <el-table-column prop="name" label="名称" width="200" align='center' class-name="one"></el-table-column>
-                    <el-table-column prop="date" label="日期" width="300" align='center'></el-table-column>
-                    <el-table-column prop="payType" label="支付方式" width="500"></el-table-column>
-                    <el-table-column prop="price" label="价格" width="200" align='center'></el-table-column>
-                    <el-table-column prop="type" label="订单状态" width="200" align='center' class-name="last"></el-table-column>
+                <el-table :data="tableData1" stripe style="width:100%" :fit="true" :show-header=false  v-loading="loading" element-loading-text="加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.2)">
+                    <el-table-column prop="name" label="名称" :width="width1" align='center' class-name="one"></el-table-column>
+                    <el-table-column prop="date" label="日期" :width="width1" align='center'></el-table-column>
+                    <el-table-column prop="payType" label="支付方式" :width="width1"></el-table-column>
+                    <el-table-column prop="price" label="价格" :width="width1" align='center'></el-table-column>
+                    <el-table-column prop="type" label="订单状态" :width="width1" align='center' class-name="last"></el-table-column>
                 </el-table>
             </vue-scroll>
             <div class="noHave" v-show="valueShow&&showTable==1&&tableData1.length==0">
@@ -38,10 +38,10 @@
             </div>
             <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="valueShow&&showTable==2&&tableData2.length>0">
                 <el-table :data="tableData2" stripe style="width: 100%" :show-header=false>
-                    <el-table-column prop="name" label="名称" width="300" align='center' class-name="one"></el-table-column>
-                    <el-table-column prop="date" label="日期" width="700" ></el-table-column>
-                    <el-table-column prop="time" label="时间" width="200" align='center'></el-table-column>
-                    <el-table-column prop="type" label="领取状态" width="200" align='center' class-name="last"></el-table-column>
+                    <el-table-column prop="name" label="名称" :width="width2" align='center' class-name="one"></el-table-column>
+                    <el-table-column prop="date" label="日期" :width="width2" ></el-table-column>
+                    <el-table-column prop="time" label="时间" :width="width2" align='center'></el-table-column>
+                    <el-table-column prop="type" label="领取状态" :width="width2" align='center' class-name="last"></el-table-column>
                 </el-table>
             </vue-scroll>
             <div class="noHave" v-show="valueShow&&showTable==2&&tableData2.length==0">
@@ -120,7 +120,9 @@ export default {
             ewmImg:'',
             orderTime:'',
             html:'',
-            valueShow:false
+            valueShow:false,
+            width1:0,
+            width2:0,
         }
     },
     store,
@@ -147,6 +149,29 @@ export default {
     },
     mounted(){
         this.windowChange();
+        this.$nextTick(()=>{
+            // 获取父元素
+            let recordBox=this.$refs.recordBox;
+            // 获取宽度
+            let wrecordBox = recordBox.getBoundingClientRect().width;
+            // 添加左内边距
+            this.width1=(wrecordBox-100)*0.2;
+            this.width2=(wrecordBox-100)*0.25;
+        });
+        const that = this;
+        window.onresize=()=>{
+            return(()=>{
+                this.$nextTick(()=>{
+                    // 获取父元素
+                    let recordBox=this.$refs.recordBox;
+                    // 获取宽度
+                    let wrecordBox = recordBox.getBoundingClientRect().width;
+                    // 添加左内边距
+                    this.width1=(wrecordBox-100)*0.2;
+                    this.width2=(wrecordBox-100)*0.25;
+                });
+            })()
+        }
     },
     methods:{
         ...mapMutations(["windowChange","changeUser","alertTxt"]),
@@ -170,9 +195,9 @@ export default {
         },
         handleScroll(vertical, horizontal, nativeEvent){
             // console.log(nativeEvent.target.scrollTop,nativeEvent.target.clientHeight,nativeEvent.target.scrollHeight)
-            if(nativeEvent.target.scrollTop+nativeEvent.target.clientHeight==nativeEvent.target.scrollHeight){
-                this.loading=true;
-            }
+            // if(nativeEvent.target.scrollTop+nativeEvent.target.clientHeight==nativeEvent.target.scrollHeight){
+            //     this.loading=true;
+            // }
         },
         // 获取会员套餐列表
         getVipInfoThis(){
@@ -534,10 +559,11 @@ export default {
     }
     .member .pubBox{
         width: 100%;
-        height: 400px;
+        min-height: 400px;
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-wrap: wrap;
     }
     .member .pubBox .pubitem{
         width: 249px;
@@ -547,6 +573,7 @@ export default {
         padding-top: 30px;
         box-sizing: border-box;
         border: 1px solid #DEAE81;
+        margin:0 50px 30px 50px;
     }
     .member .pubBox .pubitem:hover{
         cursor: pointer;
@@ -621,11 +648,13 @@ export default {
     .member .pubBox .pubitem:not(.selected){
         border: 1px solid #DEDEDE;
     } */
-    .member .pubBox .pubitem:nth-child(2){
+    /* .member .pubBox .pubitem:nth-child(2){
         margin:0 100px;
-    }
+    } */
     .member .recordBox{
-        width: 1550px;
+        width: 100%;
+        min-width: 600px;
+        /* min-width: 600px; */
         /* min-height: 320px; */
         padding: 0 50px;
         box-sizing: border-box;
@@ -641,6 +670,7 @@ export default {
         color: #333;
     }
     .member .vipTip{
+        padding: 0 20px;
         font-size: 20px;
         color: #FD4344;
         margin-bottom: 30px;

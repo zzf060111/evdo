@@ -27,7 +27,7 @@
                             <el-input  type="text" :value="arrUser.user_login" v-if="arrUser" disabled></el-input>
                         </el-form-item>
                         <el-form-item label="密码" prop="truePwd">
-                            <el-input type="password" value="123456" disabled></el-input>
+                            <el-input type="password" :value="arrUser.password?'123456':''" disabled></el-input>
                             <p @click="showPwd">修改</p>
                         </el-form-item>
                     </el-form>

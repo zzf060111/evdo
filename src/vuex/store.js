@@ -91,7 +91,7 @@ const mutations={
             localStorage.removeItem('user');
         }
         
-    }
+    },
 }
 
 export default new Vuex.Store({
