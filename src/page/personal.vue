@@ -45,6 +45,7 @@
                 <collection v-else-if="rightShow==1"></collection>
                 <helpCenter v-else-if="rightShow==2"></helpCenter>
                 <member  v-else-if="rightShow==5"></member>
+                <message v-else-if="rightShow==4"></message>
                 <!-- <detailsItem v-else-if="rightShow==6" @changeNav="changeNav"></detailsItem> -->
             </div>
         </div>
@@ -92,11 +93,17 @@ export default {
                     isSel:false
                 },
                 {
+                    id:'4',
+                    img:require('../../static/image/personal/icon_xtxx@2x.png'),
+                    str:'系统消息',
+                    isSel:false
+                },
+                {
                     id:'3',
                     img:require('../../static/image/personal/icon_information@2x.png'),
                     str:'个人信息',
                     isSel:true
-                },
+                }
                 // {
                 //     id:'4',
                 //     img:require('../../static/image/personal/icon_function@2x.png'),
@@ -151,9 +158,9 @@ export default {
         ...mapMutations(["windowChange","changeUser","alertTxt"]),
         // 切换左侧导航栏
         changeNav(index){
-            if(index==3){
-                this.$router.push('/fsList');
-            }else{
+            // if(index==3){
+            //     this.$router.push('/fsList');
+            // }else{
                 info().then((res)=>{
                     if(res.data.code==-200){
                         localStorage.removeItem('token');
@@ -174,7 +181,7 @@ export default {
                         this.navArr=arr;
                     }
                 })
-            }
+            // }
         },
         // 跳转会员套餐
         jumpMember(){
@@ -313,7 +320,8 @@ export default {
         collection:resolve=>{require(['../components/collection'],resolve)},
         helpCenter:resolve=>{require(['../components/helpCenter'],resolve)},
         member:resolve=>{require(['../components/member'],resolve)},
-        detailsItem:resolve=>{require(['../components/details'],resolve)}
+        detailsItem:resolve=>{require(['../components/details'],resolve)},
+        message:resolve=>{require(['../components/message'],resolve)}
     },
     computed:mapState(["ops","screenHeight","opsx","arrUser"]),
     watch:{

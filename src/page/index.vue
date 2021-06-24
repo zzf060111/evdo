@@ -14,7 +14,7 @@
             </el-carousel>
         </div>
         <div class="fenleiBox" ref="fenleibox" :style="`padding-left:${fenleiboxPl}px`">
-            <div class="flItem" v-for="(item,index) of flTopList" :key="index" @click="jumpMove(item.id)">
+            <div class="flItem" v-for="(item,index) of flTopList" :key="index" @click="jumpMove(item.id)" :style="`margin:40px ${flItemRl}px`">
                 <img :src="item.more?item.more.mobile_thumbnail:item.img" alt="">
                 <p>{{item.name}}</p>
             </div>
@@ -66,7 +66,7 @@
                 <img v-lazy="require('../../static/image/index/pic1@2x.png')" class="bj">
                 <h2>医维度在线版</h2>
                 <p>
-                    医维度虚拟仿真教学软件系统是一款在线多终端数字化虚拟仿真医学平台，包含Web端、PC客户端、手机APP，所有终端数据同步，系统内容实时更新。卓越的跨平台3D渲染引擎可以在任意终端流畅运行，准确还原组织、器官的材质纹理与形态。该平台一直保持着持续的更新迭代，其中包括两套由真实人体断层重建的三维数字人体、两千余件真实的人体三维标本等，中博公司在2016年成立了专业的三维标本数字化扫描技术团队，自主研发多款高端三维彩色扫描设备与数据处理方案。
+                    医维度虚拟仿真教学软件系统是一款在线多终端数字化虚拟仿真医学平台，包含Web端、PC客户端、手机APP，所有终端数据同步，系统内容实时更新。卓越的跨平台3D渲染引擎可以在任意终端流畅运行，准确还原组织、器官的材质纹理与形态。该平台一直保持着持续的更新迭代，其中包括两套由真实人体断层重建的三维数字人体、两千余件真实的人体三维标本等，中博公司在2016年成立了专业的三维标本数字化扫描技术团队，自主研发多款高端三维彩色扫描设备与数据处理方案。扫描标本数量已达6千件以上，目前以具备了非常成熟、高速、高效的三维物体扫描技术。
                 </p>
                 <img :src="require('../../static/image/index/right.png')" class="rd left1">
             </div>
@@ -151,6 +151,7 @@
                 bannerArr:[],
                 carouseHeight:'',
                 fenleiboxPl:0,
+                flItemRl:0,
                 moveBoxPl:0,
                 otherflBoxPl:0
             }
@@ -232,7 +233,17 @@
                 let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
                 // 设置其高度（以宽度的60%为例）
                 this.carouseHeight=0.4 * wcarouse+'px';
-                this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/290)*290)/2;
+                if(wfenleibox>=1740){
+                    this.flItemRl=70;
+                    this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/290)*290)/2;
+                }else if(wfenleibox>1458&&wfenleibox<1740){
+                    let wItem=(1750-wfenleibox)/12;
+                    this.flItemRl=70-wItem;
+                    this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/(150+this.flItemRl*2))*(150+this.flItemRl*2))/2;
+                }else{
+                    this.flItemRl=46.5;
+                    this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/243)*243)/2;
+                }
                 this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                 this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
                 // console.log(this.moveBoxPl);
@@ -271,7 +282,17 @@
                         let wboxrightDown3=boxrightDown3.getBoundingClientRect().width;
                         // 设置其高度（以宽度的60%为例）
                         this.carouseHeight=0.4 * wcarouse+'px';
-                        this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/290)*290)/2;
+                        if(wfenleibox>=1740){
+                            this.flItemRl=70;
+                            this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/290)*290)/2;
+                        }else if(wfenleibox>1458&&wfenleibox<1740){
+                            let wItem=(1750-wfenleibox)/12;
+                            this.flItemRl=70-wItem;
+                            this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/(150+this.flItemRl*2))*(150+this.flItemRl*2))/2;
+                        }else{
+                            this.flItemRl=46.5;
+                            this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/243)*243)/2;
+                        }
                         this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
                         this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
                         $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
@@ -489,12 +510,12 @@
         box-sizing: border-box;
     }
     .fenleiBox .flItem{
-        /* width: 240px;
-        height: 240px; */
+        /* width: 150px; */
         width: 150px;
         height: 170px;
         position: relative;
-        margin:40px 70px;
+        /* margin:40px 70px; */
+        /* margin:40px 70px; */
     }
     .fenleiBox .flItem:hover{
         cursor: pointer;
@@ -512,8 +533,8 @@
         line-height: 50px;
     }
     .otherflBox{
-        width: 72%;
-        max-width: 1600px;
+        width: 75%;
+        max-width: 1630px;
         min-height: 200px;
         margin: 0 auto;
         padding-top: 52px;
