@@ -87,3 +87,11 @@ export function Askend(params){
 export function oauth2unbind(params){
     return http.post(`v1/user/oauth2unbind`,params)
 }
+// 获取消息通知
+export function notice(params){
+    return http.get(`v1/user/notice`,params)
+}
+// 读取消息
+export function noticeRead(params){
+    return http.get(`v1/user/noticeRead`,params)
+}

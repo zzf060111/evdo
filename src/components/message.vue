@@ -1,16 +1,16 @@
 <template>
     <div class="message" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="ops" style="width:100%;height:100%;">
-            <div class="Messitem">
+        <vue-scroll :ops="ops" style="width:100%;height:780px;" @handle-scroll="handleScroll">
+            <div class="Messitem" v-for="(item,index) of msgArr" :key="index">
                 <div class="top">
-                    <p>{{isShow==0?'这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知…':''}}</p>
+                    <p>{{item.isShow==0?item.notice.title:''}}</p>
                     <div>
-                        <p v-show="isShow==0">未读</p>
-                        <img :src="isShow==0?require('../../static/image/personal/down@2x.png'):require('../../static/image/personal/up@2x.png')" alt="" @click="showMess">
+                        <p v-show="item.status==0">未读</p>
+                        <img :src="item.isShow==0?require('../../static/image/personal/down@2x.png'):require('../../static/image/personal/up@2x.png')" alt="" @click="showMess(index)">
                     </div>
                 </div>
-                <div class="down" v-show="isShow==1">
-                    这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知这里是系统消息通知
+                <div class="down" v-show="item.isShow==1">
+                    {{item.notice.content}}
                 </div>
             </div>
         </vue-scroll>
@@ -19,17 +19,21 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
-import {info} from '../services/api/personal'
+import {info,notice,noticeRead} from '../services/api/personal'
 export default {
     data(){
         return{
-            isShow:0
+            page:1,
+            msgArr:[],
         }
     },
     store,
     created(){
         // 验证登录是否失效
         this.isLogin();
+        this.msgArr=[];
+        localStorage.removeItem('isloaded');
+        this.getNotice(this.page);
     },
     mounted(){
         this.windowChange();
@@ -48,10 +52,53 @@ export default {
                 }
             })
         },
+        // 获取消息列表
+        getNotice(page){
+            let data={};
+            data['page']=page;
+            data['limit']=10;
+            notice(data).then((res)=>{
+                if(res.data.code==0){
+                    if(res.data.data.data.length>0){
+                        let arr=this.msgArr.concat(res.data.data.data);
+                        // arr.concat(res.data.data.data);
+                        for(let i=0;i<arr.length;i++){
+                            arr[i]['isShow']=0;
+                        }
+                        this.msgArr=arr;
+                    }else{
+                        if(!localStorage.getItem('isloaded')){
+                            this.alertTxt({'msg':'系统信息已经加载完','type':'error'});
+                            localStorage.setItem('isloaded','yes');
+                        }
+                    }
+                }
+            })
+        },
         // 读取消息
-        showMess(){
-            this.isShow=this.isShow==0?1:0;
-        }
+        showMess(index){
+            this.msgArr[index].isShow=this.msgArr[index].isShow==0?1:0;
+            if(this.msgArr[index].status==0){
+                let data={};
+                data['id']=this.msgArr[index].id;
+                noticeRead(data).then((res)=>{
+                    if(res.data.code==0){
+                        this.msgArr[index].status=1;
+                    }
+                })
+            }
+        },
+        // 滚动条事件
+        handleScroll(vertical, horizontal, nativeEvent){
+            // console.log(nativeEvent.target.scrollTop,nativeEvent.target.clientHeight,nativeEvent.target.scrollHeight)
+            if(nativeEvent.target.scrollTop+nativeEvent.target.clientHeight==nativeEvent.target.scrollHeight){
+                this.page++;
+                this.getNotice(this.page)
+            }
+        },
+    },
+    destroyed(){
+        localStorage.removeItem('isloaded');
     },
     computed:mapState(["ops","opsx","screenHeight"])
 }
@@ -85,6 +132,7 @@ export default {
         overflow: hidden;
         text-overflow:ellipsis;
         white-space: nowrap;
+        text-align: left;
     }
     .message .Messitem .top>div{
         display: flex;
