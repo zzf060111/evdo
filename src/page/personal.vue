@@ -24,11 +24,11 @@
                 <img :src="require('../../static/image/personal/icon_qiye_selected.png')" alt="">
                 <p>{{arrUser.organization}}</p>
             </div>
-            <div class="cardBox card2">
+            <!-- <div class="cardBox card2">
                 <img :src="require('../../static/image/personal/bg_members@2x.png')" class="bj">
                 <p><img :src="require('../../static/image/personal/icon_members3@2x.png')"><span>{{arrUser.member_in?'个人版会员期限至'+`${new Date(arrUser.member_at*1000).getFullYear()}-${setNum(new Date(arrUser.member_at*1000).getMonth()+1)}-${setNum(new Date(arrUser.member_at*1000).getDate())}`:'开通个人版VIP'}}</span></p>
                 <div class="btn" @click="jumpMember">{{arrUser.member_in?'点击续费':'点击开通'}}</div>
-            </div>
+            </div> -->
             <div class="navBox">
                 <div class="navItem" v-for="(item,index) of navArr" :key="index" @click="changeNav(index)">
                     <div class="bj" v-show="item.isSel"><p></p></div>
@@ -46,6 +46,7 @@
                 <helpCenter v-else-if="rightShow==2"></helpCenter>
                 <member  v-else-if="rightShow==5"></member>
                 <message v-else-if="rightShow==4"></message>
+                <givelist v-else-if="rightShow==6"></givelist>
                 <!-- <detailsItem v-else-if="rightShow==6" @changeNav="changeNav"></detailsItem> -->
             </div>
         </div>
@@ -80,6 +81,18 @@ export default {
             activeIndex:'8',
             rightShow:'',
             navArr:[
+                {
+                    id:'5',
+                    img:require('../../static/image/personal/icon_hyzx@2x.png'),
+                    str:'会员中心',
+                    isSel:false
+                },
+                {
+                    id:'6',
+                    img:require('../../static/image/personal/icon_qdzs@2x.png'),
+                    str:'赠送记录',
+                    isSel:false
+                },
                 {
                     id:'1',
                     img:require('../../static/image/personal/icon_collection@2x.png'),
@@ -152,7 +165,10 @@ export default {
         this.isLogin();
     },
     mounted(){
-        this.windowChange()
+        this.windowChange(document.documentElement.clientHeight);
+        window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
+        }
     },
     methods:{
         ...mapMutations(["windowChange","changeUser","alertTxt"]),
@@ -197,7 +213,7 @@ export default {
         setClockIn(){
             setClockIn().then((res)=>{
                 if(res.data.code==0){
-                    this.$alert('今日签到成功！赠送您1小时会员时长，限当日内使用。','提示',{
+                    this.$alert('今日签到成功！赠送您当晚(09:00-10:00)1小时会员时长，限当晚内使用。','提示',{
                         confirmButtonText:'去使用',
                         customClass:'leftCount',
                         center:true
@@ -321,7 +337,8 @@ export default {
         helpCenter:resolve=>{require(['../components/helpCenter'],resolve)},
         member:resolve=>{require(['../components/member'],resolve)},
         detailsItem:resolve=>{require(['../components/details'],resolve)},
-        message:resolve=>{require(['../components/message'],resolve)}
+        message:resolve=>{require(['../components/message'],resolve)},
+        givelist:resolve=>{require(['../components/givelist'],resolve)}
     },
     computed:mapState(["ops","screenHeight","opsx","arrUser"]),
     watch:{
@@ -505,7 +522,7 @@ export default {
         text-align: center;
         line-height: 40px;
         color: #FF5555;
-        margin: 30px auto 0 auto;
+        margin: 30px auto 20px auto;
         font-size: 18px;
     }
     .personal .leftNav .loginOut:hover{

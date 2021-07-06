@@ -4,6 +4,10 @@
         <vue-scroll :ops="opsx" style="width:100%;height:100%;" v-else>
         <div style="width:80%;max-width:1600px;margin:0 auto">
         <p class="title">个人版会员套餐</p>
+        <div v-if="arrUser.member_in" style="display:flex;align-item:center;justify-content: center;height:50px">
+            <img :src="require('../../static/image/personal/icon_members3@2x.png')" alt="" style="width:40px;height:33.84px;margin-right:10px">
+            <span style="font-size:18px;color:#333">个人版会员期限至：{{`${new Date(arrUser.member_at*1000).getFullYear()}-${setNum(new Date(arrUser.member_at*1000).getMonth()+1)}-${setNum(new Date(arrUser.member_at*1000).getDate())}`}}</span>
+        </div>
         <div class="pubBox">
             <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index"  @click="openPay(item.price,item.day,item.id)" @mouseover="selVip(index)" @mouseout="delVip">
                 <div class="yiZhe">{{item.tag}}</div>
@@ -17,14 +21,18 @@
             </div>
         </div>
         <div class="vipTip" v-if="arrUser.is_enterprise">您当前已经是企业版会员，包含全部个人版权限，请确认是否需要购买或续费之后再操作。</div>
+        <div class="tipText" style="color:#999;font-size:16px;text-align:left;padding:0 50px 0 70px;margin-bottom:20px">
+            《个人版》会员开通须知：
+            <p style="text-indent:40px;margin-top:10px;line-height:30px">尊敬的用户您好，在您注册医维度账号之后，会获赠7天《个人版》vip，除此之外，每天登陆账号打卡，还可获得当晚 (09:00-10:00) 一小时《个人版》vip，我们给予了用户充足的体验时间，因此，充值后不可退款。</p>
+        </div>
         <div class="title">
             <p v-for="(item,index) of navArr" :key="index" @click="selNav(item.id)">
                 {{item.txt}}
-                <b v-show="item.isSel"></b>
+                <!-- <b v-show="item.isSel"></b> -->
             </p>
         </div>
-        <div class="recordBox" :style="`height:${screenHeight-700}px`" ref="recordBox">
-            <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="valueShow&&showTable==1&&tableData1.length>0" @handle-scroll="handleScroll">
+        <div class="recordBox" ref="recordBox">
+            <vue-scroll :ops="ops" style="width:100%;height:300px;" v-show="valueShow&&showTable==1&&tableData1.length>0" @handle-scroll="handleScroll">
                 <el-table :data="tableData1" stripe style="width:100%" :fit="true" :show-header=false  v-loading="loading" element-loading-text="加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.2)">
                     <el-table-column prop="name" label="名称" :width="width1" align='center' class-name="one"></el-table-column>
                     <el-table-column prop="date" label="日期" :width="width1" align='center'></el-table-column>
@@ -36,7 +44,7 @@
             <div class="noHave" v-show="valueShow&&showTable==1&&tableData1.length==0">
                 暂无购买记录，您可以点击上方会员套餐购买VIP
             </div>
-            <vue-scroll :ops="ops" style="width:100%;height:100%;" v-show="valueShow&&showTable==2&&tableData2.length>0">
+            <!-- <vue-scroll :ops="ops" style="width:100%;height:300px" v-show="valueShow&&showTable==2&&tableData2.length>0">
                 <el-table :data="tableData2" stripe style="width: 100%" :show-header=false>
                     <el-table-column prop="name" label="名称" :width="width2" align='center' class-name="one"></el-table-column>
                     <el-table-column prop="date" label="日期" :width="width2" ></el-table-column>
@@ -46,7 +54,7 @@
             </vue-scroll>
             <div class="noHave" v-show="valueShow&&showTable==2&&tableData2.length==0">
                 暂无赠送记录
-            </div>
+            </div> -->
         </div>
         </div>
         </vue-scroll>
@@ -103,7 +111,7 @@ export default {
         return{
             navArr:[
                 {id:1,txt:'购买记录',isSel:true},
-                {id:2,txt:'赠送记录',isSel:false},
+                // {id:2,txt:'赠送记录',isSel:false},
             ],
             showTable:0,
             tableData1:[],
@@ -148,7 +156,7 @@ export default {
         this.isLogin();
     },
     mounted(){
-        this.windowChange();
+        this.windowChange(document.documentElement.clientHeight);
         this.$nextTick(()=>{
             // 获取父元素
             let recordBox=this.$refs.recordBox;
@@ -160,6 +168,7 @@ export default {
         });
         const that = this;
         window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
             return(()=>{
                 this.$nextTick(()=>{
                     // 获取父元素
@@ -395,7 +404,15 @@ export default {
                     }
                 })
             },1000)
-        }  
+        },
+        // 出来个位数
+        setNum(num){
+            if(num<10){
+                return `0${num}`;
+            }else{
+                return num;
+            }
+        }
     },
     destroyed(){
         localStorage.removeItem('showTable');
@@ -658,14 +675,14 @@ export default {
         /* min-height: 320px; */
         padding: 0 50px;
         box-sizing: border-box;
-        margin: 20px auto 0 auto;
+        margin: 20px auto 20px auto;
         position: relative;
     }
     .member .recordBox .noHave{
         width: 100%;
-        height: 200px;
+        height: 100px;
         text-align: center;
-        line-height: 200px;
+        line-height: 100px;
         font-size: 20px;
         color: #333;
     }
@@ -673,6 +690,6 @@ export default {
         padding: 0 20px;
         font-size: 20px;
         color: #FD4344;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
 </style>

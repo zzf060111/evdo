@@ -64,13 +64,15 @@ const mutations={
         localStorage.setItem('searchval',str);
     },
     // 窗口变化
-    windowChange(state){
-        state.screenHeight = document.documentElement.clientHeight;
-        window.onresize = () => {
-            return (() => {
-                state.screenHeight = document.documentElement.clientHeight;
-            })();
-        };
+    windowChange(state,height){
+        // state.screenHeight = document.documentElement.clientHeight;
+        // window.onresize = () => {
+        //     return (() => {
+        //         state.screenHeight = document.documentElement.clientHeight;
+        //         console.log(state.screenHeight)
+        //     })();
+        // };
+        state.screenHeight = height;
     },
     // 公共提示
     alertTxt(state,res){

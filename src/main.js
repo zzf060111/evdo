@@ -31,8 +31,11 @@ Vue.prototype.$loading = Loading.service;
 Vue.prototype.$message = Message;
 Vue.prototype.$alert = MessageBox.alert
 // 分享组件
-import vshare from 'vshare'
-Vue.use(vshare)
+import Share from 'vue-social-share'
+import 'vue-social-share/dist/client.css';
+import '../node_modules/social-share.js/dist/js/social-share.min.js'
+ 
+Vue.use(Share)
 // 动画
 import 'vue2-animate/dist/vue2-animate.min.css'
 // 滚动条样式

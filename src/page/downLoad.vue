@@ -48,7 +48,10 @@ export default {
     },
     store,
     mounted(){
-        this.windowChange();
+        this.windowChange(this.windowChange(document.documentElement.clientHeight));
+        window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
+        }
     },
     methods:{
         ...mapMutations(["windowChange"]),

@@ -1,5 +1,5 @@
 <template>
-    <div class="index" :style="`height:${screenHeight-60}px`">
+    <div class="index" :style="`height:${screenHeight-60}px;max-height:${screenHeight-60}px`">
         <vue-scroll :ops="opsx" style="width:100%;height:100%;">
         <div class="topNav">
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
@@ -207,7 +207,7 @@
             })
         },
         mounted(){
-            this.windowChange();
+            this.windowChange(document.documentElement.clientHeight);
             this.$nextTick(() => {
                 // 获取图片（或外层框）
                 let carouse = this.$refs.carouse;
@@ -256,6 +256,7 @@
             });
             const that = this;
             window.onresize = () => {
+                this.windowChange(document.documentElement.clientHeight);
                 return (() => {
                     this.$nextTick(() => {
                         // 获取图片（或外层框）

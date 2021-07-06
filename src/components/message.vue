@@ -1,17 +1,24 @@
 <template>
     <div class="message" :style="`height:${screenHeight-60}px`">
-        <vue-scroll :ops="ops" style="width:100%;height:780px;" @handle-scroll="handleScroll">
-            <div class="Messitem" v-for="(item,index) of msgArr" :key="index">
-                <div class="top">
-                    <p>{{item.isShow==0?item.notice.title:''}}</p>
-                    <div>
-                        <p v-show="item.status==0">未读</p>
-                        <img :src="item.isShow==0?require('../../static/image/personal/down@2x.png'):require('../../static/image/personal/up@2x.png')" alt="" @click="showMess(index)">
+        <vue-scroll :ops="ops" :style="`width:100%;height:${screenHeight-110}px;`">
+            <div style="width:100%;height:780px;" v-show="msgArr.length>0&&isValue">
+                <vue-scroll :ops="opsx" :style="`width:100%;height:100%;`" @handle-scroll="handleScroll">
+                    <div class="Messitem" v-for="(item,index) of msgArr" :key="index">
+                        <div class="top">
+                            <p>{{item.isShow==0?item.notice.title:''}}</p>
+                            <div>
+                                <p v-show="item.status==0">未读</p>
+                                <img :src="item.isShow==0?require('../../static/image/personal/down@2x.png'):require('../../static/image/personal/up@2x.png')" alt="" @click="showMess(index)">
+                            </div>
+                        </div>
+                        <div class="down" v-show="item.isShow==1">
+                            {{item.notice.content}}
+                        </div>
                     </div>
-                </div>
-                <div class="down" v-show="item.isShow==1">
-                    {{item.notice.content}}
-                </div>
+                </vue-scroll>
+            </div>
+            <div v-show="isValue&&msgArr.length==0" style="font-size:18px;font-weight:bold">
+                暂时没有消息
             </div>
         </vue-scroll>
     </div>
@@ -25,6 +32,7 @@ export default {
         return{
             page:1,
             msgArr:[],
+            isValue:false
         }
     },
     store,
@@ -36,7 +44,10 @@ export default {
         this.getNotice(this.page);
     },
     mounted(){
-        this.windowChange();
+        this.windowChange(document.documentElement.clientHeight);
+        window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
+        }
     },
     methods:{
         ...mapMutations(["windowChange","changeUser","alertTxt"]),
@@ -59,6 +70,7 @@ export default {
             data['limit']=10;
             notice(data).then((res)=>{
                 if(res.data.code==0){
+                    this.isValue=true;
                     if(res.data.data.data.length>0){
                         let arr=this.msgArr.concat(res.data.data.data);
                         // arr.concat(res.data.data.data);
@@ -67,7 +79,7 @@ export default {
                         }
                         this.msgArr=arr;
                     }else{
-                        if(!localStorage.getItem('isloaded')){
+                        if(!localStorage.getItem('isloaded')&&this.msgArr.length>0){
                             this.alertTxt({'msg':'系统信息已经加载完','type':'error'});
                             localStorage.setItem('isloaded','yes');
                         }
@@ -105,11 +117,11 @@ export default {
 </script>
 <style scoped>
     .message{
-        width: 90%;
+        width: 100%;
         max-width: 1400px;
         min-width: 600px;
         margin: 0 auto;
-        padding: 30px 0;
+        padding: 30px 50px;
         box-sizing: border-box;
     }
     .message .Messitem{

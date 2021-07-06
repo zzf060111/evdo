@@ -59,7 +59,7 @@
                                 <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
                             </div>
                         </div>
-                        <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
+                        <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module" @click="lookItem(item.id,item.need_vip)">
                     </div>
                     <div class="txtDown">
                         <h2>{{item.title}}</h2>
@@ -124,7 +124,7 @@ export default {
         this.islogin(data1);
     },
     mounted(){
-        this.windowChange();
+        this.windowChange(document.documentElement.clientHeight);
         this.$nextTick(()=>{
             // 获取父元素
             let publicBox=this.$refs.publicBox;
@@ -139,6 +139,7 @@ export default {
         });
         const that = this;
         window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
             return(()=>{
                 this.$nextTick(()=>{
                     // 获取父元素

@@ -6,15 +6,15 @@
                 <topnav :topIcon="topIcon" :activeIndex="activeIndex"></topnav>
                 </vue-scroll>
             </div>
-            <div class="videoBox" :style="`height:${screenHeight-160}px`">
+            <div class="videoBox" :style="`height:750px`">
                 <img :src="require('../../static/image/fslist/backr.png')" alt="" class="back" @click="backJump">
-                <div class="video" :style="`height:${screenHeight-210}px`">
+                <div class="video" :style="`height:700px`">
                     <img :src="require('../../static/image/fslist/stop.png')" alt="" class="stopIcon" v-if="isStop" @click="playVideoi">
                     <video ref="myVideo" :src="videoObj.video_url" controls :poster="videoObj.thumbnail"></video>
                     <div>
                         <transition name="fade">
                             <div v-if="isfenx">
-                                <vshare :vshareConfig="vshareConfig"></vshare>
+                                <share :config="vshareConfig"></share>
                             </div>
                         </transition>
                         <p @click="fenxiang">
@@ -53,7 +53,9 @@ export default {
             isStop:true,
             isfenx:false,
             vshareConfig:{
-                shareList: ['more','weixin','sqq'],
+                url:window.location.href,
+                title:'医维度',
+                sites: ['qq','wechat'],
             },
             videoObj:"",
             valueShow:false
@@ -61,7 +63,7 @@ export default {
     },
     store,
     beforeCreate(){
-        window._bd_share_main = "";
+        // window._bd_share_main = "";
     },
     created(){
         let data={};
@@ -76,7 +78,10 @@ export default {
         })
     },
     mounted(){
-        this.windowChange();
+        this.windowChange(document.documentElement.clientHeight);
+        window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
+        }
          // 监听视频播放
         this.$refs.myVideo.addEventListener("play", () => {
             this.isStop=false
@@ -101,7 +106,7 @@ export default {
         fenxiang(){
             if(this.isfenx){
                 this.isfenx=false;
-                window._bd_share_main = "";
+                // window._bd_share_main = "";
             }else{
                 this.isfenx=true;
             }
@@ -238,5 +243,13 @@ export default {
         text-indent: 44px;
         box-sizing: border-box;
         line-height: 25px;
+    }
+    #share-qrcode{
+        width: 30px;
+        height: 30px;
+    }
+    #share-qrcode img{
+        width: 100%;
+        height: 100%;
     }
 </style>

@@ -121,7 +121,7 @@ export default {
         this.reqfavorites();
     },
     mounted(){
-        this.windowChange();
+        this.windowChange(document.documentElement.clientHeight);
         this.$nextTick(()=>{
             // 获取父元素
             let pubBox=this.$refs.pubBox;
@@ -136,6 +136,7 @@ export default {
         });
         const that = this;
         window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
             return(()=>{
                 this.$nextTick(()=>{
                     // 获取父元素

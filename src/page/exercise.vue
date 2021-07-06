@@ -32,8 +32,8 @@
                     </el-menu>
                 </vue-scroll>
             </div>
-            <div class="centerBox" ref="centerBox" :style="`padding-left:${centerBoxPl+300}px`">
-                <div class="box">
+            <div class="centerBox">
+                <div class="box" ref="centerBox" :style="`padding-left:${centerBoxPl+50}px`">
                     <div class="item" v-for="(item,index) of itemArr" :key="index" @click="jumpItem(item.id,item.txt)">
                         <img :src="item.icon" alt="">
                         <h3>{{item.txt}}</h3>
@@ -97,14 +97,14 @@ export default {
         this.getFenlei();
     },
     mounted(){
-        this.windowChange();
+        this.windowChange(document.documentElement.clientHeight);
         this.$nextTick(()=>{
             // 获取父元素
             let centerBox=this.$refs.centerBox;
             // 获取宽度
             let wcenterBox = centerBox.getBoundingClientRect().width;
             // 添加左内边距
-            if(wcenterBox<=730){
+            if(wcenterBox<=440){
                 this.centerBoxPl=0
             }else{
                 this.centerBoxPl=(wcenterBox-Math.floor((wcenterBox-50)/340)*340-50)/2;
@@ -112,6 +112,7 @@ export default {
         });
         const that = this;
         window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
             return(()=>{
                 this.$nextTick(()=>{
                     // 获取父元素
@@ -119,7 +120,7 @@ export default {
                     // 获取宽度
                     let wcenterBox = centerBox.getBoundingClientRect().width;
                     // 添加左内边距
-                    if(wcenterBox<=730){
+                    if(wcenterBox<=440){
                         this.centerBoxPl=0
                     }else{
                         this.centerBoxPl=(wcenterBox-Math.floor((wcenterBox-50)/340)*340-50)/2;

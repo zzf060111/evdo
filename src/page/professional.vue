@@ -31,7 +31,7 @@
         </div>
         <div class="leftNav" :style="`height:${screenHeight-110}px`" v-if="leftNav.length>0">
             <vue-scroll :ops="ops" style="width:100%;height:100%;">
-            <el-menu class="left-menu" :default-active="leftIndex" background-color="#F6F6F6" unique-opened @select="changLeftNav">
+            <el-menu class="left-menu" :default-active="leftIndex" background-color="#F6F6F6" unique-opened @select="changLeftNav" @open="openMenu">
                 <el-submenu :index="item.num" v-for="(item,index) of leftNav" :key="index">
                     <template slot="title">
                         <img :src="item.more.thumbnail">
@@ -87,7 +87,7 @@
                                 <img :src="item.is_favorite?require('../../static/image/index/icon_ysc.png'):require('../../static/image/index/icon_sc.png')" alt="">
                             </div>
                         </div>
-                        <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module">
+                        <img :src="require('../../static/image/enterprise/icon_bf@2x.png')" class="module" @click="lookItem(item.id,item.need_vip)">
                     </div>
                     <div class="txtDown">
                         <h2>{{item.title}}</h2>
@@ -154,7 +154,7 @@ export default {
         this.getFenlei(this.twoNavIndex,id);
     },
     mounted(){
-        this.windowChange();
+        this.windowChange(document.documentElement.clientHeight);
         this.$nextTick(()=>{
             // 获取父元素
             let publicBox=this.$refs.publicBox;
@@ -169,6 +169,7 @@ export default {
         });
         const that = this;
         window.onresize=()=>{
+            this.windowChange(document.documentElement.clientHeight);
             return(()=>{
                 this.$nextTick(()=>{
                     // 获取父元素
@@ -256,6 +257,19 @@ export default {
             }
         },
         // 切换左侧导航
+        openMenu(index){
+            this.leftIndex=index+'-'+'1';
+            localStorage.setItem('proLeftnav',index+'-'+'1');
+            let arr=this.leftNav;
+            let obj=this.data;
+            let id1=arr[index-1].id;
+            let id2=arr[index-1].child[0].id;
+            obj.parent_id=id1;
+            obj.category_id=id2;
+            obj.page=1;
+            obj['keywords']='';
+            this.getList(obj);
+        },
         changLeftNav(key,keyPath){
             this.changeSearch('');
             localStorage.setItem('proLeftnav',key);
