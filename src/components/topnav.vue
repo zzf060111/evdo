@@ -1,6 +1,6 @@
 <template>
   	<div class="topnav">
-		<el-menu :default-active="activeIndex" :class="activeIndex=='2'||activeIndex=='3'||activeIndex=='4'?'el-menu-demo':''" mode="horizontal" background-color="#252B43" text-color="#ffffff" active-text-color="#FFD302" @select="routerPath">
+		<el-menu :default-active="activeIndex" :class="activeIndex=='2'||activeIndex=='3'||activeIndex=='4'?'el-menu-demo':''" mode="horizontal" background-color="#3A485D" text-color="#ffffff" active-text-color="#FFD302" @select="routerPath">
 		  	<el-menu-item index="1" :class="activeIndex==1?'isIndex':''">
 				<img :src="topIcon" class="icon">  
 				医维度
@@ -104,10 +104,10 @@
 			</div>
 		</el-dialog>
 		<!-- 提示 -->
-		<el-dialog title="通知" :visible.sync="toastVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="regUser toast" top="13vh" @close="Toastclose()">
+		<el-dialog title="通知" :visible.sync="toastVisible" :append-to-body="true" :close-on-click-modal="false" center custom-class="regUser toast" top="300px" @close="Toastclose()">
 			<div>亲爱的医维度用户您好！</div>
 			<div class="txt">
-				 温馨提示您，版本更新后，取消会员积分充值规则，现可开通个人版会员享更多资源，或加入组织成为企业版用户，享全站查看权限。您之前的会员积分现已转换成超值会员时长，详情可至个人中心查看。如有疑问，请扫描下方二维码，关注“医维度”公众号，咨询客服人员。感谢您的配合！
+      			温馨提示您，当前版本已更新，如有疑问，请扫描下方二维码，关注“医维度”公众号，咨询客服人员。感谢您的配合！
 			</div>
 			<img :src="require('../../static/image/top/pic_ewm@2x.png')" alt="">
 			<p>扫描二维码，关注医维度公众号</p>
@@ -812,7 +812,7 @@ export default {
 	}
 	.toast.el-dialog{
 		width: 380px;
-		height: 588px;
+		height: 480px;
 		border-radius: 10px;
 	}
 	.toast.el-dialog .el-dialog__body{
@@ -908,7 +908,7 @@ export default {
 	.topnav .el-menu-demo>.el-menu-item.isIndex{
 		color: #FFD302 !important;
 		border-bottom-color: transparent;
-		background-color: rgb(97, 101, 118)  !important;
+		background-color:#576376  !important;
 	}
 	.topnav .el-menu>.el-menu-item.isIndex{
 		color: #FFD302 !important;
@@ -933,7 +933,7 @@ export default {
 		font-size: 18px;
 		padding-left: 50px;
         box-sizing: border-box;
-		background-color: #252B43;
+		background-color: #3A485D;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -948,7 +948,7 @@ export default {
 		margin-right: 5px;
 	}
 	.searchBox{
-		width: 480px;
+		width: 410px;
 		height: 35px;
 		border: 1px solid #FFFFFF;
 		border-radius: 5px;
@@ -960,6 +960,7 @@ export default {
 		top:12.5px;
 		right: 230px; */
 		z-index: 1;
+		margin-right: 150px;
 	}
 	.searchBox img{
 		width: 21.41px;
@@ -967,9 +968,9 @@ export default {
 		margin-right: 10px;
 	}
 	.searchBox input{
-		width: 260px;
+		width: 190px;
 		height: 28px;
-		background-color: #252B43;
+		background-color: #3A485D;
 		outline: none;
 		border: none;
 		color: #fff;
@@ -998,18 +999,19 @@ export default {
 		font-size: 14px;
 	}
 	.userBox{
-		width:150px;
+		width:230px;
 		height: 100%;
 		display: flex;
 		align-items: center;
 		color: #fff;
-		/* position: absolute;
+		position: sticky;
 		top:0;
-		right: 50px;
-		z-index: 1; */
+		right: 0;
+		z-index: 1;
 		font-size: 16px;
-		margin-left: 50px;
-		margin-right: 80px;
+		/* margin-left: 50px;
+		margin-right: 80px; */
+		background-color: #3A485D;
 	}
 	.userBox:hover{
 		cursor: pointer;

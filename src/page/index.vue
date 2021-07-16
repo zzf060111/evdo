@@ -15,7 +15,7 @@
         </div>
         <div class="fenleiBox" ref="fenleibox" :style="`padding-left:${fenleiboxPl}px`">
             <div class="flItem" v-for="(item,index) of flTopList" :key="index" @click="jumpMove(item.id)" :style="`margin:40px ${flItemRl}px`">
-                <img :src="item.more?item.more.mobile_thumbnail:item.img" alt="">
+                <img :src="item.thumb?item.thumb:item.img" alt="">
                 <p>{{item.name}}</p>
             </div>
         </div>
@@ -29,13 +29,13 @@
             </div>
         </div>
         <div class="moveList" ref="moveList" :style="`padding-left:${moveBoxPl}px`">
-            <div class="moveNav">
+            <div class="moveNav" :style="`margin-left:${-moveBoxPl}px`">
                 <p :class="moveVal==0?'selected':''" @click="clickMove(0)">推荐</p>
                 <p :class="moveVal==1?'selected':''" @click="clickMove(1)">人气</p>
             </div>
             <div class="moveBox" v-if="itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                    <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
+                    <img :src="require('../../static/image/professional/bg_changyong@2x1.png')" class="bj">
                     <div class="imgTop">
                         <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
                         <div class="iconTop">
@@ -116,7 +116,7 @@
                 <p>方便快捷的在线3D人体解剖平台</p>
             </div>
             <div class="btn">
-                <p :class="arrUser&&!arrUser.is_enterprise?'isSel':''" @click="changeUserIndex(0)">专业版</p>
+                <p :class="arrUser&&!arrUser.is_enterprise?'isSel':''" @click="changeUserIndex(0)">个人版</p>
                 <p :class="arrUser&&arrUser.is_enterprise?'isSel':''" @click="changeUserIndex(1)">企业版</p>
             </div>
         </div>
@@ -245,7 +245,7 @@
                     this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/243)*243)/2;
                 }
                 this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
-                this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
+                this.moveBoxPl=(wmoveList-Math.floor(wmoveList/278)*278)/2;
                 // console.log(this.moveBoxPl);
                 $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                 $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
@@ -295,7 +295,7 @@
                             this.fenleiboxPl=(wfenleibox-Math.floor(wfenleibox/243)*243)/2;
                         }
                         this.otherflBoxPl=(wotherflBox-Math.floor(wotherflBox/220)*220)/2;
-                        this.moveBoxPl=(wmoveList-Math.floor(wmoveList/274)*274)/2;
+                        this.moveBoxPl=(wmoveList-Math.floor(wmoveList/278)*278)/2;
                         $('.boxleft').attr('style',`height:${wboxleft*1.55}px`);
                         $('.boxrightTop1').attr('style',`height:${wboxrightTop1*0.775}px`);
                         $('.boxrightTop2').attr('style',`height:${wboxrightTop2*0.53}px`);
@@ -425,7 +425,15 @@
             },
             // 跳转轮播图
             jumpBanner(){
-                window.location.href=this.bannerArr[this.$refs.carousel.activeIndex].url
+                if(this.bannerArr[this.$refs.carousel.activeIndex].url.indexOf('personal')!=-1){
+                    if(!this.arrUser){
+                         this.$refs.child.jumpLogin();
+                    }else{
+                        window.location.href=this.bannerArr[this.$refs.carousel.activeIndex].url
+                    }
+                }else{
+                    window.location.href=this.bannerArr[this.$refs.carousel.activeIndex].url
+                }
             },
             // 查看详情
             lookItem(id,isVip){
@@ -449,7 +457,14 @@
                         }
                     })
                 }else{
-                    window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
+                    let f=document.createElement('form');
+                    f.style.display='none';
+                    f.action='https://www.evdo.vip/portal/model/view/id/'+id;
+                    f.method='post';
+                    f.innerHTML='<input type="hidden" name="token" value="'+localStorage.getItem('token')+'"/><input type="hidden" name="version" value="'+2.0+'"/>';
+                    document.body.appendChild(f);
+                    f.submit();
+                    f.remove();
                 }
             },
             // 跳转其他
@@ -492,6 +507,9 @@
     }
 </style>
 <style scoped>
+    .index{
+        background-color: #29323F;
+    }
     .carouse{
         width: 75%;
         max-width: 1630px;
@@ -522,14 +540,14 @@
         cursor: pointer;
     }
     .fenleiBox .flItem img{
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
     }
     .fenleiBox p{
-        font-size: 20px;
+        font-size: 18px;
         width: 150px;
         text-align: center;
-        color: #333;
+        color: #fff;
         height: 50px;
         line-height: 50px;
     }
@@ -543,6 +561,7 @@
     }
     .otherflBox h4{
         font-size: 20px;
+        color: #fff;
     }
     .otherflBox .itemBox{
         width: 100%;
@@ -567,7 +586,7 @@
     }
     .otherflBox .itemBox .items p{
         margin-right: 5px;
-        color: #333;
+        color: #fff;
         font-size: 16px;
         font-weight: bold;
     }
@@ -585,16 +604,17 @@
         margin-bottom: 36px;
     }
     .moveList .moveNav p{
-        font-size: 28px;
+        font-size: 20px;
         margin: 0 30px;
         padding-bottom: 5px;
         box-sizing: border-box;
+        color: #fff;
     }
     .moveList .moveNav p:hover{
         cursor: pointer;
     }
     .moveList .moveNav p.selected{
-        border-bottom: 3px solid #6495ED;
+        border-bottom: 3px solid #FFD302;
     }
     .moveList .moveBox{
         width: 100%;
@@ -605,10 +625,12 @@
     .moveList .moveBox .pubItem{
         width: 262px;
         height: 328px;
-        margin:0 12px 12px 0;
+        margin:0 16px 30px 0;
         box-sizing: border-box;
         position: relative;
-        padding: 21px;
+        padding: 11px;
+        /* background-color: #fff; */
+        border-radius: 10px;
     }
     .moveList .moveBox .pubItem .bj{
         width: 100%;
@@ -616,11 +638,11 @@
         position: absolute;
         top: 0;
         left: 0;
-        z-index: -1;
+        z-index: 0;
     }
     .moveList .moveBox .pubItem .imgTop{
-        width: 220px;
-        height: 220px;
+        width: 240px;
+        height: 240px;
         position: relative;
     }
     .moveList .moveBox .pubItem .imgTop>img{
@@ -681,33 +703,37 @@
         margin-top: 10px;
         padding-left: 20px;
         box-sizing: border-box;
+        position: relative;
+        z-index: 1;
     }
     .moveList .moveBox .pubItem .txtDown h2{
         font-size: 16px;
         overflow: hidden;
         text-overflow:ellipsis;
         white-space: nowrap;
+        color: #fff;
     }
     .moveList .moveBox .pubItem .txtDown p{
         font-size: 12px;
         overflow: hidden;
         text-overflow:ellipsis;
         white-space: nowrap;
+        color: #fff;
     }
     .tab{
         width: 100%;
         height: 100px;
-        font-size: 30px;
+        font-size: 20px;
         font-weight: bold;
-        color: #333333;
+        color: #fff;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
     }
     .tab p{
-        width: 50px;
-        height: 6px;
+        width: 40px;
+        height: 4px;
         background-color: #FFD302;
         margin-top: 10px;
     }
@@ -724,16 +750,20 @@
         position: relative;
     }
     .productBox div h2{
-        font-size: 26px;
+        font-size: 20px;
         font-weight: bold;
         color: #fff;
         margin-bottom: 20px;
+        position: relative;
+        z-index: 2;
     }
     .productBox div p{
-        font-size: 18px;
+        font-size: 16px;
         color: #fff;
         line-height: 32px;
         opacity: 0.8;
+        position: relative;
+        z-index: 2;
     }
     .productBox .bj{
         width: 100%;
@@ -741,7 +771,7 @@
         position: absolute;
         top:0;
         left: 0;
-        z-index: -1;
+        z-index: 1;
     }
     .productBox .rd{
         width: 44px;
@@ -815,7 +845,7 @@
     .bottomNav{
         width: 100%;
         height: 282px;
-        background-color: #252B43;
+        background-color: #3A485D;
     }
     .bottomNav .text{
         width: 100%;
@@ -871,7 +901,7 @@
     }
     .bottomTitle .aBox p{
         font-size: 16px;
-        color: #666;
+        color: #999;
         display: inline-block;
         margin: 0 30px;
         font-weight: 400;

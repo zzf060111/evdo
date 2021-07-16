@@ -69,7 +69,7 @@ export default new Router({
       path: '/videoItem',
       name: 'VideoItem',
       component: resolve => require(['@/page/videoItem'], resolve)
-    }
+    },
   ],
   scrollBehavior(to, from, saveTop) { 
     if (saveTop) { 
@@ -77,5 +77,7 @@ export default new Router({
     } else { 
       return { x: 0, y: 0 } 
     } 
-  }
+  },
+  // mode:'history',
+  // base:'/web'
 })

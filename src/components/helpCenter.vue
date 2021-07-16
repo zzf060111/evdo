@@ -4,13 +4,15 @@
         <div class="box">
             <div class="left">
                 <p>我的提问</p>
-                <textarea v-model="myquestionsVal" placeholder="请在此处输入您的问题详情"></textarea>
-                <div class="questionsBtn" @click="playAsk">
-                    提问
+                <div style="display:flex;margin-bottom:40px">
+                    <textarea class="textareaOne" v-model="myquestionsVal"  placeholder="请在此处输入您的问题详情"></textarea>
+                    <div class="questionsBtn" @click="playAsk">
+                        提问
+                    </div>
                 </div>
-                <div class="questionsBox">
-                    <vue-scroll :ops="ops" style="width:100%;height:100%;">
-                        <el-collapse accordion v-if="showValue&&myList.length>0">
+                <div class="questionsBox" v-if="showValue&&myList.length>0">
+                    <vue-scroll :ops="ops" style="width:100%;height:460px;">
+                        <el-collapse accordion>
                             <el-collapse-item v-for="(item,index) of myList" :key="index">
                                 <template slot="title">
                                     <el-button :type="item.is_ask?'danger':'success'">{{item.is_ask?'已回复':'待回复'}}</el-button>  {{item.title}}
@@ -19,12 +21,12 @@
                                     <div v-for="(item1,index1) of item.reply" :key="index1">
                                         <div class="topImg">
                                             <img :src="item1.ask?arrUser.avatar:require('../../static/image/personal/touxiang1@2x.png')" alt="">
-                                            <div><span :style="item1.ask?'color:#EB4847':'color:#34C758'">{{item1.ask?'追问：':'回答：'}}</span>{{item1.content}}</div>
+                                            <div><span :style="item1.ask?'color:#EB4847':'color:#34C758'">{{item1.ask?'追问：':'回答：'}}</span><div style="display: inline-block;word-break:break-all">{{item1.content}}</div></div>
                                         </div>
                                         <div class="time">
                                             <span>{{item1.created_at}}</span>
                                             <div v-if="index1==0&&item.status!=3">
-                                                <span @click="isShowAsk">追问</span>
+                                                <span @click="isShowAsk(item.id)">追问</span>
                                                 <span @click="askendQue(item.id)">结单</span>
                                             </div>
                                             <div v-else-if="index1==0&&item.status==3">
@@ -33,7 +35,7 @@
                                         </div>
                                         <transition name="zoom">
                                             <div class="askBox" v-show="isAginAsk&&index1==0">
-                                                <textarea cols="30" rows="10" v-model="aginAskVal" placeholder="请输入追问内容"></textarea>
+                                                <textarea :class="`textAreaid${item.id}`" v-model="aginAskVal" placeholder="请输入追问内容"></textarea>
                                                 <p @click="playAskreply(item.id,item.reply[0].user_id)">确定</p>
                                             </div>
                                         </transition>
@@ -44,16 +46,25 @@
                                 </div>
                             </el-collapse-item>
                         </el-collapse>
-                        <div v-else class="noList">暂无问题</div>
                     </vue-scroll>
                 </div>
+                <div v-else-if="showValue&&myList.length==0" class="noList">暂无提问</div>
             </div>
             <div class="right" v-if="gfList.length>0">
                 <p>常见问题解答</p>
                 <div class="questionsBox">
                     <vue-scroll :ops="ops" style="width:100%;height:100%;">
                     <el-collapse accordion>
-                        <el-collapse-item :title="item.title" v-for="(item,index) of gfList" :key="index">
+                        <el-collapse-item v-for="(item,index) of gfList" :key="index">
+                            <template slot="title">
+                                <div class="titleBox">
+                                    <div>
+                                        <img :src="require('../../static/image/personal/icon_question@2x.png')" alt="">
+                                        <div>{{'Q'+(index+1)}}</div>
+                                    </div>
+                                    <p>{{item.title}}</p>
+                                </div>
+                            </template>
                             <img :src="require('../../static/image/personal/touxiang1@2x.png')" alt="">
                             <div>
                                 {{item.reply[0].content}}
@@ -90,6 +101,8 @@ export default {
     },
     mounted(){
         this.windowChange(document.documentElement.clientHeight);
+        var textarea=document.querySelector('.textareaOne');
+        this.autoTextarea(textarea);
         window.onresize=()=>{
             this.windowChange(document.documentElement.clientHeight);
         }
@@ -97,8 +110,13 @@ export default {
     methods:{
         ...mapMutations(["windowChange","alertTxt"]),
         // 显示或隐藏追问
-        isShowAsk(){
+        isShowAsk(id){
             this.isAginAsk=!this.isAginAsk;
+            console.log(id,this.isAginAsk)
+            if(this.isAginAsk){
+                let textarea=document.querySelector(`.textAreaid${id}`);
+                this.autoTextarea(textarea);
+            }
         },
         // 获取问答列表
         getList(){
@@ -190,6 +208,61 @@ export default {
                         }
                     }
             })
+        },
+        // textarea高度自适应
+        autoTextarea(elem, extra, maxHeight){
+            extra = extra || 0;
+            var isFirefox = !!document.getBoxObjectFor || 'mozInnerScreenX' in window,
+                isOpera = !!window.opera && !!window.opera.toString().indexOf('Opera'),
+                addEvent = function(type, callback) {
+                    elem.addEventListener ?
+                        elem.addEventListener(type, callback, false) :
+                        elem.attachEvent('on' + type, callback);
+                },
+                getStyle = elem.currentStyle ? function(name) {
+                    var val = elem.currentStyle[name];
+                    if (name === 'height' && val.search(/px/i) !== 1) {
+                        var rect = elem.getBoundingClientRect();
+                        return rect.bottom - rect.top -
+                            parseFloat(getStyle('paddingTop')) -
+                            parseFloat(getStyle('paddingBottom')) + 'px';
+                    };
+                    return val;
+                } : function(name) {
+                    return getComputedStyle(elem, null)[name];
+                },
+                minHeight = parseFloat(getStyle('height'));
+            elem.style.resize = 'none';
+            var change = function() {
+                var scrollTop, height,
+                    padding = 10,
+                    style = elem.style;
+                if (elem._length === elem.value.length) return;
+                elem._length = elem.value.length;
+                if (!isFirefox && !isOpera) {
+                    padding = parseInt(getStyle('paddingTop')) + parseInt(getStyle('paddingBottom'));
+                };
+                scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+                elem.style.height = minHeight + 'px';
+                if (elem.scrollHeight > minHeight) {
+                    if (maxHeight && elem.scrollHeight > maxHeight) {
+                        height = maxHeight - padding;
+                        style.overflowY = 'auto';
+                    } else {
+                        height = elem.scrollHeight - padding;
+                        style.overflowY = 'hidden';
+                    };
+                    style.height = height + extra + 'px';
+                    scrollTop += parseInt(style.height) - elem.currHeight;
+                    document.body.scrollTop = scrollTop;
+                    document.documentElement.scrollTop = scrollTop;
+                    elem.currHeight = parseInt(style.height);
+                };
+            };
+            addEvent('propertychange', change);
+            addEvent('input', change);
+            addEvent('focus', change);
+            change();
         }
     },
     computed:mapState(["ops","opsx","screenHeight","arrUser"])
@@ -203,6 +276,9 @@ export default {
         color: #666;
         line-height: normal;
         text-align: left;
+    }
+    .helpCenter .el-collapse-item.is-active{
+        margin-bottom: 20px;
     }
     .helpCenter .el-collapse-item__header .el-button{
         width: 50px;
@@ -280,18 +356,18 @@ export default {
     }
     .helpCenter .el-collapse-item__content div.askBox p{
         width: 15%;
-        height: 50px;
+        height: 40px;
         background-color: #5CD7AD;
         color: #fff !important;
         text-align: center !important;
-        line-height: 50px;
+        line-height: 40px;
         border-radius: 5px;
-        margin-left: 10px;
+        margin:10px 0 10px 10px !important;
     }
     .helpCenter .el-collapse-item__content div.askBox textarea{
         width: 70% !important;
-        height: 100px !important;
-        padding: 10px !important;
+        /* height: 100px !important; */
+        /* padding: 10px !important; */
     }
     .helpCenter .el-collapse-item__content div.aginAskBox{
         margin:10px 0 0 40px;
@@ -327,7 +403,8 @@ export default {
     .helpCenter .box .left .noList{
         padding-top: 20px;
         box-sizing: border-box;
-        font-size: 18px;
+        font-size: 16px;
+        color:#666;
     }
     .helpCenter .box .right{
         width: 500px;
@@ -339,16 +416,20 @@ export default {
         color: #666;
         margin-bottom: 20px;
     }
-    .helpCenter .box .left textarea{
-        width: 100%;
-        height: 240px;
-        padding: 30px;
-        box-sizing: border-box;
+    .helpCenter .box .left  textarea{
+        display: block;
+        width: 80%;
+        max-width: 670px;
+        font-size: 16px;
+        height: 24px;
+        line-height: 24px;
+        padding: 7px 10px;
+        /* box-sizing: border-box; */
         box-shadow: 1px 3px 10px rgba(0, 0, 0, 0.16);
         border: none;
         outline: none;
-        font-size: 18px;
         color: #333;
+        resize: none;
     }
     .helpCenter .box .left textarea::-webkit-input-placeholder{
         font-size: 16px;
@@ -373,8 +454,9 @@ export default {
         line-height: 40px;
         font-size: 18px;
         color: #fff;
-        float: right;
-        margin: 30px 0;
+        margin-left: 20px;
+        /* float: right; */
+        /* margin: 30px 0; */
     } 
     .helpCenter .box .right .questionsBox{
         width: 100%;
@@ -383,8 +465,42 @@ export default {
     }
     .helpCenter .box .left .questionsBox{
         width: 100%;
-        height: 420px;
+        max-height: 460px;
         background-color: #F1F4F5;
         clear: both;
+    }
+    .titleBox{
+        display: flex;
+        align-items: flex-start;
+    }
+    .titleBox>div{
+        width: 30px;
+        height: 30px;
+        position: relative;
+        margin-right: 20px;
+        padding: 0;
+    }
+    .titleBox>div img{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top:0;
+        left: 0;
+        z-index: 1;
+    }
+    .titleBox>div>div{
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        line-height: 25px;
+        font-size: 12px;
+        color: #fff;
+        position: absolute;
+        top:0;
+        left: 0;
+        z-index: 2;
+    }
+    .titleBox p{
+        width: 400px;
     }
 </style>

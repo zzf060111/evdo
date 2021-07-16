@@ -5,7 +5,7 @@ const service = axios.create({
     // 公共接口--这里注意后面会讲
     baseURL: 'https://www.evdo.vip/api/',
     // 超时时间 单位是ms，这里设置了3s的超时时间
-    timeout: 3 * 1000
+    timeout: 10 * 1000
 })
 // 2.请求拦截器
 var loadingInstance;
@@ -33,6 +33,7 @@ service.interceptors.request.use(
             //config.params = {'token':token} //如果要求携带在参数中
             config.headers.token= token; //如果要求携带在请求头中
         }
+        config.headers["Device-Type"]='web';
         return config
     },
     error => {

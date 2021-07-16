@@ -95,3 +95,11 @@ export function notice(params){
 export function noticeRead(params){
     return http.get(`v1/user/noticeRead`,params)
 }
+// 删除消息
+export function systemNoticeDel(params){
+    return http.get(`v1/user/systemNoticeDel`,params)
+}
+// 获取未读消息条数
+export function newNoticeNum(params){
+    return http.get(`v1/user/newNoticeNum`,params)
+}

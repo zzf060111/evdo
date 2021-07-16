@@ -1,14 +1,21 @@
 <template>
-    <div class="givelist" ref="recordBox" :style="`height:${screenHeight-60}px;min-width:400px`">
+    <div class="givelist" ref="recordBox" :style="`height:${screenHeight-60}px;min-width:500px`">
         <p style="text-align:left;font-size:18px;color:#333;height:78px;line-height:78px;padding-left:50px">赠送记录</p>
         <vue-scroll :ops="ops" :style="`width:100%;height:${screenHeight-110}px;`">
             <div class="recordBox" v-show="valueShow&&tableData.length>0">
                 <vue-scroll :ops="ops" style="width:100%;height:100%">
                     <el-table :data="tableData" style="width:100%" :show-header=false>
-                        <el-table-column prop="name" label="名称" :width="width2" align='center' class-name="one"></el-table-column>
-                        <el-table-column prop="date" label="日期" :width="width2" ></el-table-column>
-                        <el-table-column prop="time" label="时间" :width="width2" align='center'></el-table-column>
-                        <el-table-column prop="type" label="领取状态" :width="width2" align='center' class-name="last"></el-table-column>
+                        <el-table-column prop="name" label="名称" :width="width2" align='center' class-name="one">
+                            <template slot-scope="scope">
+                                <div style="display:flex;align-items:center;justify-content: center;">
+                                    <img style="width:30px;height:30px;margin-right:10px" :src="tableData[scope.$index].time=='一小时'?require('../../static/image/personal/icon_qdzs@2x1.png'):require('../../static/image/personal/icon_zczs@2x.png')" alt="">
+                                    {{tableData[scope.$index].name}}
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="date" label="日期" :width="width3" ></el-table-column>
+                        <el-table-column prop="time" label="时间" :width="width1" align='right'></el-table-column>
+                        <el-table-column prop="type" label="领取状态" :width="width1" align='center' class-name="last"></el-table-column>
                     </el-table>
                 </vue-scroll>
             </div>
@@ -27,7 +34,9 @@ export default {
         return{
             tableData:[],
             valueShow:false,
-            width2:0
+            width1:0,
+            width2:0,
+            width3:0
         }
     },
     store,
@@ -44,7 +53,9 @@ export default {
             // 获取宽度
             let wrecordBox = recordBox.getBoundingClientRect().width;
             // 添加左内边距
-            this.width2=(wrecordBox-100)*0.25;
+            this.width3=(wrecordBox-100)*0.5;
+            this.width2=(wrecordBox-100)*0.24;
+            this.width1=(wrecordBox-100)*0.13;
         });
         const that = this;
         window.onresize=()=>{
@@ -56,7 +67,9 @@ export default {
                     // 获取宽度
                     let wrecordBox = recordBox.getBoundingClientRect().width;
                     // 添加左内边距
-                    this.width2=(wrecordBox-100)*0.25;
+                    this.width3=(wrecordBox-100)*0.5;
+                    this.width2=(wrecordBox-100)*0.24;
+                    this.width1=(wrecordBox-100)*0.13;
                 });
             })()
         }
@@ -84,6 +97,7 @@ export default {
                     if(arr.length>0){
                         let newArr=[];
                         for(let i=0;i<arr.length;i++){
+                            // let img=arr[i].day==0?require('../../static/image/personal/icon_qdzs@2x1.png'):require('../../static/image/personal/icon_zczs@2x.png');
                             let obj={};
                             obj['name']=arr[i].description;
                             obj['date']=this.getDate(arr[i].create_time);

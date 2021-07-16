@@ -25,7 +25,7 @@
                                     <el-menu-item :index="item2.num" v-for="(item2,index2) of item.childrens" :key="index2">{{item2.name}} <b>|</b> 共{{item2.nums}}题</el-menu-item>
                                 </el-menu-item-group>
                             </el-submenu>
-                            <el-menu-item :index="item.num" v-else>
+                            <el-menu-item :index="item.num" v-else class="outherItem">
                                 <span slot="title">{{item.name}} <b>|</b> 共{{item.nums}}题</span>
                             </el-menu-item>
                         </div>
@@ -353,6 +353,15 @@ export default {
         border-radius: 10px;
         color: #333 !important;
         font-weight: bold;
+    }
+    .left-menu .outherItem.el-menu-item.is-active{
+        background-color: #fff !important;
+        width: 100% !important;
+        border-radius: 0;
+    }
+    .left-menu .outherItem.el-menu-item{
+        padding-left:20px !important;
+        width: 100% !important;
     }
     .left-menu  .el-menu-item:hover{
         border-radius: 10px;

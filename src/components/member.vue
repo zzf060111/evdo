@@ -4,23 +4,23 @@
         <vue-scroll :ops="opsx" style="width:100%;height:100%;" v-else>
         <div style="width:80%;max-width:1600px;margin:0 auto">
         <p class="title">个人版会员套餐</p>
-        <div v-if="arrUser.member_in" style="display:flex;align-item:center;justify-content: center;height:50px">
-            <img :src="require('../../static/image/personal/icon_members3@2x.png')" alt="" style="width:40px;height:33.84px;margin-right:10px">
-            <span style="font-size:18px;color:#333">个人版会员期限至：{{`${new Date(arrUser.member_at*1000).getFullYear()}-${setNum(new Date(arrUser.member_at*1000).getMonth()+1)}-${setNum(new Date(arrUser.member_at*1000).getDate())}`}}</span>
+        <div v-if="arrUser.member_in" ref="vipBox" :style="`max-width:935px;height:${wvipBox*0.1}px;margin:0 auto 40px auto;position:relative;line-height:${wvipBox*0.1}px;text-align:left;padding-left:50px;box-sizing:border-box`">
+            <img :src="require('../../static/image/personal/pic_zxhy@2x.png')" alt="" style="width:100%;height:100%;position:absolute;top:0;left:0;z-index:-1">
+            <span style="font-size:18px;color:#7C4312">个人版会员期限至：{{`${new Date(arrUser.member_at*1000).getFullYear()}-${setNum(new Date(arrUser.member_at*1000).getMonth()+1)}-${setNum(new Date(arrUser.member_at*1000).getDate())}`}}</span>
         </div>
+        <div class="vipTip" v-if="arrUser.is_enterprise">温馨提示：您当前已经是企业版会员，包含全部个人版权限，请确认是否需要购买或续费之后再操作。</div>
         <div class="pubBox">
-            <div :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index"  @click="openPay(item.price,item.day,item.id)" @mouseover="selVip(index)" @mouseout="delVip">
+            <div ref="pubitem" :style="`height:${pubitemHeight}px;padding-top: ${pubitemHeight*0.12}px;`" :class="selIndex==index?'pubitem selected':'pubitem'" v-for="(item,index) of vipList" :key="index"  @click="openPay(item.price,item.day,item.id)" @mouseover="selVip(index)" @mouseout="delVip">
                 <div class="yiZhe">{{item.tag}}</div>
-                <h2>{{item.description}}</h2>
-                <h3>{{`¥${parseFloat(item.price).toFixed(1)}`}}<span>{{item.day==365?'/年':item.day==90?'/季':'/月'}}</span></h3>
-                <div class="oldprice">
+                <h2 :style="`font-size: ${pubitemWidth*0.12}px;`">{{item.description}}</h2>
+                <h3 :style="`margin-top: ${pubitemWidth*0.12}px;font-size: ${pubitemWidth*0.11}px;`">{{`¥${parseFloat(item.price).toFixed(1)}`}}<span>{{item.day==365?'/年':item.day==90?'/季':'/月'}}</span></h3>
+                <div class="oldprice" :style="`margin:${pubitemWidth*0.12}px auto;font-size: ${pubitemWidth*0.08}px;`">
                     ¥{{parseInt(item.original_price)}}
-                    <p></p>
+                    <p :style="`top:${pubitemWidth*0.055}px`"></p>
                 </div>
-                <div class="btn">{{arrUser.member_in?'续费':'开通'}}</div>
+                <div class="btn" :style="`width:${pubitemWidth*0.57}px;height:${pubitemWidth*0.17}px;border-radius: ${pubitemWidth*0.17/2}px;line-height: ${pubitemWidth*0.17}px;font-size: ${pubitemWidth*0.09}px;`">{{arrUser.member_in?'续费':'开通'}}</div>
             </div>
         </div>
-        <div class="vipTip" v-if="arrUser.is_enterprise">您当前已经是企业版会员，包含全部个人版权限，请确认是否需要购买或续费之后再操作。</div>
         <div class="tipText" style="color:#999;font-size:16px;text-align:left;padding:0 50px 0 70px;margin-bottom:20px">
             《个人版》会员开通须知：
             <p style="text-indent:40px;margin-top:10px;line-height:30px">尊敬的用户您好，在您注册医维度账号之后，会获赠7天《个人版》vip，除此之外，每天登陆账号打卡，还可获得当晚 (09:00-10:00) 一小时《个人版》vip，我们给予了用户充足的体验时间，因此，充值后不可退款。</p>
@@ -131,6 +131,9 @@ export default {
             valueShow:false,
             width1:0,
             width2:0,
+            pubitemHeight:0,
+            pubitemWidth:0,
+            wvipBox:0
         }
     },
     store,
@@ -182,6 +185,9 @@ export default {
             })()
         }
     },
+    updated(){
+        
+    },
     methods:{
         ...mapMutations(["windowChange","changeUser","alertTxt"]),
         selNav(id){
@@ -213,6 +219,34 @@ export default {
             getVipInfo().then((res)=>{
                 if(res.data.code==0){
                     this.vipList=res.data.data.list;
+                    this.$nextTick(()=>{
+                        let pubitem=this.$refs.pubitem[0];
+                        let wpubitem=pubitem.getBoundingClientRect().width;
+                        this.pubitemHeight=wpubitem*1.23;
+                        this.pubitemWidth=wpubitem;
+                        if(this.arrUser.member_in){
+                            let vipBox=this.$refs.vipBox;
+                            let wvipBox=vipBox.getBoundingClientRect().width;
+                            this.wvipBox=wvipBox;
+                        }
+                    });
+                    const that = this;
+                    window.onresize=()=>{
+                        this.windowChange(document.documentElement.clientHeight);
+                        return(()=>{
+                            this.$nextTick(()=>{
+                                let pubitem=this.$refs.pubitem[0];
+                                let wpubitem=pubitem.getBoundingClientRect().width;
+                                this.pubitemHeight=wpubitem*1.23;
+                                this.pubitemWidth=wpubitem;
+                                if(this.arrUser.member_in){
+                                    let vipBox=this.$refs.vipBox;
+                                    let wvipBox=vipBox.getBoundingClientRect().width;
+                                    this.wvipBox=wvipBox;
+                                }
+                            });
+                        })()
+                    }
                 }else if(res.data.code==-200){
                     this.alertTxt({msg:res.data.msg,type:'error'});
                     localStorage.removeItem('token');
@@ -551,7 +585,7 @@ export default {
         padding-left: 70px;
         box-sizing: border-box;
         display: flex;
-        margin-bottom: 40px;
+        margin-bottom: 10px;
     }
     .member .title p:first-child{
         margin-right: 70px;
@@ -576,21 +610,24 @@ export default {
     }
     .member .pubBox{
         width: 100%;
-        min-height: 400px;
+        min-height: 370px;
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-wrap: wrap;
+        /* flex-wrap: wrap; */
     }
     .member .pubBox .pubitem{
-        width: 249px;
-        height: 306px;
+        width:30%;
+        max-width: 249px;
+        max-height: 306px;
         border-radius: 10px;
         position: relative;
-        padding-top: 30px;
         box-sizing: border-box;
         border: 1px solid #DEAE81;
-        margin:0 50px 30px 50px;
+        /* margin:0 50px 30px 50px; */
+    }
+    .member .pubBox .pubitem:nth-child(2){
+        margin: 0 50px;
     }
     .member .pubBox .pubitem:hover{
         cursor: pointer;
@@ -611,12 +648,9 @@ export default {
     }
     .member .pubBox .pubitem h2{
         color: #333;
-        font-size: 30px;
     }
     .member .pubBox .pubitem h3{
         color: #D18B55;
-        font-size: 27px;
-        margin-top: 30px;
     }
     .member .pubBox .pubitem h3 span{
         font-size: 15px;
@@ -624,8 +658,6 @@ export default {
     }
     .member .pubBox .pubitem .oldprice{
         color: #aaa;
-        font-size: 20px;
-        margin: 30px auto;
         width: 50px;
         position: relative;
     }
@@ -634,18 +666,17 @@ export default {
         height: 2px;
         background-color: #aaa;
         position: absolute;
-        top:12px;
         left: 0;
         z-index: 1;
     }
     .member .pubBox .pubitem .btn{
-        width: 143px;
+        /* width: 143px;
         height: 44px;
-        border-radius: 22px;
+        border-radius: 22px; */
         background-color: #DEAE81;
         text-align: center;
-        line-height: 44px;
-        font-size: 23px;
+        /* line-height: 44px;
+        font-size: 23px; */
         color: #fff;
         margin:0 auto;
     }
@@ -683,13 +714,13 @@ export default {
         height: 100px;
         text-align: center;
         line-height: 100px;
-        font-size: 20px;
+        font-size: 18px;
         color: #333;
     }
     .member .vipTip{
-        padding: 0 20px;
-        font-size: 20px;
-        color: #FD4344;
+        padding: 0 50px 0 70px;
+        font-size: 16px;
+        color: #999;
         margin-bottom: 20px;
     }
 </style>

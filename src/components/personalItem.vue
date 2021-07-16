@@ -66,7 +66,7 @@
                 </div>
                 <!-- <div class="loginOut" @click="logOut">退出登陆</div> -->
             </div>
-            <div class="leftBox">
+            <!-- <div class="leftBox">
                 <p class="title">组织信息</p>
                 <div v-if="arrUser.is_enterprise&&arrUser.user_status==1">
                     <div class="formBox">
@@ -97,7 +97,7 @@
                     <div class="addBtn" @click="addJoin">
                         加入组织
                     </div>
-                </div>
+                </div> -->
                 <!-- <div v-else-if="!arrUser.is_enterprise&&arrUser.user_status==3">
                     <div class="formBox">
                         <el-form :model="detailform" label-width="100px"  ref="detailform">
@@ -113,7 +113,7 @@
                         正在审核中
                     </div>
                 </div> -->
-            </div>
+            <!-- </div> -->
         </div>
         </vue-scroll>
         <!-- 修改昵称 -->
@@ -520,33 +520,33 @@ export default {
             })
         },
         // 退出组织
-        quitGroup(){
-            this.$alert('确定退出组织','退出组织',{
-                confirmButtonText:'确定',
-                center:true,
-                customClass:'errorAlert',
-                callback:(action)=>{
-                    if(action=='confirm'){
-                        quitGroup().then((res)=>{
-                            if(res.data.code==0){
-                                this.alertTxt({msg:res.data.msg,type:'success'});
-                                // this.$emit('changeNav',2);
-                                this.isLogin();
-                            }else if(res.data.code==-200){
-                                this.alertTxt({msg:res.data.msg,type:'error'});
-                                this.$router.push('/');
-                            }else{
-                                this.alertTxt({msg:res.data.msg,type:'error'});
-                            }
-                        })
-                    }
-                }
-            })
-        },
+        // quitGroup(){
+        //     this.$alert('确定退出组织','退出组织',{
+        //         confirmButtonText:'确定',
+        //         center:true,
+        //         customClass:'errorAlert',
+        //         callback:(action)=>{
+        //             if(action=='confirm'){
+        //                 quitGroup().then((res)=>{
+        //                     if(res.data.code==0){
+        //                         this.alertTxt({msg:res.data.msg,type:'success'});
+        //                         // this.$emit('changeNav',2);
+        //                         this.isLogin();
+        //                     }else if(res.data.code==-200){
+        //                         this.alertTxt({msg:res.data.msg,type:'error'});
+        //                         this.$router.push('/');
+        //                     }else{
+        //                         this.alertTxt({msg:res.data.msg,type:'error'});
+        //                     }
+        //                 })
+        //             }
+        //         }
+        //     })
+        // },
         // 加入组织
-        addJoin(){
-            this.$parent.jumpJoin();
-        }
+        // addJoin(){
+        //     this.$parent.jumpJoin();
+        // }
     },
     computed:mapState(["opsx","forgetStr","forgetReg","arrUser","screenHeight"])
 }
@@ -621,13 +621,14 @@ export default {
         align-items: center;
     } */
     .personalItem .rightBox,.personalItem .leftBox{
-        width:45%;
-        max-width: 740px;
+        /* width:45%; */
+        width: 100%;
+        /* max-width: 740px; */
         min-width: 520px;
         height: 930px;  
-        border: 1px solid #D1D1D1;
-        margin-top: 30px;
-        padding-right: 10px;
+        /* border: 1px solid #D1D1D1; */
+        /* margin-top: 30px;
+        padding-right: 10px; */
         box-sizing: border-box;
     }
     .personalItem .rightBox,.personalItem .leftBox{
@@ -704,9 +705,11 @@ export default {
     .personalItem .rightBox .bindBox{
         /* width: 70%; */
         max-width: 520px;
-        min-width: 370px;
+        /* min-width: 370px; */
         text-align: left;
-        margin-left:140px;
+        margin: 0 auto;
+        /* margin-left:140px; */
+        padding-left: 100px;
     }
     .personalItem .rightBox .bindBox .item{
         margin-bottom: 30px;

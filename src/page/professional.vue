@@ -14,7 +14,7 @@
                 </el-menu-item>
             </el-menu>
             </vue-scroll> -->
-            <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#616576" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
+            <el-menu :default-active="twoNavIndex" class="el-menu-demo" mode="horizontal" background-color="#576376" text-color="#ffffff" active-text-color="#FFD302" @select="changeNav">
                 <el-menu-item index="1"> 
                     基础医学
                 </el-menu-item>
@@ -31,14 +31,16 @@
         </div>
         <div class="leftNav" :style="`height:${screenHeight-110}px`" v-if="leftNav.length>0">
             <vue-scroll :ops="ops" style="width:100%;height:100%;">
-            <el-menu class="left-menu" :default-active="leftIndex" background-color="#F6F6F6" unique-opened @select="changLeftNav" @open="openMenu">
+            <el-menu class="left-menu" :default-active="leftIndex" background-color="#3A485D" text-color="#ffffff" unique-opened @select="changLeftNav" @open="openMenu">
                 <el-submenu :index="item.num" v-for="(item,index) of leftNav" :key="index">
                     <template slot="title">
                         <img :src="item.more.thumbnail">
                         <span>{{item.name}} <b>|</b> {{item.auth_count}}</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item :index="item2.num" v-for="(item2,index2) of item.child" :key="index2">{{item2.name}} <b>|</b> {{item2.auth_child_count}}</el-menu-item>
+                        <el-menu-item :index="item2.num" v-for="(item2,index2) of item.child" :key="index2">
+                            <span style="display: inline-block;max-width:120px;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">{{item2.name}}</span> <b>|</b> <span>{{item2.auth_child_count}}</span>
+                        </el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>
@@ -47,7 +49,7 @@
         <div class="parentBox" ref="publicBox" :style="`padding-left:${publicBoxPl+330}px`">
             <div class="publicBox" v-if="twoNavIndex==1&&itemArr.length>0"> 
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                    <img v-lazy="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
+                    <img :src="require('../../static/image/professional/bg_changyong@2x1.png')" class="bj">
                     <div class="imgTop">
                         <img v-lazy="item.thumbnail"  @click="lookItem(item.id,item.need_vip)">
                         <div class="iconTop">
@@ -73,7 +75,7 @@
             </div>
             <div class="publicBox boxyxsp" v-if="twoNavIndex==2&&itemArr.length>0">
                 <div class="pubItem" v-for="(item,index) of itemArr" :key="index">
-                    <img v-lazy="require('../../static/image/enterprise/bg_yxsp@2x.png')" class="bj">
+                    <img :src="require('../../static/image/professional/bg_yxsp@2x.png')" class="bj">
                     <div class="imgTop">
                         <img v-lazy="item.thumbnail" @click="lookItem(item.id,item.need_vip)">
                         <div class="iconTop">
@@ -258,17 +260,23 @@ export default {
         },
         // 切换左侧导航
         openMenu(index){
-            this.leftIndex=index+'-'+'1';
-            localStorage.setItem('proLeftnav',index+'-'+'1');
             let arr=this.leftNav;
             let obj=this.data;
-            let id1=arr[index-1].id;
-            let id2=arr[index-1].child[0].id;
-            obj.parent_id=id1;
-            obj.category_id=id2;
-            obj.page=1;
-            obj['keywords']='';
-            this.getList(obj);
+            let id1;
+            let id2;
+            if(localStorage.getItem('proLeftnav')&&index==localStorage.getItem('proLeftnav').split('-')[0]){
+                
+            }else{
+                this.leftIndex=index+'-'+'1';
+                localStorage.setItem('proLeftnav',index+'-'+'1');
+                id1=arr[index-1].id;
+                id2=arr[index-1].child[0].id;
+                obj.parent_id=id1;
+                obj.category_id=id2;
+                obj.page=1;
+                obj['keywords']='';
+                this.getList(obj);
+            }
         },
         changLeftNav(key,keyPath){
             this.changeSearch('');
@@ -311,9 +319,9 @@ export default {
                     // window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
                     let f=document.createElement('form');
                     f.style.display='none';
-                    f.action='https://www.evdo.vip/portal/model/view/';
+                    f.action='https://www.evdo.vip/portal/model/view/id/'+id;
                     f.method='post';
-                    f.innerHTML='<input type="hidden" name="id" value="'+id+'"/><input type="hidden" name="token" value="'+localStorage.getItem('token')+'"/><input type="hidden" name="version" value="'+2.0+'"/>';
+                    f.innerHTML='<input type="hidden" name="token" value="'+localStorage.getItem('token')+'"/><input type="hidden" name="version" value="'+2.0+'"/>';
                     document.body.appendChild(f);
                     f.submit();
                     f.remove();
@@ -524,6 +532,9 @@ export default {
 }
 </script>
 <style>
+    .el-menu{
+        border-right: none !important;
+    }
     .professional .twoNav .el-menu-demo{
         height: 100%;
         display: flex;
@@ -545,8 +556,10 @@ export default {
         align-items: center;
         font-size: 16px;
     }
-    .left-menu .el-submenu.is-opened .el-submenu__title,.left-menu .el-submenu.is-opened .el-menu,.left-menu .el-submenu.is-opened .el-menu .el-menu-item{
-        background-color: #fff !important;
+    .professional .left-menu .el-submenu.is-opened .el-submenu__title,.professional .left-menu .el-submenu.is-opened .el-menu,.professional .left-menu .el-submenu.is-opened .el-menu .el-menu-item{
+        background-color: #576376 !important;
+    }
+    .left-menu .el-submenu.is-opened .el-submenu__title,.left-menu .el-submenu.is-opened .el-submenu__title:hover{
         border-radius: 0;
     }
     .left-menu .el-submenu__title img{
@@ -568,19 +581,24 @@ export default {
         font-weight: bold;
     }
     .left-menu .el-menu-item{
-        width: 90%;
+        width: 152px;
+        /* max-width: 250px; */
+        /* display: inline-block; */
         height: 40px;
-        margin:0 auto;
+        margin:10px 0 10px 40px;
         overflow: hidden;    
         text-overflow:ellipsis;    
         white-space: nowrap;
         text-align: left;
         line-height: 40px;
+        box-sizing: border-box;
+        padding: 0 20px !important;
+        box-sizing: border-box;
     }
-    .left-menu .el-submenu.is-active .el-menu-item.is-active{
+    .professional .left-menu .el-submenu.is-active .el-menu-item.is-active{
         background-color: #FFD302 !important;
         border-radius: 10px;
-        color: #333 !important;
+        color: #252B43 !important;
         font-weight: bold;
     }
     .left-menu .el-submenu .el-menu .el-menu-item,.left-menu .el-submenu .el-submenu__title{
@@ -588,18 +606,24 @@ export default {
     }
     .left-menu .el-submenu .el-submenu__title:hover,.left-menu .el-submenu .el-menu .el-menu-item:hover{
         border-radius: 10px;
-        background-color: #f5f5f5 !important;
+        background-color: #3A485D !important;
+    }
+    .professional .pageBox .el-pagination__total,.professional .pageBox .el-pagination__jump{
+        color: #fff;
     }
 </style>
 <style scoped>
     .professional{
         padding-top: 50px;
         box-sizing: border-box;
+        background-color: #29323F;
+        position: relative;
+        z-index: 0;
     }
     .twoNav{
         width: 100%;
         height: 50px;
-        background-color: #616576;
+        background-color: #576376;
         font-size: 16px;
         padding-left: 50px;
         box-sizing: border-box;
@@ -612,7 +636,7 @@ export default {
         padding-top: 20px;
         box-sizing: border-box;
         width: 300px;
-        background-color: #F6F6F6;
+        background-color: #3A485D;
         overflow-y: auto;
         position: fixed;
         top:110px;
@@ -631,18 +655,18 @@ export default {
     .publicBox{
         width: 100%;
         min-height: 200px;
-        padding:10px 0 0 10px;
+        padding:30px 0 0 10px;
         box-sizing: border-box;
         display: flex;
         flex-wrap: wrap;
     }
     .publicBox .pubItem{
-        width: 282px;
-        height: 348px;
-        margin:0 10px 10px 0;
+        width: 264px;
+        height: 330px;
+        margin:0 16px 30px 0;
         box-sizing: border-box;
         position: relative;
-        padding: 21px;
+        padding: 11px;
     }
     .publicBox .pubItem .bj{
         width: 100%;
@@ -712,7 +736,7 @@ export default {
         color: #333;
         text-align: left;
         margin-top: 10px;
-        padding-left: 20px;
+        padding:0 20px;
         box-sizing: border-box;
     }
     .publicBox .pubItem .txtDown h2{
@@ -720,12 +744,14 @@ export default {
         overflow: hidden;
         text-overflow:ellipsis;
         white-space: nowrap;
+        color: #fff;
     }
     .publicBox .pubItem .txtDown p{
         font-size: 12px;
         overflow: hidden;
         text-overflow:ellipsis;
         white-space: nowrap;
+        color: #fff;
     }
     .pageBox{
         width: 100%;
@@ -738,6 +764,8 @@ export default {
     }
     .publicBox.boxyxsp .pubItem .imgTop{
         height: 160px;
+        padding: 5px;
+        box-sizing: border-box;
     }
     .publicBox.boxyxsp .pubItem .imgTop .module{
         width: 36px;

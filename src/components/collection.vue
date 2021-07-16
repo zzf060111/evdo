@@ -28,7 +28,7 @@
             <vue-scroll :ops="opsx" style="width:100%;height:100%;">
                 <div class="box boxJcyx" v-if="showValue&&twoNavIndex==1&&arr.length>0">
                     <div class="pubItem" v-for="(item,index) of arr" :key="index">
-                        <img :src="require('../../static/image/professional/bg_changyong@2x.png')" class="bj">
+                        <img :src="require('../../static/image/personal/bg_scmx@2x.png')" class="bj">
                         <div class="imgTop">
                             <img :src="item.thumbnail"  @click="lookItem(item.object_id,item.need_vip)">
                             <div class="iconTop">
@@ -187,9 +187,9 @@ export default {
                             // window.location.href='https://www.evdo.vip/portal/model/view/id/'+id+'/token/'+localStorage.getItem('token')+'/version/2.0';
                             let f=document.createElement('form');
                             f.style.display='none';
-                            f.action='https://www.evdo.vip/portal/model/view/';
+                            f.action='https://www.evdo.vip/portal/model/view/id/'+id;
                             f.method='post';
-                            f.innerHTML='<input type="hidden" name="id" value="'+id+'"/><input type="hidden" name="token" value="'+localStorage.getItem('token')+'"/><input type="hidden" name="version" value="'+2.0+'"/>';
+                            f.innerHTML='<input type="hidden" name="token" value="'+localStorage.getItem('token')+'"/><input type="hidden" name="version" value="'+2.0+'"/>';
                             document.body.appendChild(f);
                             f.submit();
                             f.remove();

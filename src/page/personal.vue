@@ -20,9 +20,11 @@
                 <p><img :src="require('../../static/image/personal/icon_members3@2x.png')" v-if="arrUser.is_enterprise"> <span :class="arrUser.is_enterprise?'':'changWidth'">{{arrUser.is_enterprise?arrUser.organization+'-'+arrUser.class:'加入企业用户组，共享全站权限'}}</span></p>
                 <div class="btn" @click="jumpJoin">{{btnTxt1}}</div>
             </div> -->
-            <div class="academy" v-if="arrUser.is_enterprise">
-                <img :src="require('../../static/image/personal/icon_qiye_selected.png')" alt="">
-                <p>{{arrUser.organization}}</p>
+            <div class="academy">
+                <div @click="jumpJoin(arrUser.is_enterprise)">
+                    <img :src="require('../../static/image/personal/qiyeban@2x.png')" alt="">
+                    {{arrUser.is_enterprise?arrUser.organization:'加入组织'}}
+                </div>
             </div>
             <!-- <div class="cardBox card2">
                 <img :src="require('../../static/image/personal/bg_members@2x.png')" class="bj">
@@ -34,6 +36,7 @@
                     <div class="bj" v-show="item.isSel"><p></p></div>
                     <img :src="item.img">
                     <p>{{item.str}}</p>
+                    <p class="tips" v-if="item.str=='系统消息'&&noRead>0">{{noRead}}</p>
                 </div>
             </div>
             <div class="loginOut" @click="logOut">退出登陆</div>
@@ -45,9 +48,9 @@
                 <collection v-else-if="rightShow==1"></collection>
                 <helpCenter v-else-if="rightShow==2"></helpCenter>
                 <member  v-else-if="rightShow==5"></member>
-                <message v-else-if="rightShow==4"></message>
+                <message v-else-if="rightShow==4" @getNoread="getNoread"></message>
                 <givelist v-else-if="rightShow==6"></givelist>
-                <!-- <detailsItem v-else-if="rightShow==6" @changeNav="changeNav"></detailsItem> -->
+                <detailsItem v-else-if="rightShow==7" @changeNav="changeNav"></detailsItem>
             </div>
         </div>
         <!-- 加入组织 -->
@@ -73,7 +76,7 @@
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex'
 import topnav from '../components/topnav'
-import {logout,info,setClockIn,joinReq} from '../services/api/personal'
+import {logout,info,setClockIn,joinReq,newNoticeNum} from '../services/api/personal'
 export default {
     data(){
         return{
@@ -141,7 +144,8 @@ export default {
                 code:[
                     { required: true, message: '请输入邀请码', trigger: 'blur' },
                 ]
-            }
+            },
+            noRead:0
         }
     },
     store,
@@ -151,7 +155,7 @@ export default {
             this.rightShow=this.$route.params.rShow;
             localStorage.setItem('rightShow',this.$route.params.rShow);
         }else{
-            this.rightShow=localStorage.getItem('rightShow')?localStorage.getItem('rightShow'):'3';
+            this.rightShow=localStorage.getItem('rightShow')?localStorage.getItem('rightShow'):'5';
         }
         let arr=this.navArr;
         for(let i=0;i<arr.length;i++){
@@ -163,6 +167,8 @@ export default {
         }
         // 获取用户信息判断用户是否登录
         this.isLogin();
+        // 获取未读消息
+        this.getNoread();
     },
     mounted(){
         this.windowChange(document.documentElement.clientHeight);
@@ -195,6 +201,8 @@ export default {
                             }
                         }
                         this.navArr=arr;
+                        // 获取未读消息
+                        this.getNoread();
                     }
                 })
             // }
@@ -230,24 +238,36 @@ export default {
             })
         },
         // 加入组织
-        // jumpJoin(){
-        //     if(this.btnTxt1=='加入组织'){
-        //         this.joinIn=true;
-        //     }else if(this.btnTxt1=='审核中'){
-        //         this.isLogin();
-        //     }else if(this.btnTxt1=="查看详情"){
-        //         this.rightShow='6';
-        //         localStorage.setItem('rightShow','6');
-        //         let arr=this.navArr;
-        //         for(let i=0;i<arr.length;i++){
-        //             arr[i].isSel=false;
-        //         }
-        //         this.navArr=arr;
-        //     }
-        // },
-        jumpJoin(){
-            this.joinIn=true;
+        jumpJoin(isVip){
+            // if(this.btnTxt1=='加入组织'){
+            //     this.joinIn=true;
+            // }else if(this.btnTxt1=='审核中'){
+            //     this.isLogin();
+            // }else if(this.btnTxt1=="查看详情"){
+            //     this.rightShow='6';
+            //     localStorage.setItem('rightShow','6');
+            //     let arr=this.navArr;
+            //     for(let i=0;i<arr.length;i++){
+            //         arr[i].isSel=false;
+            //     }
+            //     this.navArr=arr;
+            // }
+            console.log(isVip)
+            if(isVip){
+                this.rightShow='7';
+                localStorage.setItem('rightShow','7');
+                let arr=this.navArr;
+                for(let i=0;i<arr.length;i++){
+                    arr[i].isSel=false;
+                }
+                this.navArr=arr;
+            }else{
+                this.joinIn=true;
+            }
         },
+        // jumpJoin(){
+        //     this.joinIn=true;
+        // },
         joinInclick(formName){
              this.$refs[formName].validate((valid)=>{
                 if(valid){
@@ -322,6 +342,14 @@ export default {
                 }
             })
         },
+        // 获取未读消息
+        getNoread(){
+            newNoticeNum().then((res)=>{
+                if(res.data.code==0){
+                    this.noRead=res.data.data;
+                }
+            })
+        }
     },
     beforeRouteLeave(to, form, next){
         next();
@@ -417,18 +445,35 @@ export default {
     }
     .personal .leftNav .academy{
         width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         margin-bottom: 27px;
         padding: 0 30px;
         box-sizing: border-box;
     }
-    .personal .leftNav .academy p{
+    .personal .leftNav .academy:hover{
+        cursor: pointer;
+    }
+    .personal .leftNav .academy>div{
+        max-width: 270px;
+        display:inline-block;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        padding: 0 20px;
+        box-sizing: border-box;
+        background: linear-gradient(132deg, #F5DABF 0%, #DEBEA5 51%, #F5DFC7 100%);
+        border-radius: 20px;
+        margin: 0 auto;
         font-size: 16px;
-        color: #5E81F4;
-        margin-left: 5px;
-        text-align: left;
+        color: #41290D;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+    .personal .leftNav .academy img{
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+        margin-top:-3px;
     }
     .personal .leftNav .cardBox{
         width: 100%;
@@ -495,8 +540,22 @@ export default {
         justify-content: center;
         align-items: center;
         position: relative;
-        font-size: 20px;
+        font-size: 18px;
         color: #333;
+    }
+    .personal .leftNav .navBox .navItem .tips{
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background-color: #ff0000;
+        text-align: center;
+        line-height: 20px;
+        color: #fff;
+        font-size: 10px;
+        position: absolute;
+        left:90px;
+        top: 10px;
+        z-index: 9;
     }
     .personal .leftNav .navBox .navItem:hover{
         cursor: pointer;

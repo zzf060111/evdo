@@ -1,18 +1,29 @@
 <template>
-    <div class="message" :style="`height:${screenHeight-60}px`">
+    <div class="message" ref="message" :style="`height:${screenHeight-60}px`">
         <vue-scroll :ops="ops" :style="`width:100%;height:${screenHeight-110}px;`">
             <div style="width:100%;height:780px;" v-show="msgArr.length>0&&isValue">
-                <vue-scroll :ops="opsx" :style="`width:100%;height:100%;`" @handle-scroll="handleScroll">
-                    <div class="Messitem" v-for="(item,index) of msgArr" :key="index">
-                        <div class="top">
-                            <p>{{item.isShow==0?item.notice.title:''}}</p>
+                <vue-scroll :ops="ops" :style="`width:100%;height:100%;`" @handle-scroll="handleScroll">
+                    <div class="Messitem"  v-for="(item,index) of msgArr" :key="index">
+                        <div class="top" @click="showMess(index)">
                             <div>
-                                <p v-show="item.status==0">未读</p>
-                                <img :src="item.isShow==0?require('../../static/image/personal/down@2x.png'):require('../../static/image/personal/up@2x.png')" alt="" @click="showMess(index)">
+                                <!-- <p v-show="item.status==0">未读</p> -->
+                                <img style="width:32px;height:32px;margin:-5px 10px 0 0;" :src="item.status==0?require('../../static/image/personal/icon_weidu@2x.png'):require('../../static/image/personal/icon_yidu@2x.png')" alt="">
+                                <span>{{item.notice.title}}</span>
+                            </div>
+                            <div>
+                                {{getDate(item.create_time)}}
                             </div>
                         </div>
-                        <div class="down" v-show="item.isShow==1">
-                            {{item.notice.content}}
+                        <div class="down down1" v-show="item.isShow==0" @click="showMess(index)">
+                            <div :style="`width:${widthVal}px`">{{item.notice.content}}</div>
+                            <img :src="require('../../static/image/personal/down@2x.png')" alt="">
+                        </div>
+                        <div class="down down2" v-show="item.isShow==1">
+                            <div :style="`width:${widthVal}px`" @click="showMess(index)">{{item.notice.content}}</div>
+                            <img :src="require('../../static/image/personal/up@2x.png')" alt="" @click="showMess(index)">
+                            <div>
+                                <p @click="delMessage(index)">删除</p>
+                            </div>
                         </div>
                     </div>
                 </vue-scroll>
@@ -26,13 +37,14 @@
 <script>
 import store from '../vuex/store'
 import {mapState,mapMutations} from 'vuex';
-import {info,notice,noticeRead} from '../services/api/personal'
+import {info,notice,noticeRead,systemNoticeDel} from '../services/api/personal'
 export default {
     data(){
         return{
             page:1,
             msgArr:[],
-            isValue:false
+            isValue:false,
+            widthVal:0
         }
     },
     store,
@@ -45,8 +57,26 @@ export default {
     },
     mounted(){
         this.windowChange(document.documentElement.clientHeight);
+        this.$nextTick(()=>{
+            // 获取父元素
+            let message=this.$refs.message;
+            // 获取宽度
+            let wmessage = message.getBoundingClientRect().width;
+            // 添加左内边距
+            this.widthVal=(wmessage-100)*0.88;
+        });
         window.onresize=()=>{
             this.windowChange(document.documentElement.clientHeight);
+            return(()=>{
+                this.$nextTick(()=>{
+                    // 获取父元素
+                    let message=this.$refs.message;
+                    // 获取宽度
+                    let wmessage = message.getBoundingClientRect().width;
+                    // 添加左内边距
+                    this.widthVal=(wmessage-100)*0.88;
+                });
+            })()
         }
     },
     methods:{
@@ -96,9 +126,31 @@ export default {
                 noticeRead(data).then((res)=>{
                     if(res.data.code==0){
                         this.msgArr[index].status=1;
+                        this.$emit('getNoread');
                     }
                 })
             }
+        },
+        // 删除消息
+        delMessage(index){
+            let arr=this.msgArr;
+            this.$alert('确认删除系统消息？','提示',{
+                confirmButtonText:'删 除',
+                center:true,
+                customClass:'errorAlert',
+                callback:(action)=>{
+                    if(action=='confirm'){
+                        let data={};
+                        data['id']=arr[index].id
+                        systemNoticeDel(data).then((res)=>{
+                            if(res.data.code==0){
+                                this.alertTxt({'msg':'删除成功','type':'success'});
+                                arr.splice(index,1);
+                            }
+                        })
+                    }
+                }
+            })
         },
         // 滚动条事件
         handleScroll(vertical, horizontal, nativeEvent){
@@ -108,6 +160,17 @@ export default {
                 this.getNotice(this.page)
             }
         },
+        // 整理日期
+        getDate(time){
+            var date=new Date(time*1000);
+            var year=date.getFullYear();
+            var month=date.getMonth()+1>=10?date.getMonth()+1:`0${date.getMonth()+1}`;
+            var day=date.getDate()>=10?date.getDate():`0${date.getDate()}`;
+            var hours=date.getHours()>=10?date.getHours():`0${date.getHours()}`;
+            var minutes=date.getMinutes()>=10?date.getMinutes():`0${date.getMinutes()}`;
+            var seconds=date.getSeconds()>=10?date.getSeconds():`0${date.getSeconds()}`;
+            return year+'-'+month+'-'+day+' '+hours+':'+minutes+':'+seconds
+        }
     },
     destroyed(){
         localStorage.removeItem('isloaded');
@@ -129,22 +192,19 @@ export default {
         background-color: #F1F4F5;
         margin-bottom: 20px;
     }
+    .message .Messitem:hover{
+        cursor: pointer;
+    }
     .message .Messitem .top{
         width: 100%;
-        height: 60px;
+        height: 55px;
         display: flex;
         justify-content: space-between;
-        padding: 20px;
+        align-items: flex-start;
+        padding:20px 20px 0 20px;
         box-sizing: border-box;
         font-size: 16px;
         color: #333;
-    }
-    .message .Messitem .top>p{
-        width: 64%;
-        overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap;
-        text-align: left;
     }
     .message .Messitem .top>div{
         display: flex;
@@ -160,19 +220,51 @@ export default {
         line-height: 20px;
         margin-right: 20px;
     }
-    .message .Messitem .top>div img{
-        width: 24px;
-        height: 24px;
+    .message .Messitem .top>div span{
+        font-size: 18px;
     }
-    .message .Messitem .top>div img:hover{
-        cursor: pointer;
+    .message .Messitem .top>div:nth-child(2){
+        font-size: 16px;
+        color: #C4CACE;
     }
     .message .Messitem .down{
         width: 100%;
-        padding: 0 20px 40px 20px;
+        padding: 0 20px;
         box-sizing: border-box;
+        text-align: left;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
         font-size: 16px;
         color: #333;
-        text-align: left;
+    }
+    .message .Messitem .down1 div{
+        height: 35px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+    .message .Messitem .down img{
+        width: 24px;
+        height: 24px;
+    }
+    .message .Messitem .down2{
+        min-height: 40px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+    }
+    .message .Messitem .down2 div:last-child{
+        width: 100%;
+        margin-top: 10px;
+    }
+    .message .Messitem .down2 div:last-child p{
+        width: 70px;
+        height: 30px;
+        text-align: center;
+        line-height: 30px;
+        color: #fff;
+        font-size: 14px;
+        background-color: #FF5555;
     }
 </style>
