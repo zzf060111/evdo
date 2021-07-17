@@ -252,7 +252,7 @@ export default {
             //     }
             //     this.navArr=arr;
             // }
-            console.log(isVip)
+            // console.log(isVip)
             if(isVip){
                 this.rightShow='7';
                 localStorage.setItem('rightShow','7');

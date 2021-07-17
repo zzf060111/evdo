@@ -208,7 +208,7 @@ export default {
             category().then((res)=>{
                 if(res.data.code==0){
                     let leftArr=[];
-                    let arr=res.data.data.reverse();
+                    let arr=res.data.data;
                     let twoArr=[];
                     for(let i=0;i<arr.length;i++){
                         let obj={};
